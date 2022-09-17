@@ -8,7 +8,6 @@ package com.tspdevelopment.KidsScore.data.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tspdevelopment.KidsScore.helpers.SecurityHelper;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +32,7 @@ import org.springframework.security.core.GrantedAuthority;
  */
 @Entity(name="USER_TABLE")
 @Data
-public class User implements UserDetails, Serializable {
+public class User implements UserDetails {
     
     @Id
     @GeneratedValue(generator = "UUID")
