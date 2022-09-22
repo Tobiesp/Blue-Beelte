@@ -13,7 +13,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -24,6 +27,9 @@ import org.springframework.data.annotation.LastModifiedDate;
  */
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PointTotal implements Serializable {
     
     @Id
@@ -43,7 +49,6 @@ public class PointTotal implements Serializable {
     @Column(nullable=false, unique=true, length=1024)
     private String itemName;
     
-    @Column(name="STUDENT_GROUP")
     @ManyToOne
     private Group group;
     

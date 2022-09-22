@@ -21,7 +21,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -33,6 +36,9 @@ import org.springframework.security.core.GrantedAuthority;
  */
 @Entity(name="USER_TABLE")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User implements UserDetails {
     
     @Id
@@ -61,7 +67,11 @@ public class User implements UserDetails {
     private String fullName;
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<GrantedAuthority> roles = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
+    
+    public void setAuthorities(GrantedAuthority role) {
+        roles.add((Role)role);
+    }
     
     @Override
     public Collection<GrantedAuthority> getAuthorities() {

@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
@@ -19,7 +20,10 @@ import org.springframework.security.core.GrantedAuthority;
  * @author tobiesp
  */
 @Entity(name="ROLE_TABLE")
-@Data @AllArgsConstructor @NoArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Role implements GrantedAuthority {
     
     public static final String ADMIN_ROLE = "ADMIN_ROLE";

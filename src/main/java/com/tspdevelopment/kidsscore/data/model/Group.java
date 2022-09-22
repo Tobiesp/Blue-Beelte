@@ -12,7 +12,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -23,6 +26,9 @@ import org.springframework.data.annotation.LastModifiedDate;
  */
 @Entity(name="GROUP_TABLE")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Group implements Serializable {
     
     @Id

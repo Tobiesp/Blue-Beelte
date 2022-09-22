@@ -5,7 +5,6 @@
  */
 package com.tspdevelopment.kidsscore.configuration;
 
-import com.tspdevelopment.kidsscore.data.repository.UserRepository;
 import com.tspdevelopment.kidsscore.filters.JwtTokenFilter;
 import com.tspdevelopment.kidsscore.helpers.SecurityHelper;
 import com.tspdevelopment.kidsscore.services.DBUserDetailsService;
@@ -18,13 +17,12 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  *
@@ -36,12 +34,12 @@ import org.springframework.web.filter.CorsFilter;
         jsr250Enabled = true,
         prePostEnabled = true
 )
-public class SecurityConfigV2 {
+public class SecurityConfig {
 
     @Autowired
     private final JwtTokenFilter jwtTokenFilter;
 
-    public SecurityConfigV2(JwtTokenFilter jwtTokenFilter) {
+    public SecurityConfig(JwtTokenFilter jwtTokenFilter) {
         this.jwtTokenFilter = jwtTokenFilter;
     }
 
@@ -102,6 +100,11 @@ public class SecurityConfigV2 {
                 .passwordEncoder(SecurityHelper.getInstance().passwordEncoder())
                 .and()
                 .build();
+    }
+
+    @Bean
+    public PasswordEncoder encoder() {
+        return SecurityHelper.getInstance().passwordEncoder();
     }
 
 }
