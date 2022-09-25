@@ -56,6 +56,6 @@ public class PointsSpent implements Serializable {
     private Student student;
     
     @Column
-    private int pointsSpent;
+    private int points;
     
 }

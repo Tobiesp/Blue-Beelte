@@ -1,5 +1,6 @@
 package com.tspdevelopment.kidsscore.provider.interfaces;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,5 +20,9 @@ public interface StudentProvider extends BaseProvider<Student> {
     public Student update(Student replaceItem, UUID id);
 
     public List<Student> search(Student item);
+
+    public List<Student> findByGraduated(Date graduated);
+
+    public List<Student> searchGraduated(Date start, Date end);
     
 }

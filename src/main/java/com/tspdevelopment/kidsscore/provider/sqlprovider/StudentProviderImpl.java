@@ -1,6 +1,7 @@
 package com.tspdevelopment.kidsscore.provider.sqlprovider;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,6 +67,14 @@ public class StudentProviderImpl implements StudentProvider{
     public List<Student> search(Student item) {
         Example<Student> example = Example.of(item);
         return this.repository.findAll(example);
+    }
+
+    public List<Student> findByGraduated(Date graduated){
+        return this.repository.findByGraduated(graduated);
+    }
+
+    public List<Student> searchGraduated(Date start, Date end){
+        return this.repository.searchGraduated(start, end);
     }
     
 }

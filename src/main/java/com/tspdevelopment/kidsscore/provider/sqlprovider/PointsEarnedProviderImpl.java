@@ -1,6 +1,7 @@
 package com.tspdevelopment.kidsscore.provider.sqlprovider;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,6 +72,46 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
     public List<PointsEarned> search(PointsEarned item) {
         Example<PointsEarned> example = Example.of(item);
         return this.repository.findAll(example);
+    }
+
+    @Override
+    public List<PointsEarned> findByAttended(Boolean attended) {
+        return this.repository.findByAttended(attended);
+    }
+
+    @Override
+    public List<PointsEarned> findByBible(Boolean bible) {
+        return this.repository.findByBible(bible);
+    }
+
+    @Override
+    public List<PointsEarned> findByBibleVerse(Boolean bibleVerse) {
+        return this.repository.findByBibleVerse(bibleVerse);
+    }
+
+    @Override
+    public List<PointsEarned> findByBringAFriend(Boolean bringAFriend) {
+        return this.repository.findByBringAFriend(bringAFriend);
+    }
+
+    @Override
+    public List<PointsEarned> findByAttentive(Boolean attentive) {
+        return this.repository.findByAttentive(attentive);
+    }
+
+    @Override
+    public List<PointsEarned> findByRecallsLastWeekLesson(Boolean recallsLastWeekLesson) {
+        return this.repository.findByRecallsLastWeekLesson(recallsLastWeekLesson);
+    }
+
+    @Override
+    public List<PointsEarned> findByEventDate(Date eventDate) {
+        return this.repository.findByEventDate(eventDate);
+    }
+
+    @Override
+    public List<PointsEarned> searchEventDate(Date start, Date end) {
+        return this.repository.searchEventDate(start, end);
     }
 
     

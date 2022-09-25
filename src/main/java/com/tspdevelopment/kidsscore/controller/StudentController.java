@@ -1,25 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.tspdevelopment.kidsscore.controller;
 
-import com.tspdevelopment.kidsscore.data.model.Group;
-import com.tspdevelopment.kidsscore.data.model.Role;
-import com.tspdevelopment.kidsscore.data.model.Student;
-import com.tspdevelopment.kidsscore.data.repository.StudentRepository;
-import com.tspdevelopment.kidsscore.provider.interfaces.StudentProvider;
-import com.tspdevelopment.kidsscore.provider.sqlprovider.StudentProviderImpl;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import javax.annotation.security.RolesAllowed;
+
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +25,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.tspdevelopment.kidsscore.data.model.Role;
+import com.tspdevelopment.kidsscore.data.model.Student;
+import com.tspdevelopment.kidsscore.data.repository.StudentRepository;
+import com.tspdevelopment.kidsscore.provider.interfaces.StudentProvider;
+import com.tspdevelopment.kidsscore.provider.sqlprovider.StudentProviderImpl;
 
 /**
  *
@@ -48,7 +47,7 @@ public class StudentController {
     }
     
     @GetMapping("/")
-    @RolesAllowed({Role.ADMIN_ROLE})
+    @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     CollectionModel<EntityModel<Student>> all(){
         List<EntityModel<Student>> students = provider.findAll().stream()
         .map(student -> EntityModel.of(student,
@@ -62,7 +61,7 @@ public class StudentController {
     }
     
     @PostMapping("/")
-    @RolesAllowed({Role.ADMIN_ROLE})
+    @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
     Student newItem(@RequestBody Student newItem){
         return provider.create(newItem);
     }
@@ -82,19 +81,23 @@ linkTo(methodOn(StudentController.class).one(null, id)).withSelfRel(),
     }
     
     @PutMapping("/{id}")
-    @RolesAllowed({Role.ADMIN_ROLE})
-    Student replaceItem(@RequestBody Student replaceItem, @PathVariable UUID id){
-        return provider.update(replaceItem, id);
+    @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    EntityModel<Student> replaceItem(@RequestBody Student replaceItem, @PathVariable UUID id){
+        Student student = provider.update(replaceItem, id);
+            return EntityModel.of(student, //
+                linkTo(methodOn(StudentController.class).one(null, id)).withSelfRel(),
+                Link.of(linkTo(methodOn(StudentController.class).all()).withRel("student").getHref() + "search", "search"),
+                linkTo(methodOn(StudentController.class).all()).withRel("students"));
     }
     
     @DeleteMapping("/{id}")
-    @RolesAllowed({Role.ADMIN_ROLE})
+    @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
     void deleteItem(@PathVariable UUID id){
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Can't delete a Student");
     }
     
     @PostMapping("/search")
-    @RolesAllowed({Role.ADMIN_ROLE})
+    @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     CollectionModel<EntityModel<Student>> search(@RequestBody Student item){
         List<EntityModel<Student>> students = provider.search(item).stream()
 				.map(c -> EntityModel.of(c,

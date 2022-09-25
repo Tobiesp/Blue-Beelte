@@ -19,5 +19,9 @@ public interface GroupProvider extends BaseProvider<Group> {
     public Group update(Group replaceItem, UUID id);
 
     public List<Group> search(Group item);
+
+    public Optional<Group> findByName(String name);
+
+    public List<Group> findByNameLike(String name);
     
 }

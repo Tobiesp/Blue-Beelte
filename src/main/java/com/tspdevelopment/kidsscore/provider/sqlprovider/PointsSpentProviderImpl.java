@@ -1,6 +1,7 @@
 package com.tspdevelopment.kidsscore.provider.sqlprovider;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,7 +53,7 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
         return repository.findById(id) //
                 .map(item -> {
                     item.setEventDate(replaceItem.getEventDate());
-                    item.setPointsSpent(replaceItem.getPointsSpent());
+                    item.setPoints(replaceItem.getPoints());
                     item.setStudent(replaceItem.getStudent());
                     item.setModifiedAt(LocalDateTime.now());
                     return repository.save(item);
@@ -66,6 +67,14 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
     public List<PointsSpent> search(PointsSpent item) {
         Example<PointsSpent> example = Example.of(item);
         return this.repository.findAll(example);
+    }
+
+    public List<PointsSpent> findByEventDate(Date eventDate){
+        return this.repository.findByEventDate(eventDate);
+    }
+    
+    public List<PointsSpent> searchEventDate(Date start, Date end){
+        return this.repository.searchEventDate(start, end);
     }
     
 }

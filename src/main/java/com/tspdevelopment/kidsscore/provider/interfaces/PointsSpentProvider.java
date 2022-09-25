@@ -1,5 +1,6 @@
 package com.tspdevelopment.kidsscore.provider.interfaces;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,5 +20,9 @@ public interface PointsSpentProvider extends BaseProvider<PointsSpent>{
     public PointsSpent update(PointsSpent replaceItem, UUID id);
 
     public List<PointsSpent> search(PointsSpent item);
+
+    public List<PointsSpent> findByEventDate(Date eventDate);
+    
+    public List<PointsSpent> searchEventDate(Date start, Date end);
     
 }

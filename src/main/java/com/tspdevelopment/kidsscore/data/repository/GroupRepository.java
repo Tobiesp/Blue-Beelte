@@ -5,6 +5,7 @@
  */
 package com.tspdevelopment.kidsscore.data.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +18,7 @@ import com.tspdevelopment.kidsscore.data.model.Group;
  */
 public interface GroupRepository extends JpaRepository<Group, UUID> {
     public Optional<Group> findByName(String name);
+
+    public List<Group> findByNameLike(String name);
     
 }

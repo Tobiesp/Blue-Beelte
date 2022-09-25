@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Example;
 
 import com.tspdevelopment.kidsscore.data.model.RunningTotals;
+import com.tspdevelopment.kidsscore.data.model.Student;
 import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.kidsscore.provider.interfaces.RunningTotalsProvider;
 
@@ -65,6 +66,11 @@ public class RunningTotalsProviderImpl implements RunningTotalsProvider{
     public List<RunningTotals> search(RunningTotals item) {
         Example<RunningTotals> example = Example.of(item);
         return this.repository.findAll(example);
+    }
+
+    @Override
+    public Optional<RunningTotals> findByStudent(Student student) {
+        return this.repository.findByStudent(student);
     }
     
 }

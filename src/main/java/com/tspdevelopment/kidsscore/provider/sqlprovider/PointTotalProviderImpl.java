@@ -7,7 +7,9 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Example;
 
+import com.tspdevelopment.kidsscore.data.model.Group;
 import com.tspdevelopment.kidsscore.data.model.PointTotal;
+import com.tspdevelopment.kidsscore.data.model.Student;
 import com.tspdevelopment.kidsscore.data.repository.PointTotalRepository;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointTotalProvider;
 
@@ -52,8 +54,8 @@ public class PointTotalProviderImpl implements PointTotalProvider{
         return repository.findById(id) //
                 .map(item -> {
                     item.setGroup(replaceItem.getGroup());
-                    item.setName(replaceItem.getName());
-                    item.setPointTotal(replaceItem.getPointTotal());
+                    item.setStudent(replaceItem.getStudent());
+                    item.setTotalPoints(replaceItem.getTotalPoints());
                     item.setModifiedAt(LocalDateTime.now());
                     return repository.save(item);
                 }) //
@@ -66,6 +68,14 @@ public class PointTotalProviderImpl implements PointTotalProvider{
     public List<PointTotal> search(PointTotal item) {
         Example<PointTotal> example = Example.of(item);
         return this.repository.findAll(example);
+    }
+
+    public List<PointTotal> findByGroup(Group group){
+        return this.repository.findByGroup(group);
+    }
+
+    public Optional<PointTotal> findByStudent(Student student){
+        return this.repository.findByStudent(student);
     }
     
 }

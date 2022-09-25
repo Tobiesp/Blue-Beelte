@@ -65,5 +65,13 @@ public class GroupProviderImpl implements GroupProvider{
         Example<Group> example = Example.of(item);
         return this.repository.findAll(example);
     }
+
+    public Optional<Group> findByName(String name) {
+        return this.repository.findByName(name);
+    }
+
+    public List<Group> findByNameLike(String name) {
+        return this.repository.findByNameLike(name);
+    }
     
 }

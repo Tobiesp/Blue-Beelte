@@ -46,13 +46,13 @@ public class PointTotal implements Serializable {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
     
-    @Column(nullable=false, unique=true, length=1024)
-    private String name;
+    @ManyToOne
+    private Student student;
     
     @ManyToOne
     private Group group;
     
     @Column(nullable=false)
-    private int pointTotal;
+    private int totalPoints;
     
 }
