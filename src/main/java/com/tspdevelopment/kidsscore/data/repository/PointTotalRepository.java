@@ -16,6 +16,6 @@ import com.tspdevelopment.kidsscore.data.model.PointTotal;
  * @author tobiesp
  */
 public interface PointTotalRepository extends JpaRepository<PointTotal, UUID> {
-    public Optional<PointTotal> findByName(String itemName);
+    public Optional<PointTotal> findByName(String name);
     
 }

@@ -17,6 +17,6 @@ import com.tspdevelopment.kidsscore.data.model.Student;
  * @author tobiesp
  */
 public interface RunningTotalsRepository extends JpaRepository<RunningTotals, UUID> {
-    public Optional<RunningTotals> findByName(Student student);
+    public Optional<RunningTotals> findByStudent(Student student);
     
 }

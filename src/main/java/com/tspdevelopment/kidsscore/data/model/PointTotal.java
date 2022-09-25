@@ -47,7 +47,7 @@ public class PointTotal implements Serializable {
     private LocalDateTime modifiedAt;
     
     @Column(nullable=false, unique=true, length=1024)
-    private String itemName;
+    private String name;
     
     @ManyToOne
     private Group group;

@@ -21,7 +21,7 @@ public class SecurityHelper {
         return SecurityHelperHolder.INSTANCE;
     }
     
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
     

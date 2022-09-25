@@ -34,11 +34,15 @@ import com.tspdevelopment.kidsscore.helpers.JwtTokenUtil;
 import com.tspdevelopment.kidsscore.provider.interfaces.UserProvider;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.UserProviderImpl;
 import com.tspdevelopment.kidsscore.views.UserUpdateView;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
  * @author tobiesp
  */
+@RestController
+@RequestMapping("/api/user")
 public class UserController {
     
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -129,13 +133,13 @@ public class UserController {
         }
     }
     
-    @PutMapping("/")
+    @PutMapping("/{id}")
     @RolesAllowed({Role.ADMIN_ROLE})
     User replaceItem(@RequestBody User replaceItem, @PathVariable UUID id){
         return provider.update(replaceItem, id);
     }
     
-    @DeleteMapping("/")
+    @DeleteMapping("/{id}")
     @RolesAllowed({Role.ADMIN_ROLE})
     void deleteItem(@PathVariable UUID id){
         this.provider.delete(id);

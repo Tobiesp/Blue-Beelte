@@ -52,7 +52,7 @@ public class PointTotalProviderImpl implements PointTotalProvider{
         return repository.findById(id) //
                 .map(item -> {
                     item.setGroup(replaceItem.getGroup());
-                    item.setItemName(replaceItem.getItemName());
+                    item.setName(replaceItem.getName());
                     item.setPointTotal(replaceItem.getPointTotal());
                     item.setModifiedAt(LocalDateTime.now());
                     return repository.save(item);

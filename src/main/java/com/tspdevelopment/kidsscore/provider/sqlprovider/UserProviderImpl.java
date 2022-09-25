@@ -36,9 +36,9 @@ public class UserProviderImpl implements UserProvider {
         }
         return repository.findById(id) //
                 .map(item -> {
-                                        item.setFullName(replaceItem.getFullName());
-                                        item.setRoles(replaceItem.getRoles());
-                                        item.setModifiedAt(LocalDateTime.now());
+                    item.setFullName(replaceItem.getFullName());
+                    item.setRoles(replaceItem.getRoles());
+                    item.setModifiedAt(LocalDateTime.now());
                     return repository.save(item);
                 }) //
                 .orElseGet(() -> {
@@ -73,7 +73,7 @@ public class UserProviderImpl implements UserProvider {
         }
         return repository.findById(id) //
                 .map(item -> {
-                                        item.setPassword(password);
+                    item.setPassword(password);
                     return repository.save(item);
                 }).orElseThrow();
     }
@@ -85,7 +85,7 @@ public class UserProviderImpl implements UserProvider {
         }
         repository.findById(userId) //
                 .map(item -> {
-                                        item.setTokenId(tokenId);
+                    item.setTokenId(tokenId);
                     return repository.save(item);
                 }).orElseThrow();
     }

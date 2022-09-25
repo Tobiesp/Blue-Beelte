@@ -5,6 +5,7 @@
  */
 package com.tspdevelopment.kidsscore.configuration;
 
+import com.tspdevelopment.kidsscore.data.repository.UserRepository;
 import com.tspdevelopment.kidsscore.filters.JwtTokenFilter;
 import com.tspdevelopment.kidsscore.helpers.SecurityHelper;
 import com.tspdevelopment.kidsscore.services.DBUserDetailsService;
@@ -22,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  *
@@ -38,6 +38,9 @@ public class SecurityConfig {
 
     @Autowired
     private final JwtTokenFilter jwtTokenFilter;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     public SecurityConfig(JwtTokenFilter jwtTokenFilter) {
         this.jwtTokenFilter = jwtTokenFilter;
@@ -58,7 +61,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder, DBUserDetailsService userDetailsService)
+    public AuthenticationManager authManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder)
             throws Exception {
         // Enable CORS and disable CSRF
         http = http.cors().and().csrf().disable();
@@ -96,14 +99,14 @@ public class SecurityConfig {
                 UsernamePasswordAuthenticationFilter.class
         );
         return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService)
+                .userDetailsService(new DBUserDetailsService(userRepository))
                 .passwordEncoder(SecurityHelper.getInstance().passwordEncoder())
                 .and()
                 .build();
     }
 
     @Bean
-    public PasswordEncoder encoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return SecurityHelper.getInstance().passwordEncoder();
     }
 

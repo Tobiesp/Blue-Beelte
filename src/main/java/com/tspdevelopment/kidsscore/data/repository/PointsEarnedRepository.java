@@ -17,6 +17,6 @@ import com.tspdevelopment.kidsscore.data.model.Student;
  * @author tobiesp
  */
 public interface PointsEarnedRepository extends JpaRepository<PointsEarned, UUID> {
-    public Optional<PointsEarned> findByName(Student student);
+    public Optional<PointsEarned> findByStudent(Student student);
     
 }

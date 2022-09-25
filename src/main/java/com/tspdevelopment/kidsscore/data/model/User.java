@@ -56,6 +56,7 @@ public class User implements UserDetails {
     private LocalDateTime modifiedAt;
     
     @Column()
+    @Builder.Default
     private boolean enabled = true;
 
     @Column(unique=true,nullable=false)
@@ -67,6 +68,7 @@ public class User implements UserDetails {
     private String fullName;
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
+    @Builder.Default
     private List<Role> roles = new ArrayList<>();
     
     public void setAuthorities(GrantedAuthority role) {
