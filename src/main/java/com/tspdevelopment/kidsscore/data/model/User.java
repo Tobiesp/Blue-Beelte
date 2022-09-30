@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tspdevelopment.kidsscore.data.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -100,6 +95,21 @@ public class User implements UserDetails {
             throw new IllegalArgumentException("Password doesn't meet all the criteria.");
         }
         this.password = SecurityHelper.getInstance().encodePassword(password);
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("User: {\n");
+        sb.append("username: ").append(this.username).append(",\n");
+        sb.append("fullname: ").append(this.fullName).append(",\n");
+        sb.append("password: ").append(this.password).append(",\n");
+        if(!this.roles.isEmpty()) {
+            for(Role r : roles) {
+                sb.append("role: ").append(r.getAuthority()).append(",\n");
+            }
+        }
+        return sb.toString();
     }
     
 }

@@ -8,21 +8,21 @@ import java.util.UUID;
 import org.springframework.data.domain.Example;
 
 import com.tspdevelopment.kidsscore.data.model.Group;
-import com.tspdevelopment.kidsscore.data.model.PointTotal;
-import com.tspdevelopment.kidsscore.data.model.Student;
-import com.tspdevelopment.kidsscore.data.repository.PointTotalRepository;
-import com.tspdevelopment.kidsscore.provider.interfaces.PointTotalProvider;
+import com.tspdevelopment.kidsscore.data.model.PointCategory;
+import com.tspdevelopment.kidsscore.data.model.PointTable;
+import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
+import com.tspdevelopment.kidsscore.provider.interfaces.PointTableProvider;
 
-public class PointTotalProviderImpl implements PointTotalProvider{
+public class PointTableProviderImpl implements PointTableProvider{
 
-    private final PointTotalRepository repository;
+    private final PointTableRepository repository;
     
-    public PointTotalProviderImpl(PointTotalRepository repository) {
+    public PointTableProviderImpl(PointTableRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public PointTotal create(PointTotal newItem) {
+    public PointTable create(PointTable newItem) {
         if((newItem != null) && (newItem.getCreatedAt() == null)) {
             newItem.setCreatedAt(LocalDateTime.now());
             newItem.setModifiedAt(LocalDateTime.now());
@@ -37,24 +37,25 @@ public class PointTotalProviderImpl implements PointTotalProvider{
     }
 
     @Override
-    public List<PointTotal> findAll() {
+    public List<PointTable> findAll() {
         return repository.findAll();
     }
 
     @Override
-    public Optional<PointTotal> findById(UUID id) {
+    public Optional<PointTable> findById(UUID id) {
         return this.repository.findById(id);
     }
 
     @Override
-    public PointTotal update(PointTotal replaceItem, UUID id) {
+    public PointTable update(PointTable replaceItem, UUID id) {
         if (replaceItem == null) {
-            throw new IllegalArgumentException("Updated Student can not be null.");
+            throw new IllegalArgumentException("Updated item can not be null.");
         }
         return repository.findById(id) //
                 .map(item -> {
                     item.setGroup(replaceItem.getGroup());
-                    item.setStudent(replaceItem.getStudent());
+                    item.setPointCategory(replaceItem.getPointCategory());
+                    item.setEnabled(replaceItem.isEnabled());
                     item.setTotalPoints(replaceItem.getTotalPoints());
                     item.setModifiedAt(LocalDateTime.now());
                     return repository.save(item);
@@ -65,17 +66,19 @@ public class PointTotalProviderImpl implements PointTotalProvider{
     }
 
     @Override
-    public List<PointTotal> search(PointTotal item) {
-        Example<PointTotal> example = Example.of(item);
+    public List<PointTable> search(PointTable item) {
+        Example<PointTable> example = Example.of(item);
         return this.repository.findAll(example);
     }
 
-    public List<PointTotal> findByGroup(Group group){
+    @Override
+    public List<PointTable> findByGroup(Group group){
         return this.repository.findByGroup(group);
     }
 
-    public Optional<PointTotal> findByStudent(Student student){
-        return this.repository.findByStudent(student);
+    @Override
+    public List<PointTable> findByPointCategory(PointCategory pointCategory) {
+        return this.repository.findByPointCategory(pointCategory);
     }
     
 }

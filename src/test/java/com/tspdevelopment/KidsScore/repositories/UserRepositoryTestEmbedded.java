@@ -1,14 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tspdevelopment.KidsScore.repositories;
 
+import com.tspdevelopment.KidsScore.helper.TestEntityGenerator;
 import com.tspdevelopment.kidsscore.data.model.User;
+import com.tspdevelopment.kidsscore.data.repository.RoleRepository;
 import com.tspdevelopment.kidsscore.data.repository.UserRepository;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -23,29 +22,31 @@ public class UserRepositoryTestEmbedded {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(UserRepositoryTestEmbedded.class);
+    
+    @BeforeEach
+    public void setUp() {
+        TestEntityGenerator.getInstance().setRoleRepository(roleRepository);
+        TestEntityGenerator.getInstance().setUserRepository(userRepository);
+    }
 
     @Test
     public void shouldSaveUser() {
-        User user = new User();
-        user.setFullName("Test User");
-        user.setPassword("S3cret password");
-        user.setEnabled(true);
-        user.setUsername("test user");
+        User user = TestEntityGenerator.getInstance().generateUser();
+        log.info(user.toString());
         User savedUser = userRepository.save(user);
-        assertThat(savedUser).usingRecursiveComparison().ignoringFields("userId").isEqualTo(user);
+        assertThat(savedUser).usingRecursiveComparison().ignoringFields("id").isEqualTo(user);
     }
     
     @Test
     public void shouldUpdatePasswordUser() {
-        User user = new User();
-        user.setFullName("Test User");
-        user.setPassword("S3cret password");
-        user.setEnabled(true);
-        user.setUsername("test user");
-        User savedUser = userRepository.save(user);
-        savedUser.setPassword("S3cr3t password");
-        User updatedUser = userRepository.save(savedUser);
-        assertThat(savedUser).usingRecursiveComparison().ignoringFields("userId").isEqualTo(updatedUser);
+        User user = TestEntityGenerator.getInstance().generateUser();
+        user.setPassword("S3cr3t password");
+        User updatedUser = userRepository.save(user);
+        assertThat(user).usingRecursiveComparison().ignoringFields("id").isEqualTo(updatedUser);
     }
 
 }

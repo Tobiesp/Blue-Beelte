@@ -38,7 +38,7 @@ public class Role implements GrantedAuthority {
     )
     @Column(updatable = false, nullable = false)
     private UUID id;
-    @Column(unique=true,nullable=false)
+    @Column(unique=true, nullable=false)
     private String authority;
     @ManyToMany(mappedBy = "roles")
     private List<User> users;

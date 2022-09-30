@@ -1,25 +1,20 @@
 package com.tspdevelopment.kidsscore.provider.interfaces;
 
+import com.tspdevelopment.kidsscore.data.model.Group;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import com.tspdevelopment.kidsscore.data.model.Student;
+import java.util.Optional;
 
 public interface StudentProvider extends BaseProvider<Student> {
-
-    public Student create(Student newItem);
-
-    public void delete(UUID id);
-
-    public List<Student> findAll();
-
-    public Optional<Student> findById(UUID id);
-
-    public Student update(Student replaceItem, UUID id);
-
-    public List<Student> search(Student item);
+    public Optional<Student> findByName(String name);
+    
+    public List<Student> findByNameLike(String name);
+    
+    public Optional<List<Student>> findByGroup(Group group);
+    
+    public Optional<List<Student>> findByGrade(int grade);
 
     public List<Student> findByGraduated(Date graduated);
 

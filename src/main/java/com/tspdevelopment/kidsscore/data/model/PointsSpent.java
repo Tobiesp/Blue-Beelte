@@ -1,20 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tspdevelopment.kidsscore.data.model;
 
-import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +25,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PointsSpent implements Serializable {
+public class PointsSpent implements BaseItem {
     
     @Id
     @GeneratedValue(generator = "UUID")
@@ -49,8 +42,7 @@ public class PointsSpent implements Serializable {
     private LocalDateTime modifiedAt;
     
     @Column
-    @Temporal(javax.persistence.TemporalType.DATE)
-    private Date eventDate;
+    private LocalDate eventDate;
     
     @ManyToOne
     private Student student;

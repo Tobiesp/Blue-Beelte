@@ -8,5 +8,4 @@ import com.tspdevelopment.kidsscore.data.model.Role;
  */
 public interface RoleProvider extends BaseProvider<Role>{
     
-    public Role create(Role item);
 }

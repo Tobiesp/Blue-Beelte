@@ -1,7 +1,6 @@
 package com.tspdevelopment.kidsscore.provider.sqlprovider;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,8 +8,10 @@ import java.util.UUID;
 import org.springframework.data.domain.Example;
 
 import com.tspdevelopment.kidsscore.data.model.PointsSpent;
+import com.tspdevelopment.kidsscore.data.model.Student;
 import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointsSpentProvider;
+import java.time.LocalDate;
 
 public class PointsSpentProviderImpl implements PointsSpentProvider {
 
@@ -69,12 +70,24 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
         return this.repository.findAll(example);
     }
 
-    public List<PointsSpent> findByEventDate(Date eventDate){
+    @Override
+    public List<PointsSpent> findByEventDate(LocalDate eventDate){
         return this.repository.findByEventDate(eventDate);
     }
     
-    public List<PointsSpent> searchEventDate(Date start, Date end){
+    @Override
+    public List<PointsSpent> searchEventDate(LocalDate start, LocalDate end){
         return this.repository.searchEventDate(start, end);
+    }
+
+    @Override
+    public List<PointsSpent> findByStudent(Student student) {
+        return this.repository.findByStudent(student);
+    }
+
+    @Override
+    public List<PointsSpent> searchStudentEventDate(Student student, LocalDate start, LocalDate end) {
+        return this.repository.searchStudentEventDate(student, start, end);
     }
     
 }

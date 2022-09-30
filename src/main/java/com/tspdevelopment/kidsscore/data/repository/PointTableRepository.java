@@ -6,22 +6,21 @@
 package com.tspdevelopment.kidsscore.data.repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tspdevelopment.kidsscore.data.model.Group;
-import com.tspdevelopment.kidsscore.data.model.PointTotal;
-import com.tspdevelopment.kidsscore.data.model.Student;
+import com.tspdevelopment.kidsscore.data.model.PointCategory;
+import com.tspdevelopment.kidsscore.data.model.PointTable;
 
 /**
  *
  * @author tobiesp
  */
-public interface PointTotalRepository extends JpaRepository<PointTotal, UUID> {
-    public Optional<PointTotal> findByStudent(Student student);
+public interface PointTableRepository extends JpaRepository<PointTable, UUID> {
+    public List<PointTable> findByPointCategory(PointCategory category);
 
-    public List<PointTotal> findByGroup(Group group);
+    public List<PointTable> findByGroup(Group group);
 
     
     

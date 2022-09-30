@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tspdevelopment.kidsscore.data.model;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -30,7 +24,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PointTotal implements Serializable {
+public class PointTable implements BaseItem {
     
     @Id
     @GeneratedValue(generator = "UUID")
@@ -47,10 +41,13 @@ public class PointTotal implements Serializable {
     private LocalDateTime modifiedAt;
     
     @ManyToOne
-    private Student student;
+    private PointCategory pointCategory;
     
     @ManyToOne
     private Group group;
+    
+    @Column()
+    private boolean enabled;
     
     @Column(nullable=false)
     private int totalPoints;

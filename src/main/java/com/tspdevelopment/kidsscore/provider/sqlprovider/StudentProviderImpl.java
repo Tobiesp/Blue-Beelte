@@ -1,5 +1,6 @@
 package com.tspdevelopment.kidsscore.provider.sqlprovider;
 
+import com.tspdevelopment.kidsscore.data.model.Group;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -69,12 +70,34 @@ public class StudentProviderImpl implements StudentProvider{
         return this.repository.findAll(example);
     }
 
+    @Override
     public List<Student> findByGraduated(Date graduated){
         return this.repository.findByGraduated(graduated);
     }
 
+    @Override
     public List<Student> searchGraduated(Date start, Date end){
         return this.repository.searchGraduated(start, end);
+    }
+
+    @Override
+    public Optional<Student> findByName(String name) {
+        return this.repository.findByName(name);
+    }
+
+    @Override
+    public List<Student> findByNameLike(String name) {
+        return this.repository.findByNameLike(name);
+    }
+
+    @Override
+    public Optional<List<Student>> findByGroup(Group group) {
+        return this.repository.findByGroup(group);
+    }
+
+    @Override
+    public Optional<List<Student>> findByGrade(int grade) {
+        return this.repository.findByGrade(grade);
     }
     
 }

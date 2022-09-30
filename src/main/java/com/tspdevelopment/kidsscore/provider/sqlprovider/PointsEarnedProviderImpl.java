@@ -1,7 +1,7 @@
 package com.tspdevelopment.kidsscore.provider.sqlprovider;
 
+import com.tspdevelopment.kidsscore.data.model.PointTable;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,15 +9,27 @@ import java.util.UUID;
 import org.springframework.data.domain.Example;
 
 import com.tspdevelopment.kidsscore.data.model.PointsEarned;
+import com.tspdevelopment.kidsscore.data.model.Student;
+import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsEarnedRepository;
+import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
+import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
+import com.tspdevelopment.kidsscore.helpers.UpdateTotals;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointsEarnedProvider;
+import java.time.LocalDate;
 
 public class PointsEarnedProviderImpl implements PointsEarnedProvider{
 
     private final PointsEarnedRepository repository;
+    private final PointTableRepository ptRepository;
+    private final PointsSpentRepository psRepository;
+    private final RunningTotalsRepository rtRepository;
     
-    public PointsEarnedProviderImpl(PointsEarnedRepository repository) {
+    public PointsEarnedProviderImpl(PointsEarnedRepository repository, PointTableRepository ptRepository, PointsSpentRepository psRepository, RunningTotalsRepository rtRepository) {
         this.repository = repository;
+        this.ptRepository = ptRepository;
+        this.psRepository = psRepository;
+        this.rtRepository = rtRepository;
     }
     
     @Override
@@ -29,6 +41,26 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
     public Optional<PointsEarned> findById(UUID id) {
         return this.repository.findById(id);
     }
+    
+    private int findPointTable(List<PointTable> ptList, String label) {
+        if(label == null) {
+            return 0;
+        }
+        for(PointTable pt: ptList ) {
+            if(pt.getPointCategory().getCategory().equalsIgnoreCase(label)) {
+                return pt.getTotalPoints();
+            }
+        }
+        return 0;
+    }
+    
+    private void updateTotals(PointsEarned item) {
+        if(item.getStudent() == null) {
+            return;
+        }
+        List<PointTable> ptList = this.ptRepository.findByGroup(item.getStudent().getGroup());
+        item.setTotal(findPointTable(ptList, item.getPointCategory().getCategory()));
+    }
 
     @Override
     public PointsEarned create(PointsEarned newItem) {
@@ -36,7 +68,13 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
             newItem.setCreatedAt(LocalDateTime.now());
             newItem.setModifiedAt(LocalDateTime.now());
         }
-        return this.repository.save(newItem);
+        updateTotals(newItem);
+        PointsEarned pe = this.repository.save(newItem);
+        UpdateTotals.getInstance().setPointsEarnedRepository(repository);
+        UpdateTotals.getInstance().setPointsSpentRepository(psRepository);
+        UpdateTotals.getInstance().setRunningTotalsRepository(rtRepository);
+        UpdateTotals.getInstance().updateTotal(pe.getStudent());
+        return pe;
     }
 
     @Override
@@ -48,23 +86,29 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
     @Override
     public PointsEarned update(PointsEarned replaceItem, UUID id) {
         if (replaceItem == null) {
-            throw new IllegalArgumentException("Updated Student can not be null.");
+            throw new IllegalArgumentException("Updated PointsEarned item can not be null.");
         }
         return repository.findById(id) //
                 .map(item -> {
-                    item.setAttended(replaceItem.isAttended());
-                    item.setAttentive(replaceItem.isAttentive());
-                    item.setBible(replaceItem.isBible());
-                    item.setBibleVerse(replaceItem.isBibleVerse());
-                    item.setBringAFriend(replaceItem.isBringAFriend());
                     item.setEventDate(replaceItem.getEventDate());
-                    item.setRecallsLastWeekLesson(replaceItem.isRecallsLastWeekLesson());
                     item.setStudent(replaceItem.getStudent());
+                    item.setPointCategory(replaceItem.getPointCategory());
                     item.setModifiedAt(LocalDateTime.now());
-                    return repository.save(item);
+                    updateTotals(item);
+                    PointsEarned i = repository.save(item);
+                    UpdateTotals.getInstance().setPointsEarnedRepository(repository);
+                    UpdateTotals.getInstance().setPointsSpentRepository(psRepository);
+                    UpdateTotals.getInstance().setRunningTotalsRepository(rtRepository);
+                    UpdateTotals.getInstance().updateTotal(item.getStudent());
+                    return i;
                 }) //
                 .orElseGet(() -> {
-                    return repository.save(replaceItem);
+                    PointsEarned i = repository.save(replaceItem);
+                    UpdateTotals.getInstance().setPointsEarnedRepository(repository);
+                    UpdateTotals.getInstance().setPointsSpentRepository(psRepository);
+                    UpdateTotals.getInstance().setRunningTotalsRepository(rtRepository);
+                    UpdateTotals.getInstance().updateTotal(replaceItem.getStudent());
+                    return i;
                 });
     }
 
@@ -75,43 +119,23 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
     }
 
     @Override
-    public List<PointsEarned> findByAttended(Boolean attended) {
-        return this.repository.findByAttended(attended);
-    }
-
-    @Override
-    public List<PointsEarned> findByBible(Boolean bible) {
-        return this.repository.findByBible(bible);
-    }
-
-    @Override
-    public List<PointsEarned> findByBibleVerse(Boolean bibleVerse) {
-        return this.repository.findByBibleVerse(bibleVerse);
-    }
-
-    @Override
-    public List<PointsEarned> findByBringAFriend(Boolean bringAFriend) {
-        return this.repository.findByBringAFriend(bringAFriend);
-    }
-
-    @Override
-    public List<PointsEarned> findByAttentive(Boolean attentive) {
-        return this.repository.findByAttentive(attentive);
-    }
-
-    @Override
-    public List<PointsEarned> findByRecallsLastWeekLesson(Boolean recallsLastWeekLesson) {
-        return this.repository.findByRecallsLastWeekLesson(recallsLastWeekLesson);
-    }
-
-    @Override
-    public List<PointsEarned> findByEventDate(Date eventDate) {
+    public List<PointsEarned> findByEventDate(LocalDate eventDate) {
         return this.repository.findByEventDate(eventDate);
     }
 
     @Override
-    public List<PointsEarned> searchEventDate(Date start, Date end) {
+    public List<PointsEarned> searchEventDate(LocalDate start, LocalDate end) {
         return this.repository.searchEventDate(start, end);
+    }
+
+    @Override
+    public List<PointsEarned> findByStudent(Student student) {
+        return this.repository.findByStudent(student);
+    }
+
+    @Override
+    public List<PointsEarned> searchStudentEventDate(Student student, LocalDate start, LocalDate end) {
+        return this.repository.searchStudentEventDate(student, start, end);
     }
 
     

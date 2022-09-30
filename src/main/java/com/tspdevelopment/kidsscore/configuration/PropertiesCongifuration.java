@@ -19,7 +19,7 @@ import com.tspdevelopment.kidsscore.properties.JwtProperties;
 public class PropertiesCongifuration {
     
     @Bean
-    @ConfigurationProperties(prefix = "simple.rmaj.jwt")
+    @ConfigurationProperties(prefix = "kids.score.jwt")
     public JwtProperties jwtProperties() {
         return new JwtProperties();
     }

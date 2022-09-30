@@ -25,7 +25,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RunningTotals implements Serializable {
+public class RunningTotals implements BaseItem {
     
     @Id
     @GeneratedValue(generator = "UUID")
