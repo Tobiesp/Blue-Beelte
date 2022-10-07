@@ -4,10 +4,10 @@
  */
 package com.tspdevelopment.kidsscore.controller;
 
+import com.tspdevelopment.kidsscore.data.model.PointCategory;
 import com.tspdevelopment.kidsscore.data.model.Role;
-import com.tspdevelopment.kidsscore.data.model.RunningTotals;
-import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
-import com.tspdevelopment.kidsscore.provider.sqlprovider.RunningTotalsProviderImpl;
+import com.tspdevelopment.kidsscore.data.repository.PointCategoryRepository;
+import com.tspdevelopment.kidsscore.provider.sqlprovider.PointCategoryProviderImpl;
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
@@ -20,18 +20,18 @@ import org.springframework.web.bind.annotation.RestController;
  * @author tobiesp
  */
 @RestController
-@RequestMapping("/api/points/total/running")
-public class RunningTotalsController extends BaseController<RunningTotals>{
-    
-    public RunningTotalsController(RunningTotalsRepository repository) {
-        this.provider = new RunningTotalsProviderImpl(repository);
+@RequestMapping("/api/category")
+public class PointCategoryController extends BaseController<PointCategory>{
+
+    public PointCategoryController(PointCategoryRepository repository) {
+        this.provider = new PointCategoryProviderImpl(repository);
     }
     
     @GetMapping("/export")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public void exportToCSV(HttpServletResponse response) throws IOException {
-        String[] csvHeader = {"Student", "Group", "Grade", "Totals"};
-        String[] nameMapping = {"student:name", "student:group:name", "student:grade", "total"};
+        String[] csvHeader = {"Category"};
+        String[] nameMapping = {"category"};
         this.exportToCSV(response, csvHeader, nameMapping);
     }
     

@@ -1,5 +1,7 @@
 package com.tspdevelopment.kidsscore.controller;
 
+import com.tspdevelopment.kidsscore.csv.CSVPreference;
+import com.tspdevelopment.kidsscore.csv.CSVWriter;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -29,12 +31,19 @@ import com.tspdevelopment.kidsscore.provider.interfaces.RoleProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.UserProvider;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.RoleProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.UserProviderImpl;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.servlet.http.HttpServletResponse;
+import org.slf4j.LoggerFactory;
 
 
 @RestController
 @RequestMapping("/api/role")
 public class RoleController {
     
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(RoleController.class);
     private final JwtTokenUtil jwtUtillity;
     private final RoleProvider provider;
     private final UserProvider userProvider;
@@ -81,6 +90,34 @@ public class RoleController {
 		return EntityModel.of(role, linkTo(methodOn(UserController.class).one(null, id)).withSelfRel());
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access role.");
+        }
+    }
+    
+    @GetMapping("/export")
+    @RolesAllowed({Role.ADMIN_ROLE })
+    public void exportToCSV(HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String currentDateTime = dateFormatter.format(new Date());
+         
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=roles_" + currentDateTime + ".csv";
+        response.setHeader(headerKey, headerValue);
+         
+        List<Role> listRole = this.provider.findAll();
+ 
+        CSVWriter csvWriter = new CSVWriter(response.getWriter(), CSVPreference.STANDARD_PREFERENCE);
+        String[] csvHeader = {"Name"};
+        String[] nameMapping = {"authority"};
+
+        csvWriter.writeHeader(csvHeader);
+
+        for (Role role : listRole) {
+            try {
+                csvWriter.write(role, nameMapping);
+            } catch (NoSuchFieldException ex) {
+                logger.error("Unable to find the Specified field in the Object.", ex);
+            }
         }
     }
     

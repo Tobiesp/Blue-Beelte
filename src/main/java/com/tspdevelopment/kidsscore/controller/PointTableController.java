@@ -24,7 +24,9 @@ import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointCategoryProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointTableProvider;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointCategoryProviderImpl;
+import java.io.IOException;
 import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -43,7 +45,7 @@ public class PointTableController extends BaseController<PointTable>{
         this.pointCategoryProvider = new PointCategoryProviderImpl(pointCategoryRepository);
     }
     
-    @GetMapping("category/")
+    @GetMapping("/category")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     CollectionModel<EntityModel<PointTable>> findByCategory(@RequestParam String category) {
         PointTableProvider prov = (PointTableProvider)this.provider;
@@ -60,6 +62,14 @@ public class PointTableController extends BaseController<PointTable>{
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
         
+    }
+    
+    @GetMapping("/export")
+    @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public void exportToCSV(HttpServletResponse response) throws IOException {
+        String[] csvHeader = {"Group", "Category", "points"};
+        String[] nameMapping = {"group:name", "pointCategory:category", "totalPoints"};
+        this.exportToCSV(response, csvHeader, nameMapping);
     }
     
 }

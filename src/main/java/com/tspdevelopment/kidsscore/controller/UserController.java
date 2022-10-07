@@ -1,5 +1,7 @@
 package com.tspdevelopment.kidsscore.controller;
 
+import com.tspdevelopment.kidsscore.csv.CSVPreference;
+import com.tspdevelopment.kidsscore.csv.CSVWriter;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -34,6 +36,11 @@ import com.tspdevelopment.kidsscore.helpers.JwtTokenUtil;
 import com.tspdevelopment.kidsscore.provider.interfaces.UserProvider;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.UserProviderImpl;
 import com.tspdevelopment.kidsscore.views.UserUpdateView;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -156,6 +163,34 @@ public class UserController {
 				.collect(Collectors.toList());
 
 		return CollectionModel.of(companies, linkTo(methodOn(UserController.class).all()).withSelfRel());
+    }
+    
+    @GetMapping("/export")
+    @RolesAllowed({Role.ADMIN_ROLE })
+    public void exportToCSV(HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String currentDateTime = dateFormatter.format(new Date());
+         
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=roles_" + currentDateTime + ".csv";
+        response.setHeader(headerKey, headerValue);
+         
+        List<User> list = this.provider.findAll();
+ 
+        CSVWriter csvWriter = new CSVWriter(response.getWriter(), CSVPreference.STANDARD_PREFERENCE);
+        String[] csvHeader = {"Username", "Full Name"};
+        String[] nameMapping = {"username", "fullName"};
+
+        csvWriter.writeHeader(csvHeader);
+
+        for (User i : list) {
+            try {
+                csvWriter.write(i, nameMapping);
+            } catch (NoSuchFieldException ex) {
+                log.error("Unable to find the Specified field in the Object.", ex);
+            }
+        }
     }
     
 }

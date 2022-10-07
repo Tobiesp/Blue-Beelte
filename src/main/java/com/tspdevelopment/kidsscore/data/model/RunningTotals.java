@@ -1,6 +1,5 @@
 package com.tspdevelopment.kidsscore.data.model;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;

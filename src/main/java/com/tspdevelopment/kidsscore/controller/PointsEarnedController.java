@@ -5,11 +5,16 @@
 package com.tspdevelopment.kidsscore.controller;
 
 import com.tspdevelopment.kidsscore.data.model.PointsEarned;
+import com.tspdevelopment.kidsscore.data.model.Role;
 import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
 import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointsEarnedProviderImpl;
+import java.io.IOException;
+import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +28,14 @@ public class PointsEarnedController extends BaseController<PointsEarned>{
     
     public PointsEarnedController(PointsEarnedRepository repository, PointTableRepository ptRepository, PointsSpentRepository psRepository, RunningTotalsRepository rtRepository) {
         this.provider = new PointsEarnedProviderImpl(repository, ptRepository, psRepository, rtRepository);
+    }
+    
+    @GetMapping("/export")
+    @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public void exportToCSV(HttpServletResponse response) throws IOException {
+        String[] csvHeader = {"Student", "Group", "Grade", "Event Date", "Category", "Points"};
+        String[] nameMapping = {"student:name", "student:group:name", "student:grade", "eventDate", "pointCategory:category", "total"};
+        this.exportToCSV(response, csvHeader, nameMapping);
     }
     
 }

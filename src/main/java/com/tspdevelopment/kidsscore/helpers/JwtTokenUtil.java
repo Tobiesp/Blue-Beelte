@@ -33,7 +33,7 @@ public class JwtTokenUtil {
     private final long experationTime;
     private final JwtProperties jwtProperties;
 
-    private final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);;
+    private final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
     
     public JwtTokenUtil(@Autowired JwtProperties jwtProperties) {
         if(jwtProperties == null) {
