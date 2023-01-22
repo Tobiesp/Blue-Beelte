@@ -25,7 +25,10 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
     private final PointsSpentRepository psRepository;
     private final RunningTotalsRepository rtRepository;
     
-    public PointsEarnedProviderImpl(PointsEarnedRepository repository, PointTableRepository ptRepository, PointsSpentRepository psRepository, RunningTotalsRepository rtRepository) {
+    public PointsEarnedProviderImpl(PointsEarnedRepository repository, 
+                                    PointTableRepository ptRepository, 
+                                    PointsSpentRepository psRepository, 
+                                    RunningTotalsRepository rtRepository) {
         this.repository = repository;
         this.ptRepository = ptRepository;
         this.psRepository = psRepository;
