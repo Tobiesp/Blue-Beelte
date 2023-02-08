@@ -8,17 +8,21 @@ package com.tspdevelopment.kidsscore.configuration;
 import com.tspdevelopment.kidsscore.data.repository.UserRepository;
 import com.tspdevelopment.kidsscore.filters.JwtTokenFilter;
 import com.tspdevelopment.kidsscore.helpers.SecurityHelper;
-import com.tspdevelopment.kidsscore.services.DBUserDetailsService;
+import static java.lang.String.format;
+import java.util.Arrays;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -34,38 +38,22 @@ import org.springframework.web.filter.CorsFilter;
         jsr250Enabled = true,
         prePostEnabled = true
 )
-public class SecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private final UserRepository userRepository;
     @Autowired
     private final JwtTokenFilter jwtTokenFilter;
-    
-    @Autowired
-    private UserRepository userRepository;
 
-    public SecurityConfig(JwtTokenFilter jwtTokenFilter) {
+    public SecurityConfig(UserRepository userRepository, JwtTokenFilter jwtTokenFilter) {
+        this.userRepository = userRepository;
         this.jwtTokenFilter = jwtTokenFilter;
     }
 
-    // Used by spring security if CORS is enabled.
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source
-                = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
-
-    @Bean
-    public AuthenticationManager authManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder)
-            throws Exception {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
         // Enable CORS and disable CSRF
         http = http.cors().and().csrf().disable();
-
         // Set session management to stateless
         http = http
                 .sessionManagement()
@@ -90,6 +78,11 @@ public class SecurityConfig {
                 // Our public endpoints
                 .antMatchers("/api/public/**").permitAll()
                 .antMatchers("/actuator/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                //            .antMatchers(HttpMethod.GET, "/api/author/**").permitAll()
+                //            .antMatchers(HttpMethod.POST, "/api/author/search").permitAll()
+                //            .antMatchers(HttpMethod.GET, "/api/book/**").permitAll()
+                //            .antMatchers(HttpMethod.POST, "/api/book/search").permitAll()
                 // Our private endpoints
                 .anyRequest().authenticated();
 
@@ -98,16 +91,48 @@ public class SecurityConfig {
                 jwtTokenFilter,
                 UsernamePasswordAuthenticationFilter.class
         );
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(new DBUserDetailsService(userRepository))
-                .passwordEncoder(SecurityHelper.getInstance().passwordEncoder())
-                .and()
-                .build();
+    }
+
+    // Used by spring security if CORS is enabled.
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source
+                = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        //config.addAllowedOrigin("*");
+        config.setAllowedOriginPatterns(Arrays.asList("*"));
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(username -> this.userRepository
+                .findByUsername(username)
+                .orElseThrow(
+                        () -> new UsernameNotFoundException(
+                                format("User: %s, not found", username)
+                        )
+                ));
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return SecurityHelper.getInstance().passwordEncoder();
     }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+//    @Bean
+//    GrantedAuthorityDefaults grantedAuthorityDefaults() {
+//        return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
+//    }
 
 }

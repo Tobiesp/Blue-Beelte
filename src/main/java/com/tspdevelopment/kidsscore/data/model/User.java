@@ -46,8 +46,10 @@ public class User implements UserDetails {
     private UUID id;
 
     @CreatedDate
+    @Column()
     private LocalDateTime createdAt;
     @LastModifiedDate
+    @Column()
     private LocalDateTime modifiedAt;
     
     @Column()
@@ -57,9 +59,12 @@ public class User implements UserDetails {
     @Column(unique=true,nullable=false)
     private String username;
     @JsonIgnore
+    @Column()
     private String password;
     @JsonIgnore
+    @Column()
     private UUID tokenId;
+    @Column()
     private String fullName;
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)

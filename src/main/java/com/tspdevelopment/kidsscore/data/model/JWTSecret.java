@@ -1,5 +1,6 @@
 package com.tspdevelopment.kidsscore.data.model;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 /**
  *
@@ -30,6 +33,12 @@ public class JWTSecret implements BaseItem{
     )
     @Column(updatable = false, nullable = false)
     private UUID id;
+    @CreatedDate
+    @Column
+    private LocalDateTime createdAt;
+    @LastModifiedDate
+    @Column
+    private LocalDateTime modifiedAt;
     @Column(unique=true, nullable=false)
     private String secretId;
     @Column(unique=true, nullable=false)

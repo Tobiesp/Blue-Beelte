@@ -14,6 +14,7 @@ import com.tspdevelopment.kidsscore.data.repository.RoleRepository;
 import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.kidsscore.data.repository.StudentRepository;
 import com.tspdevelopment.kidsscore.data.repository.UserRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -82,16 +83,19 @@ public class LoadDatabase {
         rr.save(role_w);
         Role role_r = new Role(Role.READ_ROLE);
         rr.save(role_r);
+        rr.flush();
     }
     
     private void createUsers(UserRepository ur, RoleRepository rr) {
         User user_a = new User();
         user_a.setUsername("ksAdmin_001");
         user_a.setFullName("Admin User");
-        String pass = generatePassword();
+        String pass = "Test_Admin1!";
         log.info(String.format("Admin User: %s \nAdmin Password: %s", user_a.getUsername(), pass));
         user_a.setPassword(pass);
         user_a.setAuthorities(rr.findByAuthority(Role.ADMIN_ROLE).get());
+        user_a.setCreatedAt(LocalDateTime.now());
+        user_a.setModifiedAt(LocalDateTime.now());
         log.info(user_a.toString());
         ur.save(user_a);
         User user_w = new User();
@@ -101,6 +105,8 @@ public class LoadDatabase {
         log.info(String.format("Writer User: %s \nWriter Password: %s", user_w.getUsername(), pass));
         user_w.setPassword(pass);
         user_w.setAuthorities(rr.findByAuthority(Role.ADMIN_ROLE).get());
+        user_w.setCreatedAt(LocalDateTime.now());
+        user_w.setModifiedAt(LocalDateTime.now());
         log.info(user_w.toString());
         ur.save(user_w);
         User user_r = new User();
@@ -110,8 +116,11 @@ public class LoadDatabase {
         log.info(String.format("Reader User: %s \nReader Password: %s", user_r.getUsername(), pass));
         user_r.setPassword(pass);
         user_r.setAuthorities(rr.findByAuthority(Role.ADMIN_ROLE).get());
+        user_r.setCreatedAt(LocalDateTime.now());
+        user_r.setModifiedAt(LocalDateTime.now());
         log.info(user_r.toString());
         ur.save(user_r);
+        ur.flush();
     }
     
     private void createGroups(GroupRepository gr) {
@@ -134,6 +143,7 @@ public class LoadDatabase {
         Group group_g = new Group();
         group_g.setName("Graduated");
         gr.save(group_g);
+        gr.flush();
     }
     
     private void createPointCategories(PointCategoryRepository pcr) {
@@ -160,6 +170,7 @@ public class LoadDatabase {
         PointCategory pc_rl = new PointCategory();
         pc_rl.setCategory("recallsLastWeekLesson");
         pcr.save(pc_rl);
+        pcr.flush();
     }
     
     private void createPointTables(GroupRepository gr, PointCategoryRepository pcr, PointTableRepository ptr) {
@@ -195,5 +206,8 @@ public class LoadDatabase {
                 ptr.save(pt);
             }
         }
+        gr.flush();
+        pcr.flush();
+        ptr.flush();
     }
 }

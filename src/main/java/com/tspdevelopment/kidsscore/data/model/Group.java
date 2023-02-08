@@ -38,8 +38,10 @@ public class Group implements BaseItem {
     private UUID id;
 
     @CreatedDate
+    @Column
     private LocalDateTime createdAt;
     @LastModifiedDate
+    @Column
     private LocalDateTime modifiedAt;
     
     @Column(unique=true, length=1024)

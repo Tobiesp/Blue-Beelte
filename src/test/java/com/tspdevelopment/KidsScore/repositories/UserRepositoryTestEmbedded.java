@@ -31,6 +31,7 @@ public class UserRepositoryTestEmbedded {
     public void setUp() {
         TestEntityGenerator.getInstance().setRoleRepository(roleRepository);
         TestEntityGenerator.getInstance().setUserRepository(userRepository);
+        
     }
 
     @Test

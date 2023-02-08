@@ -29,6 +29,7 @@ import java.util.List;
 import org.slf4j.LoggerFactory;
 import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -246,7 +247,7 @@ public class TestEntityGenerator {
         } else if(student.getGroup().getName().equalsIgnoreCase("Graduated")) {
             int grade = (int) (Math.random()*6) + 6;
             student.setGrade(grade);
-            student.setGraduated(new Date());
+            student.setGraduated(LocalDateTime.now());
         }
         student = this.studentRepository.save(student);
         this.studentList.add(student);

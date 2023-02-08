@@ -38,8 +38,10 @@ public class Student implements BaseItem {
     private UUID id;
 
     @CreatedDate
+    @Column
     private LocalDateTime createdAt;
     @LastModifiedDate
+    @Column
     private LocalDateTime modifiedAt;
     
     @Column(nullable=false, unique=true, length=1024)
@@ -52,8 +54,7 @@ public class Student implements BaseItem {
     private int grade;
     
     @Column
-    @Temporal(javax.persistence.TemporalType.DATE)
-    private Date graduated;
+    private LocalDateTime graduated;
     
     
 }

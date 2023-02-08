@@ -34,16 +34,16 @@ public class UserProviderImpl implements UserProvider {
         if (replaceItem == null) {
             throw new IllegalArgumentException("Updated User can not be null.");
         }
-        return repository.findById(id) //
-                .map(item -> {
-                    item.setFullName(replaceItem.getFullName());
-                    item.setRoles(replaceItem.getRoles());
-                    item.setModifiedAt(LocalDateTime.now());
-                    return repository.save(item);
-                }) //
-                .orElseGet(() -> {
-                    return repository.save(replaceItem);
-                });
+        Optional<User> oUser = this.findById(id);
+        if(!oUser.isPresent()) {
+            return repository.save(replaceItem);
+        } else {
+            User user = oUser.get();
+            user.setFullName(replaceItem.getFullName());
+            user.setRoles(replaceItem.getRoles());
+            user.setModifiedAt(LocalDateTime.now());
+            return repository.save(user);
+        }
     }
 
     @Override
@@ -71,11 +71,15 @@ public class UserProviderImpl implements UserProvider {
         if (id == null) {
             throw new IllegalArgumentException("User id can not be null.");
         }
-        return repository.findById(id) //
-                .map(item -> {
-                    item.setPassword(password);
-                    return repository.save(item);
-                }).orElseThrow();
+        Optional<User> oUser = this.findById(id);
+        if(!oUser.isPresent()) {
+            throw new IllegalArgumentException("User must exist.");
+        } else {
+            User user = oUser.get();
+            user.setPassword(password);
+            user.setModifiedAt(LocalDateTime.now());
+            return repository.save(user);
+        }
     }
 
     @Override
@@ -83,11 +87,15 @@ public class UserProviderImpl implements UserProvider {
         if (userId == null) {
             throw new IllegalArgumentException("User id can not be null.");
         }
-        repository.findById(userId) //
-                .map(item -> {
-                    item.setTokenId(tokenId);
-                    return repository.save(item);
-                }).orElseThrow();
+        Optional<User> oUser = this.findById(userId);
+        if(!oUser.isPresent()) {
+            throw new IllegalArgumentException("User must exist.");
+        } else {
+            User user = oUser.get();
+            user.setTokenId(tokenId);
+            user.setModifiedAt(LocalDateTime.now());
+            repository.save(user);
+        }
     }
 
 }

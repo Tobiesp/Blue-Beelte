@@ -37,8 +37,10 @@ public class PointsSpent implements BaseItem {
     private UUID id;
 
     @CreatedDate
+    @Column
     private LocalDateTime createdAt;
     @LastModifiedDate
+    @Column
     private LocalDateTime modifiedAt;
     
     @Column
