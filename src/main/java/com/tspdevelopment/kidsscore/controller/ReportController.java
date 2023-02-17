@@ -27,6 +27,7 @@ import com.tspdevelopment.kidsscore.data.repository.RoleRepository;
 import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.kidsscore.data.repository.StudentRepository;
 import com.tspdevelopment.kidsscore.data.repository.UserRepository;
+import com.tspdevelopment.kidsscore.pdf.GeneratePDF;
 import com.tspdevelopment.kidsscore.provider.interfaces.GroupProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointCategoryProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointTableProvider;
@@ -45,7 +46,6 @@ import com.tspdevelopment.kidsscore.provider.sqlprovider.RoleProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.RunningTotalsProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.StudentProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.UserProviderImpl;
-import com.tspdevelopment.pdf.GeneratePDF;
 
 /**
  *
