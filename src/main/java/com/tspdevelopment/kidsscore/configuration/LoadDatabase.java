@@ -88,7 +88,7 @@ public class LoadDatabase {
         User user_a = new User();
         user_a.setUsername("ksAdmin_001");
         user_a.setFullName("Admin User");
-        String pass = generatePassword();
+        String pass = "Test_Passw0rd";//generatePassword();
         log.info(String.format("Admin User: %s \nAdmin Password: %s", user_a.getUsername(), pass));
         user_a.setPassword(pass);
         user_a.setAuthorities(rr.findByAuthority(Role.ADMIN_ROLE).get());

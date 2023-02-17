@@ -1,4 +1,4 @@
-package com.tspdevelopment.pdf;
+package com.tspdevelopment.kidsscore.pdf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;

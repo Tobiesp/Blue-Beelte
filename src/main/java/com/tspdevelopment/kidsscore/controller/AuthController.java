@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +35,7 @@ import com.tspdevelopment.kidsscore.views.UserView;
  * @author tobiesp
  */
 @RestController 
-@RequestMapping(path = "api/public")
+@RequestMapping(path = "/api/public")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -50,7 +51,7 @@ public class AuthController {
         this.userProvider = new UserProviderImpl(userRepo);
     }
     
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<UserView> login(@RequestBody @Validated AuthRequest request){
         try {
             logger.info("Auth Request: " + request.toString());
@@ -61,6 +62,7 @@ public class AuthController {
                     )
                 );
 
+            SecurityContextHolder.getContext().setAuthentication(authenticate);
             User user = (User) authenticate.getPrincipal();
             JwtToken token = jwtTokenUtil.generateAccessToken(user);
             user.setTokenId(token.getId());
@@ -77,7 +79,7 @@ public class AuthController {
     }
     
     
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public ResponseEntity logout(@RequestHeader HttpHeaders headers){
         List<String> authHeader = headers.get(HttpHeaders.AUTHORIZATION);
         if(authHeader == null) {
