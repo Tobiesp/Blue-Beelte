@@ -56,5 +56,65 @@ public class PointsEarned implements BaseItem {
     
     @Column
     private int total;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PointsEarned other = (PointsEarned) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.toString().equals(other.id.toString()))
+            return false;
+        if (createdAt == null) {
+            if (other.createdAt != null)
+                return false;
+        } else if (!createdAt.equals(other.createdAt))
+            return false;
+        if (modifiedAt == null) {
+            if (other.modifiedAt != null)
+                return false;
+        } else if (!modifiedAt.equals(other.modifiedAt))
+            return false;
+        if (eventDate == null) {
+            if (other.eventDate != null)
+                return false;
+        } else if (!eventDate.equals(other.eventDate))
+            return false;
+        if (student == null) {
+            if (other.student != null)
+                return false;
+        } else if (!student.equals(other.student))
+            return false;
+        if (pointCategory == null) {
+            if (other.pointCategory != null)
+                return false;
+        } else if (!pointCategory.equals(other.pointCategory))
+            return false;
+        if (total != other.total)
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((createdAt == null) ? 0 : createdAt.hashCode());
+        result = prime * result + ((modifiedAt == null) ? 0 : modifiedAt.hashCode());
+        result = prime * result + ((eventDate == null) ? 0 : eventDate.hashCode());
+        result = prime * result + ((student == null) ? 0 : student.hashCode());
+        result = prime * result + ((pointCategory == null) ? 0 : pointCategory.hashCode());
+        result = prime * result + total;
+        return result;
+    }
+
+    
     
 }
