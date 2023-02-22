@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -90,17 +91,17 @@ public class ReportController {
 
     @GetMapping("/getTestPDF")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity getTestPDF(){
+    ResponseEntity getTestPDF(@RequestHeader HttpHeaders headers){
         try {
             ByteArrayOutputStream pdfStream = GeneratePDF.getInstance().generateTestPDF();
             byte[] contents = pdfStream.toByteArray();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
+            HttpHeaders ResponseHeaders = new HttpHeaders();
+            ResponseHeaders.setContentType(MediaType.APPLICATION_PDF);
             // Here you have to set the actual filename of your pdf
             String filename = "output.pdf";
             headers.setContentDispositionFormData(filename, filename);
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-            ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
+            ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
             return response;
 
         } catch (DocumentException e) {
