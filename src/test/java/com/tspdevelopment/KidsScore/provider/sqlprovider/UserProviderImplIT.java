@@ -121,7 +121,11 @@ public class UserProviderImplIT {
     @Test
     public void testCreate() {
         System.out.println("create");
-        User item = TestEntityGenerator.getInstance().generateUser();
+        User item = new User();
+        item.setEmail("Test@email.com");
+        item.setFullName("Test User");
+        item.setPassword("Password_1test!");
+        item.setUsername("testUser");
         UserProviderImpl instance = new UserProviderImpl(userRepository);
         User result = instance.create(item);
         User expResult = instance.findById(result.getId()).get();
