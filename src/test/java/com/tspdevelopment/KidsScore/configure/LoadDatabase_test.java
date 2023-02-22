@@ -1,6 +1,5 @@
 package com.tspdevelopment.KidsScore.configure;
 
-import com.tspdevelopment.KidsScore.helper.TestEntityGenerator;
 import com.tspdevelopment.kidsscore.data.repository.GroupRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointCategoryRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;

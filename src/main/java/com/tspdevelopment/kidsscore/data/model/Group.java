@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -34,6 +35,7 @@ public class Group implements BaseItem {
         name = "UUID",
         strategy = "org.hibernate.id.UUIDGenerator"
     )
+    @Type(type="uuid-char")
     @Column(updatable = false, nullable = false)
     private UUID id;
 

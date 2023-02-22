@@ -6,6 +6,7 @@ package com.tspdevelopment.KidsScore.provider.sqlprovider;
 
 import com.tspdevelopment.KidsScore.helper.TestEntityGenerator;
 import com.tspdevelopment.KidsScore.repositories.UserRepositoryTestEmbedded;
+import com.tspdevelopment.kidsscore.KidsScoreApplication;
 import com.tspdevelopment.kidsscore.data.model.User;
 import com.tspdevelopment.kidsscore.data.repository.RoleRepository;
 import com.tspdevelopment.kidsscore.data.repository.UserRepository;
@@ -19,14 +20,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
  *
  * @author tobiesp
  */
-@DataJpaTest
+@SpringBootTest(classes = KidsScoreApplication.class)
 @ActiveProfiles("test")
 public class UserProviderImplIT {
     
@@ -93,7 +94,7 @@ public class UserProviderImplIT {
     @Test
     public void testDelete() {
         System.out.println("delete");
-        UUID id = userRepository.findAll().get(3).getId();
+        UUID id = userRepository.findAll().get(2).getId();
         UserProviderImpl instance = new UserProviderImpl(userRepository);
         instance.delete(id);
         Optional<User> result = instance.findById(id);
@@ -120,13 +121,11 @@ public class UserProviderImplIT {
     @Test
     public void testCreate() {
         System.out.println("create");
-        User item = null;
+        User item = TestEntityGenerator.getInstance().generateUser();
         UserProviderImpl instance = new UserProviderImpl(userRepository);
-        User expResult = null;
         User result = instance.create(item);
+        User expResult = instance.findById(result.getId()).get();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -136,13 +135,11 @@ public class UserProviderImplIT {
     public void testUpdatePassowrd() {
         System.out.println("updatePassowrd");
         UUID id = userRepository.findAll().get(0).getId();
-        String password = "";
+        String password = "test#Password1$";
         UserProviderImpl instance = new UserProviderImpl(userRepository);
-        User expResult = null;
-        User result = instance.updatePassowrd(id, password);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String expResult = userRepository.findById(id).get().getPassword();
+        String result = instance.updatePassowrd(id, password).getPassword();
+        assertNotEquals(expResult, result);
     }
 
     /**
@@ -152,11 +149,11 @@ public class UserProviderImplIT {
     public void testUpdateJwtTokenId() {
         System.out.println("updateJwtTokenId");
         UUID userId = userRepository.findAll().get(0).getId();
-        UUID tokenId = null;
+        UUID tokenId = UUID.randomUUID();
         UserProviderImpl instance = new UserProviderImpl(userRepository);
         instance.updateJwtTokenId(userId, tokenId);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        UUID result = instance.findById(userId).get().getTokenId();
+        assertEquals(result, tokenId);
     }
     
 }

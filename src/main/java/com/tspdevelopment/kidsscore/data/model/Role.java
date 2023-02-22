@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
@@ -36,6 +37,7 @@ public class Role implements GrantedAuthority {
         name = "UUID",
         strategy = "org.hibernate.id.UUIDGenerator"
     )
+    @Type(type="uuid-char")
     @Column(updatable = false, nullable = false)
     private UUID id;
     @Column(unique=true, nullable=false)
@@ -61,8 +63,22 @@ public class Role implements GrantedAuthority {
             return false;
         }
         Role r = (Role) o;
+
+        if(r.authority == null) {
+            if(this.authority == null) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        if(!r.authority.equals(this.authority)) {
+            return false;
+        }
+        if (!r.id.toString().equals(this.id.toString())) {
+            return false;
+        }
         
-        return (r.authority == null ? this.authority == null : r.authority.equals(this.authority)) && r.id == this.id;
+        return true;
     }
 
     @Override

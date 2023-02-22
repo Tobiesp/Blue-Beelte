@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -33,6 +34,7 @@ public class PointsEarned implements BaseItem {
         name = "UUID",
         strategy = "org.hibernate.id.UUIDGenerator"
     )
+    @Type(type="uuid-char")
     @Column(updatable = false, nullable = false)
     private UUID id;
 

@@ -34,13 +34,14 @@ public class UserProviderImpl implements UserProvider {
         if (replaceItem == null) {
             throw new IllegalArgumentException("Updated User can not be null.");
         }
-        Optional<User> oUser = this.findById(id);
+        Optional<User> oUser = this.repository.findById(id);
         if(!oUser.isPresent()) {
             return repository.save(replaceItem);
         } else {
             User user = oUser.get();
             user.setFullName(replaceItem.getFullName());
             user.setRoles(replaceItem.getRoles());
+            user.setEmail(replaceItem.getEmail());
             user.setModifiedAt(LocalDateTime.now());
             return repository.save(user);
         }
