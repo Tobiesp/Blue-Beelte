@@ -102,10 +102,7 @@ public class ReportController {
         String page = GenerateHTML.getInstance().generateTestHTML();
         byte[] contents = page.getBytes();
         HttpHeaders ResponseHeaders = new HttpHeaders();
-        ResponseHeaders.setContentType(MediaType.APPLICATION_PDF);
-        // Here you have to set the actual filename of your pdf
-        String filename = "output.html";
-        ResponseHeaders.setContentDispositionFormData(filename, filename);
+        ResponseHeaders.setContentType(MediaType.TEXT_HTML);
         ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
         ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
         return response;
@@ -121,9 +118,6 @@ public class ReportController {
             byte[] contents = document.getBytes();
             HttpHeaders ResponseHeaders = new HttpHeaders();
             ResponseHeaders.setContentType(MediaType.TEXT_HTML);
-            // Here you have to set the actual filename of your pdf
-            String filename = "checkout.html";
-            ResponseHeaders.setContentDispositionFormData(filename, filename);
             ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
             ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
             return response;
