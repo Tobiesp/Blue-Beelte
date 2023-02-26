@@ -8,6 +8,8 @@ package com.tspdevelopment.kidsscore.helpers;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.tspdevelopment.kidsscore.data.model.User;
+
 /**
  *
  * @author tobiesp
@@ -23,6 +25,19 @@ public class SecurityHelper {
     
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    public boolean validUser(User user) {
+        if(user.getFailedAttempt() > 3) {
+            return false;
+        }
+        if(!user.isAccountNonExpired()) {
+            return false;
+        }
+        if(!user.isEnabled()) {
+            return false;
+        }
+        return true;
     }
     
     public String encodePassword(String password){
@@ -100,7 +115,7 @@ public class SecurityHelper {
     public long processExperationTime(String time) {
         long t = 1l;
         //Validate string
-        //Valid chars y,M,w,d,h,m,s,ms
+        //Valid chars y,M,w,d,h,m
         //Seperate the number
         StringBuilder number = new StringBuilder();
         StringBuilder value = new StringBuilder();
@@ -134,9 +149,6 @@ public class SecurityHelper {
                 break;
             case "m":
                 t = t * 60 * 1000;
-                break;
-            case "s":
-                t = t * 1000;
                 break;
             default:
                 break;

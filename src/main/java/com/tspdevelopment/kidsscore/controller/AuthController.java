@@ -22,10 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.tspdevelopment.kidsscore.data.model.Role;
 import com.tspdevelopment.kidsscore.data.model.User;
+import com.tspdevelopment.kidsscore.data.repository.RoleRepository;
 import com.tspdevelopment.kidsscore.data.repository.UserRepository;
 import com.tspdevelopment.kidsscore.helpers.JwtToken;
 import com.tspdevelopment.kidsscore.helpers.JwtTokenUtil;
+import com.tspdevelopment.kidsscore.helpers.SecurityHelper;
+import com.tspdevelopment.kidsscore.provider.sqlprovider.RoleProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.UserProviderImpl;
 import com.tspdevelopment.kidsscore.views.AuthRequest;
 import com.tspdevelopment.kidsscore.views.UserView;
@@ -41,14 +45,17 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final UserProviderImpl userProvider;
+    private final RoleProviderImpl roleProvider;
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     public AuthController(AuthenticationManager authenticationManager,
                    JwtTokenUtil jwtTokenUtil,
-                   UserRepository userRepo) {
+                   UserRepository userRepo,
+                   RoleRepository roleRepo) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.userProvider = new UserProviderImpl(userRepo);
+        this.roleProvider = new RoleProviderImpl(roleRepo);
     }
     
     @PostMapping("/login")
@@ -64,6 +71,9 @@ public class AuthController {
 
             SecurityContextHolder.getContext().setAuthentication(authenticate);
             User user = (User) authenticate.getPrincipal();
+            if(SecurityHelper.getInstance().validUser(user)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
             JwtToken token = jwtTokenUtil.generateAccessToken(user);
             user.setTokenId(token.getId());
             userProvider.updateJwtTokenId(user.getId(), token.getId());
@@ -74,13 +84,14 @@ public class AuthController {
                 )
                 .body(toUserView(user));
         } catch (BadCredentialsException ex) {
+            this.userProvider.increaseLoginAttempt(request.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
     
     
     @PostMapping("/logout")
-    public ResponseEntity logout(@RequestHeader HttpHeaders headers){
+    public ResponseEntity<?> logout(@RequestHeader HttpHeaders headers){
         List<String> authHeader = headers.get(HttpHeaders.AUTHORIZATION);
         if(authHeader == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not allowed to access method.");
@@ -93,6 +104,14 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not allowed to access method.");
         }
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/signup")
+    User newItem(@RequestBody User newItem){
+        newItem.clearAllRoles();
+        Optional<Role> role = this.roleProvider.findByAuthority(Role.NO_ROLE);
+        newItem.setAuthorities(role.get());
+        return userProvider.create(newItem);
     }
     
     private UserView toUserView(User user) {

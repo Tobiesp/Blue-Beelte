@@ -99,4 +99,14 @@ public class UserProviderImpl implements UserProvider {
         }
     }
 
+    public void increaseLoginAttempt(String username) {
+        if (username == null) {
+            throw new IllegalArgumentException("Username can not be null.");
+        }
+        Optional<User> user = this.repository.findByUsername(username);
+        if(user.isPresent()) {
+            this.repository.updateFailedAttempts(user.get().getFailedAttempt() + 1, username);
+        }
+    }
+
 }

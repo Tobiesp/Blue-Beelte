@@ -9,20 +9,20 @@ import org.springframework.data.domain.Example;
 
 import com.tspdevelopment.kidsscore.data.model.Group;
 import com.tspdevelopment.kidsscore.data.model.PointCategory;
-import com.tspdevelopment.kidsscore.data.model.PointTable;
-import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
-import com.tspdevelopment.kidsscore.provider.interfaces.PointTableProvider;
+import com.tspdevelopment.kidsscore.data.model.PointType;
+import com.tspdevelopment.kidsscore.data.repository.PointTypeRepository;
+import com.tspdevelopment.kidsscore.provider.interfaces.PointTypeProvider;
 
-public class PointTableProviderImpl implements PointTableProvider{
+public class PointTypeProviderImpl implements PointTypeProvider{
 
-    private final PointTableRepository repository;
+    private final PointTypeRepository repository;
     
-    public PointTableProviderImpl(PointTableRepository repository) {
+    public PointTypeProviderImpl(PointTypeRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public PointTable create(PointTable newItem) {
+    public PointType create(PointType newItem) {
         if((newItem != null) && (newItem.getCreatedAt() == null)) {
             newItem.setCreatedAt(LocalDateTime.now());
             newItem.setModifiedAt(LocalDateTime.now());
@@ -37,17 +37,17 @@ public class PointTableProviderImpl implements PointTableProvider{
     }
 
     @Override
-    public List<PointTable> findAll() {
+    public List<PointType> findAll() {
         return repository.findAll();
     }
 
     @Override
-    public Optional<PointTable> findById(UUID id) {
+    public Optional<PointType> findById(UUID id) {
         return this.repository.findById(id);
     }
 
     @Override
-    public PointTable update(PointTable replaceItem, UUID id) {
+    public PointType update(PointType replaceItem, UUID id) {
         if (replaceItem == null) {
             throw new IllegalArgumentException("Updated item can not be null.");
         }
@@ -66,18 +66,18 @@ public class PointTableProviderImpl implements PointTableProvider{
     }
 
     @Override
-    public List<PointTable> search(PointTable item) {
-        Example<PointTable> example = Example.of(item);
+    public List<PointType> search(PointType item) {
+        Example<PointType> example = Example.of(item);
         return this.repository.findAll(example);
     }
 
     @Override
-    public List<PointTable> findByGroup(Group group){
+    public List<PointType> findByGroup(Group group){
         return this.repository.findByGroup(group);
     }
 
     @Override
-    public List<PointTable> findByPointCategory(PointCategory pointCategory) {
+    public List<PointType> findByPointCategory(PointCategory pointCategory) {
         return this.repository.findByPointCategory(pointCategory);
     }
     

@@ -28,6 +28,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.tspdevelopment.kidsscore.data.model.User;
 import com.tspdevelopment.kidsscore.data.repository.UserRepository;
 import com.tspdevelopment.kidsscore.helpers.JwtTokenUtil;
+import com.tspdevelopment.kidsscore.helpers.SecurityHelper;
 
 /**
  *
@@ -82,6 +83,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             User user = (User)userDetails;
             if(user.getTokenId() == null) {
                 logger.info("user has no token Id.");
+                filterChain.doFilter(request, response);
+                return;
+            }
+            if(SecurityHelper.getInstance().validUser(user)) {
                 filterChain.doFilter(request, response);
                 return;
             }

@@ -2,7 +2,7 @@ package com.tspdevelopment.KidsScore.configure;
 
 import com.tspdevelopment.kidsscore.data.repository.GroupRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointCategoryRepository;
-import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
+import com.tspdevelopment.kidsscore.data.repository.PointTypeRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
 import com.tspdevelopment.kidsscore.data.repository.RoleRepository;
@@ -26,7 +26,7 @@ public class LoadDatabase_test {
                                     GroupRepository gr, 
                                     StudentRepository sr, 
                                     PointCategoryRepository pcr, 
-                                    PointTableRepository ptr,
+                                    PointTypeRepository ptr,
                                     PointsEarnedRepository per,
                                     PointsSpentRepository psr,
                                     RunningTotalsRepository rtr) {

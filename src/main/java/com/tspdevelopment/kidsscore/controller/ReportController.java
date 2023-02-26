@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tspdevelopment.kidsscore.data.model.Role;
 import com.tspdevelopment.kidsscore.data.repository.GroupRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointCategoryRepository;
-import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
+import com.tspdevelopment.kidsscore.data.repository.PointTypeRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
 import com.tspdevelopment.kidsscore.data.repository.RoleRepository;
@@ -33,11 +33,11 @@ import com.tspdevelopment.kidsscore.data.repository.StudentRepository;
 import com.tspdevelopment.kidsscore.data.repository.UserRepository;
 import com.tspdevelopment.kidsscore.data.model.Group;
 import com.tspdevelopment.kidsscore.data.model.Student;
-import com.tspdevelopment.kidsscore.data.model.PointTable;
+import com.tspdevelopment.kidsscore.data.model.PointType;
 import com.tspdevelopment.kidsscore.pdf.GenerateHTML;
 import com.tspdevelopment.kidsscore.provider.interfaces.GroupProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointCategoryProvider;
-import com.tspdevelopment.kidsscore.provider.interfaces.PointTableProvider;
+import com.tspdevelopment.kidsscore.provider.interfaces.PointTypeProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointsEarnedProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointsSpentProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.RoleProvider;
@@ -46,7 +46,7 @@ import com.tspdevelopment.kidsscore.provider.interfaces.StudentProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.UserProvider;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.GroupProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointCategoryProviderImpl;
-import com.tspdevelopment.kidsscore.provider.sqlprovider.PointTableProviderImpl;
+import com.tspdevelopment.kidsscore.provider.sqlprovider.PointTypeProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointsEarnedProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointsSpentProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.RoleProviderImpl;
@@ -69,7 +69,7 @@ public class ReportController {
     private PointCategoryProvider pointCategoryProvider;
     private PointsEarnedProvider pointsEarnedProvider;
     private PointsSpentProvider pointsSpentProvider;
-    private PointTableProvider pointTableProvider;
+    private PointTypeProvider pointTableProvider;
     private RoleProvider roleProvider;
     private UserProvider userProvider;
     private RunningTotalsProvider runningTotalsProvider;
@@ -79,7 +79,7 @@ public class ReportController {
             PointCategoryRepository pointCategoryRepository,
             PointsEarnedRepository pointsEarnedRepository,
             PointsSpentRepository pointsSpentProvider,
-            PointTableRepository pointTableRepository,
+            PointTypeRepository pointTableRepository,
             RoleRepository roleRepository,
             UserRepository userRepository,
             RunningTotalsRepository runningTotalsRepository,
@@ -89,7 +89,7 @@ public class ReportController {
         this.pointsEarnedProvider = new PointsEarnedProviderImpl(pointsEarnedRepository, pointTableRepository,
                 pointsSpentProvider, runningTotalsRepository);
         this.pointsSpentProvider = new PointsSpentProviderImpl(pointsSpentProvider);
-        this.pointTableProvider = new PointTableProviderImpl(pointTableRepository);
+        this.pointTableProvider = new PointTypeProviderImpl(pointTableRepository);
         this.roleProvider = new RoleProviderImpl(roleRepository);
         this.userProvider = new UserProviderImpl(userRepository);
         this.runningTotalsProvider = new RunningTotalsProviderImpl(runningTotalsRepository);
@@ -98,7 +98,7 @@ public class ReportController {
 
     @GetMapping("/getTestHTML")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity getTestHTML() {
+    ResponseEntity<?> getTestHTML() {
         String page = GenerateHTML.getInstance().generateTestHTML();
         byte[] contents = page.getBytes();
         HttpHeaders ResponseHeaders = new HttpHeaders();
@@ -110,7 +110,7 @@ public class ReportController {
 
     @GetMapping("/checkout")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity getCheckout(@RequestParam String group) {
+    ResponseEntity<?> getCheckout(@RequestParam String group) {
         Optional<Group> grp = groupProvider.findByName(group);
         if (grp.isPresent()) {
             Optional<List<Student>> students = studentProvider.findByGroup(grp.get());
@@ -129,10 +129,10 @@ public class ReportController {
 
     @GetMapping("/checkin")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity getCheckin(@RequestParam String group) {
+    ResponseEntity<?> getCheckin(@RequestParam String group) {
         Optional<Group> grp = groupProvider.findByName(group);
         if (grp.isPresent()) {
-            List<PointTable> points = pointTableProvider.findByGroup(grp.get());
+            List<PointType> points = pointTableProvider.findByGroup(grp.get());
             Optional<List<Student>> students = studentProvider.findByGroup(grp.get());
             String document = GenerateHTML.getInstance().generateCheckinHTML(students.get(), points, group);
             byte[] contents = document.getBytes();

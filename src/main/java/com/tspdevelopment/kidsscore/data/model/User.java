@@ -75,6 +75,12 @@ public class User implements UserDetails {
     private UUID tokenId;
 
     @Column()
+    private int failedAttempt;
+
+    @Column()
+    private LocalDateTime lockedTime;
+
+    @Column()
     private String fullName;
 
     @JsonIgnore
@@ -84,6 +90,10 @@ public class User implements UserDetails {
     
     public void setAuthorities(GrantedAuthority role) {
         roles.add((Role)role);
+    }
+
+    public void clearAllRoles() {
+        roles.clear();
     }
     
     @Override

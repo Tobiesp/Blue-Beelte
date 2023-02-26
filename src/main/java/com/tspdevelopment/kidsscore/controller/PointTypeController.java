@@ -5,10 +5,10 @@
 package com.tspdevelopment.kidsscore.controller;
 
 import com.tspdevelopment.kidsscore.data.model.PointCategory;
-import com.tspdevelopment.kidsscore.data.model.PointTable;
+import com.tspdevelopment.kidsscore.data.model.PointType;
 import com.tspdevelopment.kidsscore.data.model.Role;
 import com.tspdevelopment.kidsscore.data.repository.PointCategoryRepository;
-import com.tspdevelopment.kidsscore.provider.sqlprovider.PointTableProviderImpl;
+import com.tspdevelopment.kidsscore.provider.sqlprovider.PointTypeProviderImpl;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
+import com.tspdevelopment.kidsscore.data.repository.PointTypeRepository;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointCategoryProvider;
-import com.tspdevelopment.kidsscore.provider.interfaces.PointTableProvider;
+import com.tspdevelopment.kidsscore.provider.interfaces.PointTypeProvider;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointCategoryProviderImpl;
 import java.io.IOException;
 import java.util.Optional;
@@ -36,22 +36,22 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 @RequestMapping("/api/points/config")
-public class PointTableController extends BaseController<PointTable>{
+public class PointTypeController extends BaseController<PointType>{
     
     private final PointCategoryProvider pointCategoryProvider;
     
-    public PointTableController(PointTableRepository repository, PointCategoryRepository pointCategoryRepository) {
-        this.provider = new PointTableProviderImpl(repository);
+    public PointTypeController(PointTypeRepository repository, PointCategoryRepository pointCategoryRepository) {
+        this.provider = new PointTypeProviderImpl(repository);
         this.pointCategoryProvider = new PointCategoryProviderImpl(pointCategoryRepository);
     }
     
     @GetMapping("/category")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    CollectionModel<EntityModel<PointTable>> findByCategory(@RequestParam String category) {
-        PointTableProvider prov = (PointTableProvider)this.provider;
+    CollectionModel<EntityModel<PointType>> findByCategory(@RequestParam String category) {
+        PointTypeProvider prov = (PointTypeProvider)this.provider;
         Optional<PointCategory> pc = pointCategoryProvider.findByCategory(category);
         if(pc.isPresent()) {
-            List<EntityModel<PointTable>> ptList = prov.findByPointCategory(pc.get()).stream()
+            List<EntityModel<PointType>> ptList = prov.findByPointCategory(pc.get()).stream()
                 .map(c -> this.getModel(c))
                 .collect(Collectors.toList());
 

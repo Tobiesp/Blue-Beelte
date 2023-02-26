@@ -6,7 +6,7 @@ package com.tspdevelopment.kidsscore.controller;
 
 import com.tspdevelopment.kidsscore.data.model.PointsEarned;
 import com.tspdevelopment.kidsscore.data.model.Role;
-import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
+import com.tspdevelopment.kidsscore.data.repository.PointTypeRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
 import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/points/earned")
 public class PointsEarnedController extends BaseController<PointsEarned>{
     
-    public PointsEarnedController(PointsEarnedRepository repository, PointTableRepository ptRepository, PointsSpentRepository psRepository, RunningTotalsRepository rtRepository) {
+    public PointsEarnedController(PointsEarnedRepository repository, PointTypeRepository ptRepository, PointsSpentRepository psRepository, RunningTotalsRepository rtRepository) {
         this.provider = new PointsEarnedProviderImpl(repository, ptRepository, psRepository, rtRepository);
     }
     

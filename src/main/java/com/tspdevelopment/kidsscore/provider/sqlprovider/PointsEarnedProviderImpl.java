@@ -1,6 +1,6 @@
 package com.tspdevelopment.kidsscore.provider.sqlprovider;
 
-import com.tspdevelopment.kidsscore.data.model.PointTable;
+import com.tspdevelopment.kidsscore.data.model.PointType;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +10,7 @@ import org.springframework.data.domain.Example;
 
 import com.tspdevelopment.kidsscore.data.model.PointsEarned;
 import com.tspdevelopment.kidsscore.data.model.Student;
-import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
+import com.tspdevelopment.kidsscore.data.repository.PointTypeRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
 import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
@@ -21,12 +21,12 @@ import java.time.LocalDate;
 public class PointsEarnedProviderImpl implements PointsEarnedProvider{
 
     private final PointsEarnedRepository repository;
-    private final PointTableRepository ptRepository;
+    private final PointTypeRepository ptRepository;
     private final PointsSpentRepository psRepository;
     private final RunningTotalsRepository rtRepository;
     
     public PointsEarnedProviderImpl(PointsEarnedRepository repository, 
-                                    PointTableRepository ptRepository, 
+                                    PointTypeRepository ptRepository, 
                                     PointsSpentRepository psRepository, 
                                     RunningTotalsRepository rtRepository) {
         this.repository = repository;
@@ -45,11 +45,11 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
         return this.repository.findById(id);
     }
     
-    private int findPointTable(List<PointTable> ptList, String label) {
+    private int findPointTable(List<PointType> ptList, String label) {
         if(label == null) {
             return 0;
         }
-        for(PointTable pt: ptList ) {
+        for(PointType pt: ptList ) {
             if(pt.getPointCategory().getCategory().equalsIgnoreCase(label)) {
                 return pt.getTotalPoints();
             }
@@ -61,7 +61,7 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
         if(item.getStudent() == null) {
             return;
         }
-        List<PointTable> ptList = this.ptRepository.findByGroup(item.getStudent().getGroup());
+        List<PointType> ptList = this.ptRepository.findByGroup(item.getStudent().getGroup());
         item.setTotal(findPointTable(ptList, item.getPointCategory().getCategory()));
     }
 

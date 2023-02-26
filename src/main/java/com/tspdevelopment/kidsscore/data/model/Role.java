@@ -27,6 +27,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Builder
 public class Role implements GrantedAuthority {
     
+    public static final String NO_ROLE = "ROLE_NO_ROLE";
     public static final String ADMIN_ROLE = "ROLE_ADMIN_ROLE";
     public static final String READ_ROLE = "ROLE_READ_ROLE";
     public static final String WRITE_ROLE = "ROLE_WRITE_ROLE";

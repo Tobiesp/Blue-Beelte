@@ -32,6 +32,10 @@ public class RoleProviderImpl implements RoleProvider {
         return this.repository.findById(id);
     }
 
+    public Optional<Role> findByAuthority(String authority) {
+        return this.findByAuthority(authority);
+    }
+
     @Override
     public Role update(Role replaceItem, UUID id) {
         throw new UnsupportedOperationException("Roles can not be updated.");

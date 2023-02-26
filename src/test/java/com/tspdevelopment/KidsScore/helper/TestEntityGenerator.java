@@ -8,7 +8,7 @@ package com.tspdevelopment.KidsScore.helper;
 import com.mifmif.common.regex.Generex;
 import com.tspdevelopment.kidsscore.data.model.Group;
 import com.tspdevelopment.kidsscore.data.model.PointCategory;
-import com.tspdevelopment.kidsscore.data.model.PointTable;
+import com.tspdevelopment.kidsscore.data.model.PointType;
 import com.tspdevelopment.kidsscore.data.model.PointsEarned;
 import com.tspdevelopment.kidsscore.data.model.PointsSpent;
 import com.tspdevelopment.kidsscore.data.model.Role;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.slf4j.LoggerFactory;
-import com.tspdevelopment.kidsscore.data.repository.PointTableRepository;
+import com.tspdevelopment.kidsscore.data.repository.PointTypeRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -46,8 +46,8 @@ public class TestEntityGenerator {
     private StudentRepository studentRepository;
     private List<Group> groupList;
     private GroupRepository groupRepository;
-    private List<PointTable> ptList;
-    private PointTableRepository pointTableRepository;
+    private List<PointType> ptList;
+    private PointTypeRepository pointTableRepository;
     private List<PointCategory> pcList;
     private PointCategoryRepository pointCategoryRepository;
     private List<PointsEarned> peList;
@@ -85,7 +85,7 @@ public class TestEntityGenerator {
         studentRepository = repository;
     }
     
-    public void setPointTotalRepository(PointTableRepository repository) {
+    public void setPointTotalRepository(PointTypeRepository repository) {
         pointTableRepository = repository;
     }
     
@@ -317,7 +317,7 @@ public class TestEntityGenerator {
         return pc;
     }
     
-    public PointTable generatePointTable() {
+    public PointType generatePointTable() {
         int rand = (int) (Math.random() * (this.ptList.size()-1));
         return this.ptList.get(rand);
     }
@@ -337,7 +337,7 @@ public class TestEntityGenerator {
         }
         for (Group g : groupList) {
             for (PointCategory pc : pcList) {
-                PointTable pt = new PointTable();
+                PointType pt = new PointType();
                 pt.setGroup(g);
                 pt.setPointCategory(pc);
                 if(null == g.getName()) {

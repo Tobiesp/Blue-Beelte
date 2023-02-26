@@ -11,16 +11,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tspdevelopment.kidsscore.data.model.Group;
 import com.tspdevelopment.kidsscore.data.model.PointCategory;
-import com.tspdevelopment.kidsscore.data.model.PointTable;
+import com.tspdevelopment.kidsscore.data.model.PointType;
 
 /**
  *
  * @author tobiesp
  */
-public interface PointTableRepository extends JpaRepository<PointTable, UUID> {
-    public List<PointTable> findByPointCategory(PointCategory category);
+public interface PointTypeRepository extends JpaRepository<PointType, UUID> {
+    public List<PointType> findByPointCategory(PointCategory category);
 
-    public List<PointTable> findByGroup(Group group);
+    public List<PointType> findByGroup(Group group);
 
     
     

@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author tobiesp
  */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
     
     private static final Logger log = LoggerFactory.getLogger(UserController.class);

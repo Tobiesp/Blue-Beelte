@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Singleton.java to edit this template
- */
 package com.tspdevelopment.kidsscore.helpers;
 
 import com.tspdevelopment.kidsscore.data.model.PointsEarned;
@@ -61,8 +57,8 @@ public class UpdateTotals {
      */
     public void updateTotals() {
         List<Student> students = sRepository.findAll();
-        List<PointsEarned> earnings = peRepository.searchEventDate(startOfYear(), endOfYear());
-        List<PointsSpent> spent = psRepository.searchEventDate(startOfYear(), endOfYear());
+        List<PointsEarned> earnings = peRepository.findAll();
+        List<PointsSpent> spent = psRepository.findAll();
         for(Student s: students) {
             int totalEarned = 0;
             int totalSpent = 0;

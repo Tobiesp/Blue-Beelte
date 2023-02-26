@@ -25,7 +25,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PointTable implements BaseItem {
+public class PointType implements BaseItem {
     
     @Id
     @GeneratedValue(generator = "UUID")
@@ -64,7 +64,7 @@ public class PointTable implements BaseItem {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        PointTable other = (PointTable) obj;
+        PointType other = (PointType) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

@@ -2,7 +2,7 @@ package com.tspdevelopment.kidsscore.pdf;
 
 import java.util.List;
 import com.tspdevelopment.kidsscore.data.model.Student;
-import com.tspdevelopment.kidsscore.data.model.PointTable;
+import com.tspdevelopment.kidsscore.data.model.PointType;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -112,7 +112,7 @@ public class GenerateHTML {
         return sb.toString();
     }
 
-    public String generateCheckinHTML(List<Student> students, List<PointTable> pointTypes, String group) {
+    public String generateCheckinHTML(List<Student> students, List<PointType> pointTypes, String group) {
         StringBuffer sb = new StringBuffer();
         sb.append("<!DOCTYPE html>");
         sb.append("<html>");
@@ -157,16 +157,20 @@ public class GenerateHTML {
         sb.append("<table>");
         sb.append("  <tr>");
         sb.append("    <th>Student</th>");
-        for (PointTable pc : pointTypes) {
-            sb.append("    <th>" + pc.getPointCategory().getCategory() + "</th>");
+        for (PointType pc : pointTypes) {
+            if(pc.isEnabled()) {
+                sb.append("    <th>" + pc.getPointCategory().getCategory() + "</th>");
+            }
         }
         sb.append("  </tr>");
         for (Student s : students) {
             sb.append("  <tr>");
             sb.append("    <td>" + s.getName() + "</td>");
 
-            for (PointTable pc : pointTypes) {
-                sb.append("    <td></td>");
+            for (PointType pc : pointTypes) {
+                if(pc.isEnabled()) {
+                    sb.append("    <td></td>");
+                }
             }
 
             sb.append("  </tr>");
