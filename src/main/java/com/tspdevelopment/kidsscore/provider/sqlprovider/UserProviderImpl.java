@@ -105,7 +105,8 @@ public class UserProviderImpl implements UserProvider {
         }
         Optional<User> user = this.repository.findByUsername(username);
         if(user.isPresent()) {
-            this.repository.updateFailedAttempts(user.get().getFailedAttempt() + 1, username);
+            user.get().setFailedAttempt(user.get().getFailedAttempt()+1);
+            this.repository.save(user.get());
         }
     }
 

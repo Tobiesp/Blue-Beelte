@@ -5,18 +5,18 @@
  */
 package com.tspdevelopment.kidsscore.helpers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.UUID;
 import java.util.Optional;
@@ -30,6 +30,8 @@ import com.tspdevelopment.kidsscore.data.model.User;
 import com.tspdevelopment.kidsscore.properties.JwtProperties;
 import com.tspdevelopment.kidsscore.data.repository.*;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.*;
+import java.util.Base64;
+import java.util.logging.Level;
 
 /**
  *
@@ -60,7 +62,7 @@ public class JwtTokenUtil {
     }
 
     private void generateNewJWTSecert() {
-        if(secretTime.isBefore(LocalDateTime.now())) {
+        if((secretTime == null) || secretTime.isBefore(LocalDateTime.now())) {
             this.jwtSecret = SecurityHelper.getInstance().generateSecret();
             this.secretId = SecurityHelper.getInstance().generateSecretId();
             this.secretTime = LocalDateTime.now().plus(1, ChronoUnit.HOURS);
@@ -74,7 +76,7 @@ public class JwtTokenUtil {
     }
 
     private String getJWTSecret(String secretId) {
-        if(secretId == this.secretId) {
+        if(secretId.equals(this.secretId)) {
             return this.jwtSecret;
         } else {
             Optional<JWTSecret> secret = provider.findBySecretId(secretId);
@@ -126,19 +128,38 @@ public class JwtTokenUtil {
 
         return claims.getExpiration();
     }
+    
+    private String getSID(String token) {
+        if((token == null) || token.trim().isEmpty()) {
+            return null;
+        }
+        String body = token.split("\\.")[1];
+        String claims = new String(Base64.getDecoder().decode(body));
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            JsonNode actualObj = mapper.readTree(claims);
+            return actualObj.get("sid").asText();
+        } catch (JsonProcessingException ex) {
+            return null;
+        }
+    }
 
     public boolean validate(String token) {
         try {
-            Jwt jwt = Jwts.parser().parse(token);
-            Claims claims = (Claims)jwt.getBody();
-            if(claims.containsKey("sid")){
-                String secret = this.getJWTSecret((String)claims.get("sid"));
+            logger.info("Valid JWT token: " + token);
+            String sid = getSID(token);
+            if(sid != null){
+                logger.info("Found sid: " + sid);
+                String secret = this.getJWTSecret(sid);
                 if((secret == null) || secret.trim().isEmpty()) {
+                    logger.info("JWT secret key not found!");
                     return false;
                 }
+                logger.info("JWT secret key found: " + secret);
                 Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
                 return true;
             } else {
+                logger.error("Invalid JWT token - No sid.");
                 return false;
             }
         } catch (MalformedJwtException ex) {

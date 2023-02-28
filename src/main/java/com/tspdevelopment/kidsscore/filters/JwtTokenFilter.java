@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tspdevelopment.kidsscore.filters;
 
 import static org.springframework.util.StringUtils.hasText;
@@ -86,7 +81,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            if(SecurityHelper.getInstance().validUser(user)) {
+            if(!SecurityHelper.getInstance().validUser(user)) {
                 filterChain.doFilter(request, response);
                 return;
             }

@@ -20,9 +20,4 @@ import com.tspdevelopment.kidsscore.data.model.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
     public Optional<User> findByUsername(String username);
-
-             
-    @Query("UPDATE User u SET u.failedAttempt = :attempts WHERE u.username = :username")
-    @Modifying
-    public void updateFailedAttempt(@Param("attempts") int failAttempt, @Param("username") String username);
 }

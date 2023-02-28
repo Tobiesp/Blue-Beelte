@@ -71,7 +71,7 @@ public class AuthController {
 
             SecurityContextHolder.getContext().setAuthentication(authenticate);
             User user = (User) authenticate.getPrincipal();
-            if(SecurityHelper.getInstance().validUser(user)) {
+            if(!SecurityHelper.getInstance().validUser(user)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             JwtToken token = jwtTokenUtil.generateAccessToken(user);

@@ -31,7 +31,7 @@ import com.tspdevelopment.kidsscore.data.repository.RoleRepository;
 import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.kidsscore.data.repository.StudentRepository;
 import com.tspdevelopment.kidsscore.data.repository.UserRepository;
-import com.tspdevelopment.kidsscore.html.GenerateHTML;
+import com.tspdevelopment.kidsscore.docs.GenerateReportDocs;
 import com.tspdevelopment.kidsscore.data.model.Group;
 import com.tspdevelopment.kidsscore.data.model.Student;
 import com.tspdevelopment.kidsscore.data.model.PointType;
@@ -99,7 +99,7 @@ public class ReportController {
     @GetMapping("/getTestHTML")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
     ResponseEntity<?> getTestHTML() {
-        String page = GenerateHTML.getInstance().generateTestHTML();
+        String page = GenerateReportDocs.getInstance().generateTestHTML();
         byte[] contents = page.getBytes();
         HttpHeaders ResponseHeaders = new HttpHeaders();
         ResponseHeaders.setContentType(MediaType.TEXT_HTML);
@@ -110,17 +110,26 @@ public class ReportController {
 
     @GetMapping("/checkout")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity<?> getCheckout(@RequestParam String group) {
+    ResponseEntity<?> getCheckout(@RequestParam String group, @RequestHeader HttpHeaders headers) {
         Optional<Group> grp = groupProvider.findByName(group);
         if (grp.isPresent()) {
             Optional<List<Student>> students = studentProvider.findByGroup(grp.get());
-            String document = GenerateHTML.getInstance().generateCheckoutHTML(students.get(), group);
-            byte[] contents = document.getBytes();
             HttpHeaders ResponseHeaders = new HttpHeaders();
-            ResponseHeaders.setContentType(MediaType.TEXT_HTML);
-            ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-            ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
-            return response;
+            if(headers.getAccept().contains(MediaType.APPLICATION_JSON_VALUE)){
+                String document = GenerateReportDocs.getInstance().generateCheckoutJSON(students.get(), group);
+                byte[] contents = document.getBytes();
+                ResponseHeaders.setContentType(MediaType.APPLICATION_JSON);
+                ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+                ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
+                return response;
+            } else {
+                String document = GenerateReportDocs.getInstance().generateCheckoutHTML(students.get(), group);
+                byte[] contents = document.getBytes();
+                ResponseHeaders.setContentType(MediaType.TEXT_HTML);
+                ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+                ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
+                return response;
+            }
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group not found.");
         }
@@ -129,21 +138,27 @@ public class ReportController {
 
     @GetMapping("/checkin")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity<?> getCheckin(@RequestParam String group) {
+    ResponseEntity<?> getCheckin(@RequestParam String group, @RequestHeader HttpHeaders headers) {
         Optional<Group> grp = groupProvider.findByName(group);
         if (grp.isPresent()) {
             List<PointType> points = pointTableProvider.findByGroup(grp.get());
             Optional<List<Student>> students = studentProvider.findByGroup(grp.get());
-            String document = GenerateHTML.getInstance().generateCheckinHTML(students.get(), points, group);
-            byte[] contents = document.getBytes();
             HttpHeaders ResponseHeaders = new HttpHeaders();
-            ResponseHeaders.setContentType(MediaType.TEXT_HTML);
-            // Here you have to set the actual filename of your pdf
-            String filename = "checkout.html";
-            ResponseHeaders.setContentDispositionFormData(filename, filename);
-            ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-            ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
-            return response;
+            if(headers.getAccept().contains(MediaType.APPLICATION_JSON_VALUE)){
+                String document = GenerateReportDocs.getInstance().generateCheckinJSON(students.get(), points, group);
+                byte[] contents = document.getBytes();
+                ResponseHeaders.setContentType(MediaType.APPLICATION_JSON);
+                ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+                ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
+                return response;
+            } else {
+                String document = GenerateReportDocs.getInstance().generateCheckinHTML(students.get(), points, group);
+                byte[] contents = document.getBytes();
+                ResponseHeaders.setContentType(MediaType.TEXT_HTML);
+                ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+                ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
+                return response;
+            }
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Group not found.");
         }

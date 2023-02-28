@@ -111,6 +111,10 @@ public class PointType implements BaseItem {
         return result;
     }
 
+    public UUID getId() {
+        return this.id;
+    }
+
     
     
 }

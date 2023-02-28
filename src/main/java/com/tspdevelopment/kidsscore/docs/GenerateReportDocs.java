@@ -1,4 +1,4 @@
-package com.tspdevelopment.kidsscore.html;
+package com.tspdevelopment.kidsscore.docs;
 
 import java.util.List;
 import com.tspdevelopment.kidsscore.data.model.Student;
@@ -8,16 +8,16 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class GenerateHTML {
+public class GenerateReportDocs {
 
     final static DateTimeFormatter CUSTOM_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
-    public static GenerateHTML getInstance() {
+    public static GenerateReportDocs getInstance() {
         return GeneratePDFHolder.INSTANCE;
     }
 
     public String generateTestHTML() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>");
         sb.append("<html>");
         sb.append("<head>");
@@ -52,7 +52,7 @@ public class GenerateHTML {
     }
 
     public String generateCheckoutHTML(List<Student> students, String group) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>");
         sb.append("<html>");
         sb.append("<head>");
@@ -90,8 +90,8 @@ public class GenerateHTML {
         sb.append("</head>");
         sb.append("<body>");
 
-        sb.append("<div class=\"header\"><h2>" + group + "</h2></div>");
-        sb.append("<div class=\"headerDate\"><h2>" + getNextWendesday().format(CUSTOM_FORMATTER) + "</h2></div>");
+        sb.append("<div class=\"header\"><h2>").append(group).append("</h2></div>");
+        sb.append("<div class=\"headerDate\"><h2>").append(getNextWendesday().format(CUSTOM_FORMATTER)).append("</h2></div>");
 
         sb.append("<table>");
         sb.append("  <tr>");
@@ -100,7 +100,7 @@ public class GenerateHTML {
         sb.append("  </tr>");
         for (Student s : students) {
             sb.append("  <tr>");
-            sb.append("    <td>" + s.getName() + "</td>");
+            sb.append("    <td>").append(s.getName()).append("</td>");
             sb.append("    <td></td>");
             sb.append("  </tr>");
         }
@@ -111,9 +111,34 @@ public class GenerateHTML {
 
         return sb.toString();
     }
+    
+    public String generateCheckoutJSON(List<Student> students, String group) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"report\": [");
+        boolean first = true;
+        for (Student s : students) {
+            if(!first) {
+                sb.append(",{");
+                sb.append("\"student\": \"").append(s.getName()).append("\"");
+                sb.append("}");
+            } else {
+                sb.append("{");
+                sb.append("\"student\": \"").append(s.getName()).append("\"");
+                sb.append("}");
+                first = false;
+            }
+        }
+        sb.append("],");
+        sb.append("\"reportDate\": ").append("\"").append(getNextWendesday().format(CUSTOM_FORMATTER)).append("\",");
+        sb.append("\"group\": ").append("\"").append(group).append("\"");
+        sb.append("}");
+
+        return sb.toString();
+    }
 
     public String generateCheckinHTML(List<Student> students, List<PointType> pointTypes, String group) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>");
         sb.append("<html>");
         sb.append("<head>");
@@ -151,21 +176,21 @@ public class GenerateHTML {
         sb.append("</head>");
         sb.append("<body>");
 
-        sb.append("<div class=\"header\"><h2>" + group + "</h2></div>");
-        sb.append("<div class=\"headerDate\"><h2>" + getNextWendesday().format(CUSTOM_FORMATTER) + "</h2></div>");
+        sb.append("<div class=\"header\"><h2>").append(group).append("</h2></div>");
+        sb.append("<div class=\"headerDate\"><h2>").append(getNextWendesday().format(CUSTOM_FORMATTER)).append("</h2></div>");
 
         sb.append("<table>");
         sb.append("  <tr>");
         sb.append("    <th>Student</th>");
         for (PointType pc : pointTypes) {
             if(pc.isEnabled()) {
-                sb.append("    <th>" + pc.getPointCategory().getCategory() + "</th>");
+                sb.append("    <th>").append(pc.getPointCategory().getCategory()).append("</th>");
             }
         }
         sb.append("  </tr>");
         for (Student s : students) {
             sb.append("  <tr>");
-            sb.append("    <td>" + s.getName() + "</td>");
+            sb.append("    <td>").append(s.getName()).append("</td>");
 
             for (PointType pc : pointTypes) {
                 if(pc.isEnabled()) {
@@ -179,6 +204,53 @@ public class GenerateHTML {
 
         sb.append("</body>");
         sb.append("</html>");
+
+        return sb.toString();
+    }
+    
+    public String generateCheckinJSON(List<Student> students, List<PointType> pointTypes, String group) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"report\": [");
+        boolean first = true;
+        for (Student s : students) {
+            if(!first) {
+                sb.append(",{");
+                sb.append("\"student\": \"").append(s.getName()).append("\"");
+                boolean sf = true;
+                for (PointType pc : pointTypes) {
+                    if(pc.isEnabled()) {
+                        if(sf){
+                            sb.append("\"").append(pc.getPointCategory().getCategory()).append("\": \"\"");
+                            sf = false;
+                        } else {
+                            sb.append(",\"").append(pc.getPointCategory().getCategory()).append("\": \"\"");
+                        }
+                    }
+                }
+                sb.append("}");
+            } else {
+                sb.append("{");
+                sb.append("\"student\": \"").append(s.getName()).append("\"");
+                boolean sf = true;
+                for (PointType pc : pointTypes) {
+                    if(pc.isEnabled()) {
+                        if(sf){
+                            sb.append("\"").append(pc.getPointCategory().getCategory()).append("\": \"\"");
+                            sf = false;
+                        } else {
+                            sb.append(",\"").append(pc.getPointCategory().getCategory()).append("\": \"\"");
+                        }
+                    }
+                }
+                sb.append("}");
+                first = false;
+            }
+        }
+        sb.append("],");
+        sb.append("\"reportDate\": ").append("\"").append(getNextWendesday().format(CUSTOM_FORMATTER)).append("\",");
+        sb.append("\"group\": ").append("\"").append(group).append("\"");
+        sb.append("}");
 
         return sb.toString();
     }
@@ -196,6 +268,6 @@ public class GenerateHTML {
     }
 
     private static class GeneratePDFHolder {
-        private static final GenerateHTML INSTANCE = new GenerateHTML();
+        private static final GenerateReportDocs INSTANCE = new GenerateReportDocs();
     }
 }
