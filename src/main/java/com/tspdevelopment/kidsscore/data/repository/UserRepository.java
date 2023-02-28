@@ -8,6 +8,7 @@ package com.tspdevelopment.kidsscore.data.repository;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.*;
 
 import com.tspdevelopment.kidsscore.data.model.User;
@@ -21,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     public Optional<User> findByUsername(String username);
 
              
-    @Query("UPDATE User u SET u.failedAttempt = ?1 WHERE u.username = ?2")
+    @Query("UPDATE User u SET u.failedAttempt = :attempts WHERE u.username = :username")
     @Modifying
-    public void updateFailedAttempts(int failAttempts, String username);
+    public void updateFailedAttempt(@Param("attempts") int failAttempt, @Param("username") String username);
 }

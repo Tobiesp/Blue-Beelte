@@ -1,4 +1,4 @@
-package com.tspdevelopment.kidsscore.pdf;
+package com.tspdevelopment.kidsscore.html;
 
 import java.util.List;
 import com.tspdevelopment.kidsscore.data.model.Student;

@@ -9,14 +9,30 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.tspdevelopment.kidsscore.data.model.User;
+import java.util.UUID;
 
 /**
  *
  * @author tobiesp
  */
 public class SecurityHelper {
+
+    private String VALID_CHAR = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM";
     
     private SecurityHelper() {
+    }
+
+    public String generateSecret() {
+        StringBuffer sb = new StringBuffer();
+        for(int i = 0; i < 25; i++) {
+            int r = (int) (Math.random() * (VALID_CHAR.length()-1));
+            sb.append(VALID_CHAR.charAt(r));
+        }
+        return sb.toString();
+    }
+
+    public String generateSecretId() {
+        return UUID.randomUUID().toString();
     }
     
     public static SecurityHelper getInstance() {
