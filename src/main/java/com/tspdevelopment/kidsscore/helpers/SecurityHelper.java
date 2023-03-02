@@ -17,13 +17,19 @@ import java.util.UUID;
  */
 public class SecurityHelper {
 
-    private String VALID_CHAR = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM";
+    private final String VALID_CHAR = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM";
+    private final int MAX_FAILED_LOGIN_COUNT = 3;
+    private final String COOKIE_NAME = "token";
     
     private SecurityHelper() {
     }
+    
+    public String getCookieName() {
+        return COOKIE_NAME;
+    }
 
     public String generateSecret() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for(int i = 0; i < 25; i++) {
             int r = (int) (Math.random() * (VALID_CHAR.length()-1));
             sb.append(VALID_CHAR.charAt(r));
@@ -44,7 +50,7 @@ public class SecurityHelper {
     }
 
     public boolean validUser(User user) {
-        if(user.getFailedAttempt() > 3) {
+        if(user.getFailedAttempt() > MAX_FAILED_LOGIN_COUNT) {
             return false;
         }
         if(!user.isAccountNonExpired()) {
@@ -122,10 +128,7 @@ public class SecurityHelper {
                     break;
             }
         }
-        if(capitalFlag && symbolFlag && numberFlag) {
-            return true;
-        }
-        return false;
+        return capitalFlag && symbolFlag && numberFlag;
     }
     
     public long processExperationTime(String time) {

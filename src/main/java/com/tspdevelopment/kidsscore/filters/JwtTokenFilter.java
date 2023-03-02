@@ -24,6 +24,7 @@ import com.tspdevelopment.kidsscore.data.model.User;
 import com.tspdevelopment.kidsscore.data.repository.UserRepository;
 import com.tspdevelopment.kidsscore.helpers.JwtTokenUtil;
 import com.tspdevelopment.kidsscore.helpers.SecurityHelper;
+import javax.servlet.http.Cookie;
 
 /**
  *
@@ -47,20 +48,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain)
             throws ServletException, IOException {
-        // Get authorization header and validate
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        logger.info(HttpHeaders.AUTHORIZATION + " header is: " + header);
-        if (!hasText(header) || !header.startsWith("Bearer ")) {
-            logger.info(HttpHeaders.AUTHORIZATION + " header is empty!");
-            logger.info(HttpHeaders.AUTHORIZATION + " header !hasText(header) value is: " + String.valueOf(!hasText(header)));
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         // Get jwt token and validate
-        final String token = header.split(" ")[1].trim();
+        final String token = getToken(request);
         if (!jwtTokenUtil.validate(token)) {
-            logger.info(HttpHeaders.AUTHORIZATION + " header is invalid!");
+            logger.info("Invalid JWT token!");
             filterChain.doFilter(request, response);
             return;
         }
@@ -107,6 +99,23 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         } catch (IllegalArgumentException illegalArgumentException) {
             filterChain.doFilter(request, response);
         }
+    }
+    
+    private String getToken(HttpServletRequest request) {
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (hasText(header) && header.startsWith("Bearer ")) {
+            return header.split(" ")[1].trim();
+        }
+        Cookie[] cookies = request.getCookies();
+        if(cookies.length == 0) {
+            return null;
+        }
+        for(Cookie c : cookies) {
+            if(c.getName().equals(SecurityHelper.getInstance().getCookieName())) {
+                return c.getValue();
+            }
+        }
+        return null;
     }
 
 }

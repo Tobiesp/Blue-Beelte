@@ -145,6 +145,10 @@ public class JwtTokenUtil {
     }
 
     public boolean validate(String token) {
+        if(token == null) {
+            logger.error("Token can not be null.");
+            return false;
+        }
         try {
             logger.info("Valid JWT token: " + token);
             String sid = getSID(token);
