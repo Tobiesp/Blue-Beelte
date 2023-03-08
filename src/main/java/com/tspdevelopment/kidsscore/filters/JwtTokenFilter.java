@@ -111,7 +111,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return null;
         }
         for(Cookie c : cookies) {
-            if(c.getName().equals(SecurityHelper.getInstance().getCookieName())) {
+            if(c.getName().equals(SecurityHelper.getInstance().getCookieName()) && c.isHttpOnly() && c.getSecure()) {
                 return c.getValue();
             }
         }
