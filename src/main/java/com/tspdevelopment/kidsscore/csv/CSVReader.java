@@ -29,26 +29,10 @@ public class CSVReader {
     }
     
     public <T> T readItemRow(Class<T> clazz) throws IOException {
-        try {
-            Object item = clazz.getConstructors()[0].newInstance();
-            List<String> rowData = readRow();
-            Field[] fields = item.getClass().getDeclaredFields();
-            for(Field f : fields) {
-                f.setAccessible(true);
-                String fieldName = f.getName().trim().toLowerCase();
-                for(int i=0;i<headers.size();i++) {
-                    String header = headers.get(i);
-                    if(fieldName.equals(header.trim().toLowerCase())) {
-                        Object value = getValue(rowData.get(i), f.getDeclaringClass());
-                        f.set(item, value);
-                    }
-                }
-            }
-            return (T) item;
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(CSVReader.class.getName()).log(Level.SEVERE, "Error reading CSV file row", ex);
+        if(headers.isEmpty()) {
+            throw new NullPointerException("Header can not be empty.");
         }
-        return null;
+        return this.readItemRow(clazz, headers.toArray(String[]::new));
     }
     
     public <T> T readItemRow(Class<T> clazz, String... map) throws IOException {
@@ -88,6 +72,9 @@ public class CSVReader {
     }
     
     public List<String> readRow() throws IOException {
+        if(headers.isEmpty() && (this.rowIndex == 0) && this.preference.hasHeader()) {
+            headers = readRow();
+        }
         boolean endOfLine = false;
         StringBuilder sb = new StringBuilder();
         char c;

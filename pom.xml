@@ -41,58 +41,6 @@
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-core</artifactId>
         </dependency>    
-      <dependency>         
-         <groupId>com.itextpdf</groupId>         
-         <artifactId>kernel</artifactId>         
-         <version>7.2.5</version>     
-      </dependency>  
-      <dependency>         
-         <groupId>com.itextpdf</groupId>         
-         <artifactId>io</artifactId>         
-         <version>7.2.5</version>     
-      </dependency>  
-      
-      <dependency>         
-         <groupId>com.itextpdf</groupId>         
-         <artifactId>layout</artifactId>         
-         <version>7.2.5</version>
-      </dependency>  
-      <dependency>         
-         <groupId>com.itextpdf</groupId>         
-         <artifactId>forms</artifactId>         
-         <version>7.2.5</version>    
-      </dependency>  
-      <dependency>         
-         <groupId>com.itextpdf</groupId>         
-         <artifactId>pdfa</artifactId>         
-         <version>7.2.5</version>     
-      </dependency>  
-      <dependency>         
-         <groupId>com.itextpdf</groupId>         
-         <artifactId>sign</artifactId>         
-         <version>7.2.5</version>     
-      </dependency>  
-      <dependency>         
-         <groupId>com.itextpdf</groupId>         
-         <artifactId>barcodes</artifactId>         
-         <version>7.2.5</version>     
-      </dependency>  
-      <dependency>         
-         <groupId>com.itextpdf</groupId>         
-         <artifactId>font-asian</artifactId>         
-         <version>7.2.5</version>     
-      </dependency>  
-      <dependency>         
-         <groupId>com.itextpdf</groupId>         
-         <artifactId>hyph</artifactId>         
-         <version>7.2.5</version>    
-      </dependency> 
-        <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-            <version>3.0.0-RC1</version>
-        </dependency>
-
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -182,7 +130,7 @@
                 <nodeVersion>v16.13.1</nodeVersion>
             </configuration>
             <executions>
-                <execution>
+<!--                <execution>
                     <id>install-npm</id>
                     <goals>
                         <goal>install-node-and-npm</goal>
@@ -202,7 +150,7 @@
                     <configuration>
                         <arguments>run-script build</arguments>
                     </configuration>
-                </execution>
+                </execution>-->
             </executions>
         </plugin>
         </plugins>
