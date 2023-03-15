@@ -27,11 +27,20 @@ public class CSVReaderIT {
     private final String sample;
     
     public CSVReaderIT() {
-        sample = "\"stringValue\",\"intValue\",\"doubleValue\",\"boolValue\"\n\"test\",\"1\",\"1.1\",\"True\"";
+        sample = "\"stringValue\",\"intValue\",\"doubleValue\",\"boolValue\"\n\"test\",1,1.1,True";
     }
     
     @BeforeAll
     public static void setUpClass() {
+    }
+    
+    private TestObject getTestObject() {
+        TestObject result = new TestObject();
+        result.setBoolValue(true);
+        result.setDoubleValue(1.1);
+        result.setIntValue(1);
+        result.setStringValue("test");
+        return result;
     }
 
     /**
@@ -42,11 +51,9 @@ public class CSVReaderIT {
         System.out.println("readItemRow");
         StringReader reader = new StringReader(sample);
         CSVReader instance = new CSVReader(reader, CSVPreference.STANDARD_PREFERENCE);
-        Object expResult = new TestObject("test", 1, 1.1, true);
+        Object expResult = getTestObject();
         Object result = instance.readItemRow(TestObject.class);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -57,11 +64,9 @@ public class CSVReaderIT {
         System.out.println("readItemRow");
         StringReader reader = new StringReader(sample);
         CSVReader instance = new CSVReader(reader, CSVPreference.STANDARD_PREFERENCE);
-        Object expResult = new TestObject("test", 1, 1.1, true);
+        Object expResult = getTestObject();
         Object result = instance.readItemRow(TestObject.class, "stringValue", "intValue", "doubleValue", "boolValue");
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -87,7 +92,7 @@ public class CSVReaderIT {
         CSVReader instance = new CSVReader(reader, CSVPreference.STANDARD_PREFERENCE);
         List<String> expResult = Arrays.asList(new String[]{"stringValue", "intValue", "doubleValue", "boolValue"});
         List<String> result = instance.getHeaders();
-        assertEquals(expResult, result);
+        assertArrayEquals(expResult.toArray(), result.toArray());
     }
 
     /**

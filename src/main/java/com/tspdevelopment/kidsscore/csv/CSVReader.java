@@ -15,6 +15,8 @@ import java.util.logging.Logger;
  */
 public class CSVReader {
     
+    private static final Logger LOGGER = Logger.getLogger(CSVReader.class.getName());
+    
     private final Reader reader;
     private final CSVPreference preference;
     private int rowIndex;
@@ -29,8 +31,11 @@ public class CSVReader {
     }
     
     public <T> T readItemRow(Class<T> clazz) throws IOException {
-        if(headers.isEmpty()) {
-            throw new NullPointerException("Header can not be empty.");
+        if(headers.isEmpty() && this.preference.hasHeader()) {
+            this.getHeaders();
+            if(headers.isEmpty()) {
+                throw new NullPointerException("Header can not be empty.");
+            }
         }
         return this.readItemRow(clazz, headers.toArray(String[]::new));
     }
@@ -39,92 +44,118 @@ public class CSVReader {
         try {
             Object item = clazz.getConstructors()[0].newInstance();
             List<String> rowData = readRow();
+            System.out.println("Row data lenght: " + rowData.size());
             Field[] fields = item.getClass().getDeclaredFields();
             for(Field f : fields) {
                 f.setAccessible(true);
                 String fieldName = f.getName().trim().toLowerCase();
+                System.out.println("Field Name: " + fieldName);
                 for(int i=0;i<map.length;i++) {
                     String header = map[i];
+                    System.out.println("Map Name: " + fieldName + "-" + header.trim().toLowerCase());
                     if(fieldName.equals(header.trim().toLowerCase())) {
-                        Object value = getValue(rowData.get(i), f.getDeclaringClass());
+                        Object value = getValue(rowData.get(i), f.getType());
+                        System.out.println("Value: " + String.valueOf(value));
                         f.set(item, value);
                     }
                 }
             }
             return (T) item;
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(CSVReader.class.getName()).log(Level.SEVERE, "Error reading CSV file row", ex);
+            LOGGER.log(Level.SEVERE, "Error reading CSV file row", ex);
         }
         return null;
     }
     
     public boolean hasRow() {
-        return this.lastRead != -1;
+        return this.lastRead != 65535;
     }
     
-    public List<String> getHeaders() throws IOException {
-        if(headers.isEmpty() && (this.rowIndex == 0) && this.preference.hasHeader()) {
-            headers = readRow();
-            return headers;
-        } else {
-            return this.headers;
+    public List<String> getHeaders() {
+        try {
+            readHeaders();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "Unable to read headers", ex);
         }
+        return this.headers;
     }
     
     public List<String> readRow() throws IOException {
+        readHeaders();
+        return proccessString(readLine());
+    }
+    
+    private void readHeaders() throws IOException {
         if(headers.isEmpty() && (this.rowIndex == 0) && this.preference.hasHeader()) {
-            headers = readRow();
+            headers = proccessString(readLine());
         }
+    }
+    
+    private String readLine() throws IOException {
         boolean endOfLine = false;
         StringBuilder sb = new StringBuilder();
         char c;
-        
         while(!endOfLine) {
             c = (char) reader.read();
             this.lastRead = c;
-            if(c == -1) {
+            if((int)c == 65535) {
+                System.out.println("Line EOF: " + sb.toString());
+                this.rowIndex += 1;
                 break;
             }
             sb.append(c);
             if (sb.toString().endsWith(preference.getEndOfLineSymbols())) {
-                endOfLine = true;
+                System.out.println("Line NL: " + sb.toString());
                 this.rowIndex += 1;
+                break;
             }
         }
-        return proccessString(sb.toString());
+        return sb.toString().replace(preference.getEndOfLineSymbols(), "");
     }
     
     private List<String> proccessString(String str) {
         List<String> list = new ArrayList();
-        String value = null;
-        String[] array = str.split(",");
-        for(String s : array) {
-            if(s.endsWith("\"") && value != null) {
-                value += "," + s;
-                list.add(value);
-                value = null;
-            } else if(value != null) {
-                value += "," + s;
-            }  else if(s.startsWith("\"") && value == null) {
-                value = s;
-            } else {
-                list.add(s);
-                value = null;
+        StringBuilder value = new StringBuilder();
+        boolean quote = false;
+        for(char c : str.toCharArray()) {
+            if((c == '"') && !quote) {
+                quote = true;
+                continue;
             }
+            if((c == '"') && quote) {
+                quote = false;
+                continue;
+            }
+            if(quote) {
+                value.append(c);
+                continue;
+            }
+            if((c == ',') && !quote) {
+                System.out.println("String value: " + value.toString());
+                list.add(value.toString());
+                value = new StringBuilder();
+                continue;
+            }
+            value.append(c);
+        }
+        if(value.length() > 0) {
+            System.out.println("Last String value: " + value.toString());
+            list.add(value.toString());
         }
         return list;
     }
 
     private Object getValue(String value, Class<?> clazz) {
+        System.out.println("Value Class: " + clazz.getName());
         if(clazz.equals(int.class) || clazz.equals(Integer.class)) {
             return Integer.valueOf(value);
-        } else if(clazz.equals(Double.class)) {
+        } else if(clazz.equals(Double.class) || clazz.equals(double.class)) {
             return Double.valueOf(value);
-        } else if(clazz.equals(Float.class)) {
+        } else if(clazz.equals(Float.class) || clazz.equals(float.class)) {
             return Float.valueOf(value);
-        } else if(clazz.equals(Long.class)) {
+        } else if(clazz.equals(Long.class) || clazz.equals(long.class)) {
             return Long.valueOf(value);
-        } else if(clazz.equals(Boolean.class)) {
+        } else if(clazz.equals(Boolean.class) || clazz.equals(boolean.class)) {
             return ((value.toLowerCase().charAt(0) == 't') || (value.toLowerCase().charAt(0) == 'y'));
         } else if(clazz.equals(String.class)) {
             return value;

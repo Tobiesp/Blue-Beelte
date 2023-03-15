@@ -4,18 +4,18 @@
  */
 package com.tspdevelopment.KidsScore.csv;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
  * @author tobiesp
  */
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
 public class TestObject {
         private String stringValue;
         private int    intValue;
         private double doubleValue;
         private boolean boolValue;
-    }
+}
