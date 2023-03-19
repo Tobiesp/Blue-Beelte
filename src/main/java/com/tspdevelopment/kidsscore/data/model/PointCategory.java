@@ -26,6 +26,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Builder
 public class PointCategory implements BaseItem{
     
+    public static String ATTENDED = "attended";
+    public static String ATTENTIVE= "attentive";
+    public static String BIBLE = "bible";
+    public static String BIBLE_VERSE = "bibleVerse";
+    public static String BRING_A_FRIEND = "bringAFriend";
+    public static String RECALLS_LAST_WEEK_LESSON = "recallsLastWeekLesson";
+    
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(

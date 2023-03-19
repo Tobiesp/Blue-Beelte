@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 
 
 @RestController
@@ -95,7 +96,7 @@ public class RoleController {
     
     @GetMapping("/export")
     @RolesAllowed({Role.ADMIN_ROLE })
-    public void exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity exportToCSV(HttpServletResponse response) throws IOException {
         response.setContentType("text/csv");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateTime = dateFormatter.format(new Date());
@@ -117,8 +118,10 @@ public class RoleController {
                 csvWriter.write(role, nameMapping);
             } catch (NoSuchFieldException ex) {
                 logger.error("Unable to find the Specified field in the Object.", ex);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Export failed!");
             }
         }
+        return ResponseEntity.ok().build();
     }
     
 }

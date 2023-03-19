@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -66,10 +67,10 @@ public class PointTypeController extends BaseController<PointType>{
     
     @GetMapping("/export")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public void exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Group", "Category", "points"};
         String[] nameMapping = {"group:name", "pointCategory:category", "totalPoints"};
-        this.exportToCSV(response, csvHeader, nameMapping);
+        return this.exportToCSV(response, csvHeader, nameMapping);
     }
     
 }

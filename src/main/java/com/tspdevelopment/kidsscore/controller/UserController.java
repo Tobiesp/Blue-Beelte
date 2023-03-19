@@ -41,6 +41,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -148,8 +149,9 @@ public class UserController {
     
     @DeleteMapping("/{id}")
     @RolesAllowed({Role.ADMIN_ROLE})
-    void deleteItem(@PathVariable UUID id){
+    ResponseEntity deleteItem(@PathVariable UUID id){
         this.provider.delete(id);
+        return ResponseEntity.ok().build();
     }
     
     @PostMapping("/search")
@@ -167,7 +169,7 @@ public class UserController {
     
     @GetMapping("/export")
     @RolesAllowed({Role.ADMIN_ROLE })
-    public void exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity exportToCSV(HttpServletResponse response) throws IOException {
         response.setContentType("text/csv");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateTime = dateFormatter.format(new Date());
@@ -189,8 +191,10 @@ public class UserController {
                 csvWriter.write(i, nameMapping);
             } catch (NoSuchFieldException ex) {
                 log.error("Unable to find the Specified field in the Object.", ex);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Export failed!");
             }
         }
+        return ResponseEntity.ok().build();
     }
     
 }

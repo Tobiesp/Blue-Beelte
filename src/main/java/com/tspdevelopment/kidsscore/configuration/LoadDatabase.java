@@ -138,23 +138,23 @@ public class LoadDatabase {
     }
 
     private void createPointCategories(PointCategoryRepository pcr) {
-        if (!hasPointCategroy(pcr, "attended"))
-            pcr.save(createPointCategory("attended"));
+        if (!hasPointCategroy(pcr, PointCategory.ATTENDED))
+            pcr.save(createPointCategory(PointCategory.ATTENDED));
 
-        if (!hasPointCategroy(pcr, "bible"))
-            pcr.save(createPointCategory("bible"));
+        if (!hasPointCategroy(pcr, PointCategory.BIBLE))
+            pcr.save(createPointCategory(PointCategory.BIBLE));
 
-        if (!hasPointCategroy(pcr, "bibleVerse"))
-            pcr.save(createPointCategory("bibleVerse"));
+        if (!hasPointCategroy(pcr, PointCategory.BIBLE_VERSE))
+            pcr.save(createPointCategory(PointCategory.BIBLE_VERSE));
 
-        if (!hasPointCategroy(pcr, "bringAFriend"))
-            pcr.save(createPointCategory("bringAFriend"));
+        if (!hasPointCategroy(pcr, PointCategory.BRING_A_FRIEND))
+            pcr.save(createPointCategory(PointCategory.BRING_A_FRIEND));
 
-        if (!hasPointCategroy(pcr, "attentive"))
-            pcr.save(createPointCategory("attentive"));
+        if (!hasPointCategroy(pcr, PointCategory.ATTENTIVE))
+            pcr.save(createPointCategory(PointCategory.ATTENTIVE));
 
-        if (!hasPointCategroy(pcr, "recallsLastWeekLesson"))
-            pcr.save(createPointCategory("recallsLastWeekLesson"));
+        if (!hasPointCategroy(pcr, PointCategory.RECALLS_LAST_WEEK_LESSON))
+            pcr.save(createPointCategory(PointCategory.RECALLS_LAST_WEEK_LESSON));
         pcr.flush();
     }
 

@@ -11,6 +11,7 @@ import com.tspdevelopment.kidsscore.provider.sqlprovider.PointCategoryProviderIm
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,10 +30,10 @@ public class PointCategoryController extends BaseController<PointCategory>{
     
     @GetMapping("/export")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public void exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Category"};
         String[] nameMapping = {"category"};
-        this.exportToCSV(response, csvHeader, nameMapping);
+        return this.exportToCSV(response, csvHeader, nameMapping);
     }
     
 }

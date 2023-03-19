@@ -258,7 +258,7 @@ public class TestEntityGenerator {
         PointsEarned pe = new PointsEarned();
         pe.setStudent(generateStudent());
         pe.setPointCategory(generatePointCategory());
-        pe.setEventDate(LocalDate.now());
+        pe.setEventDate(LocalDateTime.now());
         pe.setTotal(getRandomInt(8));
         pe = this.pointsEarnedRepository.save(pe);
         this.peList.add(pe);
@@ -287,27 +287,27 @@ public class TestEntityGenerator {
     public PointCategory generatePointCategory() {
         PointCategory pc = new PointCategory();
         if(this.pcList.isEmpty()) {
-            pc.setCategory("attended");
+            pc.setCategory(PointCategory.ATTENDED);
             pc = this.pointCategoryRepository.save(pc);
             this.pcList.add(pc);
         } else if(this.pcList.size() == 1) {
-            pc.setCategory("bible");
+            pc.setCategory(PointCategory.BIBLE);
             pc = this.pointCategoryRepository.save(pc);
             this.pcList.add(pc);
         } else if(this.pcList.size() == 2) {
-            pc.setCategory("bibleVerse");
+            pc.setCategory(PointCategory.BIBLE_VERSE);
             pc = this.pointCategoryRepository.save(pc);
             this.pcList.add(pc);
         } else if(this.pcList.size() == 3) {
-            pc.setCategory("bringAFriend");
+            pc.setCategory(PointCategory.BRING_A_FRIEND);
             pc = this.pointCategoryRepository.save(pc);
             this.pcList.add(pc);
         } else if(this.pcList.size() == 4) {
-            pc.setCategory("attentive");
+            pc.setCategory(PointCategory.ATTENTIVE);
             pc = this.pointCategoryRepository.save(pc);
             this.pcList.add(pc);
         } else if(this.pcList.size() == 5) {
-            pc.setCategory("recallsLastWeekLesson");
+            pc.setCategory(PointCategory.RECALLS_LAST_WEEK_LESSON);
             pc = this.pointCategoryRepository.save(pc);
             this.pcList.add(pc);
         } else {
