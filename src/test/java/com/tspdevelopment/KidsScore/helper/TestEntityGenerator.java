@@ -267,7 +267,7 @@ public class TestEntityGenerator {
     
     public PointsSpent generatePointsSpent() {
         PointsSpent ps = new PointsSpent();
-        ps.setEventDate(LocalDate.now());
+        ps.setEventDate(LocalDateTime.now());
         ps.setPoints(this.getRandomInt(20));
         ps.setStudent(generateStudent());
         ps = this.pointsSpentRepository.save(ps);

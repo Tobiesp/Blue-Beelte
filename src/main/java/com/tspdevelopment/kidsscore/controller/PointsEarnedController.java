@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.tspdevelopment.kidsscore.controller;
 
 import com.tspdevelopment.kidsscore.csv.importmodels.PointsEarnedV1;
@@ -49,13 +45,11 @@ public class PointsEarnedController extends BaseController<PointsEarned>{
         return this.exportToCSV(response, csvHeader, nameMapping);
     }
     
-    
     @GetMapping("/import")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity CSVImport(@RequestParam("file") MultipartFile file) throws IOException {
         return this.CSVImportV1(file);
     }
-    
     
     @PostMapping("/import/v1")
     @RolesAllowed({Role.ADMIN_ROLE })

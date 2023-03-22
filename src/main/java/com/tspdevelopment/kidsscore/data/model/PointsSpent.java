@@ -46,7 +46,7 @@ public class PointsSpent implements BaseItem {
     private LocalDateTime modifiedAt;
     
     @Column
-    private LocalDate eventDate;
+    private LocalDateTime eventDate;
     
     @ManyToOne
     private Student student;

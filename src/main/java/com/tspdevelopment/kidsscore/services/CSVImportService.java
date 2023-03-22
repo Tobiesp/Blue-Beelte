@@ -1,43 +1,31 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.tspdevelopment.kidsscore.services;
 
 import com.tspdevelopment.kidsscore.csv.importmodels.GroupV1;
+import com.tspdevelopment.kidsscore.csv.importmodels.PointsSpentV1;
 import com.tspdevelopment.kidsscore.csv.importmodels.PointsEarnedV1;
 import com.tspdevelopment.kidsscore.csv.importmodels.StudentV1;
 import com.tspdevelopment.kidsscore.data.model.Group;
 import com.tspdevelopment.kidsscore.data.model.PointCategory;
 import com.tspdevelopment.kidsscore.data.model.PointsEarned;
+import com.tspdevelopment.kidsscore.data.model.PointsSpent;
 import com.tspdevelopment.kidsscore.data.model.Student;
 import com.tspdevelopment.kidsscore.data.repository.GroupRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointCategoryRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointTypeRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
-import com.tspdevelopment.kidsscore.data.repository.RoleRepository;
 import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.kidsscore.data.repository.StudentRepository;
-import com.tspdevelopment.kidsscore.data.repository.UserRepository;
 import com.tspdevelopment.kidsscore.provider.interfaces.GroupProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointCategoryProvider;
-import com.tspdevelopment.kidsscore.provider.interfaces.PointTypeProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointsEarnedProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointsSpentProvider;
-import com.tspdevelopment.kidsscore.provider.interfaces.RoleProvider;
-import com.tspdevelopment.kidsscore.provider.interfaces.RunningTotalsProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.StudentProvider;
-import com.tspdevelopment.kidsscore.provider.interfaces.UserProvider;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.GroupProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointCategoryProviderImpl;
-import com.tspdevelopment.kidsscore.provider.sqlprovider.PointTypeProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointsEarnedProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointsSpentProviderImpl;
-import com.tspdevelopment.kidsscore.provider.sqlprovider.RoleProviderImpl;
-import com.tspdevelopment.kidsscore.provider.sqlprovider.RunningTotalsProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.StudentProviderImpl;
-import com.tspdevelopment.kidsscore.provider.sqlprovider.UserProviderImpl;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -53,35 +41,25 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class CSVImportService {
     
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-    private GroupProvider groupProvider;
-    private PointCategoryProvider pointCategoryProvider;
-    private PointsEarnedProvider pointsEarnedProvider;
-    private PointsSpentProvider pointsSpentProvider;
-    private PointTypeProvider pointTableProvider;
-    private RoleProvider roleProvider;
-    private UserProvider userProvider;
-    private RunningTotalsProvider runningTotalsProvider;
-    private StudentProvider studentProvider;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    private final GroupProvider groupProvider;
+    private final PointCategoryProvider pointCategoryProvider;
+    private final PointsEarnedProvider pointsEarnedProvider;
+    private final PointsSpentProvider pointsSpentProvider;
+    private final StudentProvider studentProvider;
 
     public CSVImportService(GroupRepository groupRepository,
             PointCategoryRepository pointCategoryRepository,
             PointsEarnedRepository pointsEarnedRepository,
-            PointsSpentRepository pointsSpentProvider,
+            PointsSpentRepository pointsSpentRepository,
             PointTypeRepository pointTableRepository,
-            RoleRepository roleRepository,
-            UserRepository userRepository,
             RunningTotalsRepository runningTotalsRepository,
             StudentRepository studentRepository) {
         this.groupProvider = new GroupProviderImpl(groupRepository);
         this.pointCategoryProvider = new PointCategoryProviderImpl(pointCategoryRepository);
         this.pointsEarnedProvider = new PointsEarnedProviderImpl(pointsEarnedRepository, pointTableRepository,
-                pointsSpentProvider, runningTotalsRepository);
-        this.pointsSpentProvider = new PointsSpentProviderImpl(pointsSpentProvider);
-        this.pointTableProvider = new PointTypeProviderImpl(pointTableRepository);
-        this.roleProvider = new RoleProviderImpl(roleRepository);
-        this.userProvider = new UserProviderImpl(userRepository);
-        this.runningTotalsProvider = new RunningTotalsProviderImpl(runningTotalsRepository);
+                pointsSpentRepository, runningTotalsRepository);
+        this.pointsSpentProvider = new PointsSpentProviderImpl(pointsSpentRepository);
         this.studentProvider = new StudentProviderImpl(studentRepository);
     }
     
@@ -156,6 +134,20 @@ public class CSVImportService {
             ptEnd.setPointCategory(pc.get());
         } else {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Point Category not found: " + category);
+        }
+    }
+    
+    public void importPointsSpent(List<PointsSpentV1> ps) {
+        for(PointsSpentV1 p : ps) {
+            PointsSpent ptEnd = new PointsSpent();
+            ptEnd.setEventDate(LocalDateTime.parse(p.getEvent_date(), formatter));
+            Optional<Student> student = ((StudentProviderImpl)this.studentProvider).findByName(p.getStudent());
+            if(!student.isPresent()) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Student not found: " + p.getStudent());
+            }
+            ptEnd.setStudent(student.get());
+            ptEnd.setPoints(p.getPoints_spent());
+            this.pointsSpentProvider.create(ptEnd);
         }
     }
     
