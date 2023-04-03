@@ -130,7 +130,7 @@
                 <nodeVersion>v16.13.1</nodeVersion>
             </configuration>
             <executions>
-<!--                <execution>
+                <execution>
                     <id>install-npm</id>
                     <goals>
                         <goal>install-node-and-npm</goal>
@@ -150,7 +150,7 @@
                     <configuration>
                         <arguments>run-script build</arguments>
                     </configuration>
-                </execution>-->
+                </execution>
             </executions>
         </plugin>
         </plugins>
