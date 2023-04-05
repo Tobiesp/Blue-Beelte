@@ -80,8 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/actuator/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/*.html").permitAll()
-                .antMatchers("/*.css").permitAll()
-                .antMatchers("/*.js").permitAll()
+                .antMatchers("/static/**").permitAll()
                 .antMatchers("/*.ico").permitAll()
                 .antMatchers("/").permitAll()
                 // Our private endpoints
