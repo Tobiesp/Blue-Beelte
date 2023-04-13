@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import './login.css';
 
 async function loginUser(credentials) {
-    return fetch('http://localhost:8080/login', {
+    return fetch('http://localhost:8081/api/public/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -31,7 +31,7 @@ export default function Login({ setToken }) {
   return(
     <div className="login-wrapper">
       <h1>Please Log In</h1>
-      <form>
+      <form onSubmit={handleSubmit}>
         <label>
           <p>Username</p>
           <input type="text" onChange={e => setUserName(e.target.value)}/>

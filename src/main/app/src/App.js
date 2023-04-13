@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useState } from 'react';
 import Navbar from './components/Navbar/navBar';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/home';
 import Students from './pages/students';
 import Points from './pages/points';
@@ -26,14 +26,14 @@ function App() {
         <Points show="false" />
         <Admin show="false" />
         <SignIn show="false" /> */}
-        <Switch>
+        <Routes>
           <Route path='/' exact component={Home} />
           <Route path='/home' component={Home} />
           <Route path='/students' component={Students} />
           <Route path='/points' component={Points} />
           <Route path='/admin' component={Admin} />
           <Route path='/sign-in' component={SignIn} />
-        </Switch>
+        </Routes>
     </div>
       
     </BrowserRouter>
