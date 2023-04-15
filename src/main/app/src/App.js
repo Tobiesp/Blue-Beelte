@@ -8,36 +8,31 @@ import Points from './pages/points';
 import Admin from './pages/admin';
 import SignIn from './pages/signin';
 import Login from './components/Login/login';
+import useToken from './useToken';
 
 function App() {
-  const [token, setToken] = useState();
+    const { token, setToken } = useToken();
+    
+    if (!token) {
+        return (<Login setToken={setToken} />);
+    }
+    
+    return (
+        <BrowserRouter>
+            <div className='App'>
+                <Navbar />
+                <Routes>
+                    <Route path='/' exact component={Home} />
+                    <Route path='/home' component={Home} />
+                    <Route path='/students' component={Students} />
+                    <Route path='/points' component={Points} />
+                    <Route path='/admin' component={Admin} />
+                    <Route path='/sign-in' component={SignIn} />
+                </Routes>
+            </div>
 
-  if(!token) {
-    return <Login setToken={setToken} />
-  }
-  // var homeComp = new Home()
-  // var navBarComp = new Navbar();
-  return (
-    <BrowserRouter>
-      <div className='App'>
-        <Navbar />
-        {/* {<Home show="true" />}
-        <Students show="false" />
-        <Points show="false" />
-        <Admin show="false" />
-        <SignIn show="false" /> */}
-        <Routes>
-          <Route path='/' exact component={Home} />
-          <Route path='/home' component={Home} />
-          <Route path='/students' component={Students} />
-          <Route path='/points' component={Points} />
-          <Route path='/admin' component={Admin} />
-          <Route path='/sign-in' component={SignIn} />
-        </Routes>
-    </div>
-      
-    </BrowserRouter>
-  );
-}
+        </BrowserRouter>
+            );
+        }
 
 export default App;
