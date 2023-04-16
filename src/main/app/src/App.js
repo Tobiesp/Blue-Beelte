@@ -6,7 +6,6 @@ import Home from './pages/home';
 import Students from './pages/students';
 import Points from './pages/points';
 import Admin from './pages/admin';
-import SignIn from './pages/signin';
 import Login from './components/Login/login';
 import useToken from './useToken';
 
@@ -22,12 +21,21 @@ function App() {
             <div className='App'>
                 <Navbar />
                 <Routes>
-                    <Route path='/' exact component={Home} />
-                    <Route path='/home' component={Home} />
-                    <Route path='/students' component={Students} />
-                    <Route path='/points' component={Points} />
-                    <Route path='/admin' component={Admin} />
-                    <Route path='/sign-in' component={SignIn} />
+                    <Route path='/'>
+                        <Home token={token}/>
+                    </Route>
+                    <Route path='/home'>
+                        <Home token={token}/>
+                    </Route>
+                    <Route path='/students'>
+                        <Students token={token}/>
+                    </Route>
+                    <Route path='/points'>
+                        <Points token={token}/>
+                    </Route>
+                    <Route path='/admin'>
+                        <Admin token={token}/>
+                    </Route>
                 </Routes>
             </div>
 

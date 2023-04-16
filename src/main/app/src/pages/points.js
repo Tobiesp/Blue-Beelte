@@ -4,16 +4,7 @@ class Points extends React.Component {
 
     constructor(props) {
       super(props);
-      this.state = {show: false};
-      window.PointComponent = this;
-    }
-  
-    showComponent() {
-      this.setState({show: true});
-    }
-  
-    hideComponent() {
-      this.setState({show: false});
+      this.token = props.token
     }
 
     render() {

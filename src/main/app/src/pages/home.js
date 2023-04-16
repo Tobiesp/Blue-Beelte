@@ -2,9 +2,11 @@ import React from 'react';
 
 class Home extends React.Component {
 
+  token = ""
+
   constructor(props) {
     super(props);
-    this.state = {show: false};
+    this.token = props.token
   }
 
   render() {

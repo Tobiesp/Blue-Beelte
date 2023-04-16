@@ -4,16 +4,7 @@ class Students extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {show: false};
-        window.StudentComponent = this;
-      }
-    
-      showComponent() {
-        this.setState({show: true});
-      }
-    
-      hideComponent() {
-        this.setState({show: false});
+        this.token = props.token
       }
 
     render() {
