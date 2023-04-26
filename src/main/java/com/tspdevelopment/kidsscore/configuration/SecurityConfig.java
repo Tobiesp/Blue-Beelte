@@ -82,6 +82,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/*.html").permitAll()
                 .antMatchers("/static/**").permitAll()
                 .antMatchers("/*.ico").permitAll()
+                .antMatchers("/*.json").permitAll()
+                .antMatchers("/*.png").permitAll()
                 .antMatchers("/").permitAll()
                 // Our private endpoints
                 .anyRequest().authenticated();

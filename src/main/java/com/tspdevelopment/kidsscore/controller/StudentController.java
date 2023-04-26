@@ -44,7 +44,7 @@ public class StudentController extends BaseController<Student>{
     }
     
     
-    @GetMapping("/import")
+    @PostMapping("/import")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity CSVImport(@RequestParam("file") MultipartFile file) throws IOException {
         return this.CSVImportV1(file);

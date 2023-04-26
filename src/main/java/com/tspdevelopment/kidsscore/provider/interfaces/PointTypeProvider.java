@@ -10,6 +10,8 @@ public interface PointTypeProvider extends BaseProvider<PointType>{
 
     public List<PointType> findByGroup(Group group);
     
-    public List<PointType> findByPointCategory(PointCategory pointCategory);
+    public List<PointType> findByCategory(PointCategory pointCategory);
+    
+    public List<PointType> findByCategoryAndGroup(PointCategory pointCategory, Group group);
     
 }

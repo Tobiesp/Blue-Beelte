@@ -3,9 +3,16 @@ package com.tspdevelopment.KidsScore.csv;
 import com.tspdevelopment.kidsscore.KidsScoreApplication;
 import com.tspdevelopment.kidsscore.csv.CSVPreference;
 import com.tspdevelopment.kidsscore.csv.CSVReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,10 +27,24 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 public class CSVReaderIT {
     
-    private final String sample;
+    private String sample = null;
     
     public CSVReaderIT() {
-        sample = "\"stringValue\",\"intValue\",\"doubleValue\",\"boolValue\"\n\"test\",1,1.1,True";
+//        try {
+//            Reader reader = new FileReader(new File("C:\\Users\\tobiesp\\Documents\\TeamKids Export\\Students.csv"));
+//            StringBuilder sb = new StringBuilder();
+//            int i = 0;
+//            while(i > -1) {
+//                i = reader.read();
+//                sb.append((char)i);
+//            }
+//            sample = sb.toString();
+        sample = "\"stringValue\",\"intValue\",doubleValue,\"boolValue\"\n\"test\",1,1.1,True";
+//        } catch (FileNotFoundException ex) {
+//            Logger.getLogger(CSVReaderIT.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (IOException ex) {
+//            Logger.getLogger(CSVReaderIT.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
     
     @BeforeAll
@@ -87,6 +108,7 @@ public class CSVReaderIT {
         StringReader reader = new StringReader(sample);
         CSVReader instance = new CSVReader(reader, CSVPreference.STANDARD_PREFERENCE);
         List<String> expResult = Arrays.asList(new String[]{"stringValue", "intValue", "doubleValue", "boolValue"});
+//        List<String> expResult = Arrays.asList(new String[]{"Student_Name", "Group", "Grade", "Graduated"});
         List<String> result = instance.getHeaders();
         assertArrayEquals(expResult.toArray(), result.toArray());
     }

@@ -191,14 +191,14 @@ public class LoadDatabase {
                                         || "recallsLastWeekLesson".equals(pc.getCategory())) {
                                     pt.setTotalPoints(0);
                                     pt.setEnabled(false);
+                                    break;
                                 }
-                                break;
                             case "K-2 Boys":
                             case "K-2 Girls":
                                 if ("bibleVerse".equals(pc.getCategory())) {
                                     pt.setTotalPoints(5);
+                                    break;
                                 }
-                                break;
                             default:
                                 pt.setTotalPoints(1);
                                 break;

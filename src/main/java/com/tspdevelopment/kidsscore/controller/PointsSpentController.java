@@ -4,6 +4,7 @@ import com.tspdevelopment.kidsscore.csv.importmodels.PointsSpentV1;
 import com.tspdevelopment.kidsscore.data.model.PointsSpent;
 import com.tspdevelopment.kidsscore.data.model.Role;
 import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
+import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointsSpentProviderImpl;
 import com.tspdevelopment.kidsscore.services.CSVImportService;
 import com.tspdevelopment.kidsscore.views.ResponseMessage;
@@ -30,8 +31,8 @@ public class PointsSpentController extends BaseController<PointsSpent>{
     @Autowired
     private CSVImportService importService;
     
-    public PointsSpentController(PointsSpentRepository repository) {
-        this.provider = new PointsSpentProviderImpl(repository);
+    public PointsSpentController(PointsSpentRepository repository, RunningTotalsRepository rtRepository) {
+        this.provider = new PointsSpentProviderImpl(repository, rtRepository);
     }
     
     @GetMapping("/export")
@@ -42,7 +43,7 @@ public class PointsSpentController extends BaseController<PointsSpent>{
         return this.exportToCSV(response, csvHeader, nameMapping);
     }
     
-    @GetMapping("/import")
+    @PostMapping("/import")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity CSVImport(@RequestParam("file") MultipartFile file) throws IOException {
         return this.CSVImportV1(file);

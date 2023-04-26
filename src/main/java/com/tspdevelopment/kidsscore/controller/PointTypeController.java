@@ -48,7 +48,7 @@ public class PointTypeController extends BaseController<PointType>{
         PointTypeProvider prov = (PointTypeProvider)this.provider;
         Optional<PointCategory> pc = pointCategoryProvider.findByCategory(category);
         if(pc.isPresent()) {
-            List<EntityModel<PointType>> ptList = prov.findByPointCategory(pc.get()).stream()
+            List<EntityModel<PointType>> ptList = prov.findByCategory(pc.get()).stream()
                 .map(c -> this.getModel(c))
                 .collect(Collectors.toList());
 

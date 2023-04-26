@@ -8,17 +8,22 @@ import java.util.UUID;
 import org.springframework.data.domain.Example;
 
 import com.tspdevelopment.kidsscore.data.model.PointsSpent;
+import com.tspdevelopment.kidsscore.data.model.RunningTotals;
 import com.tspdevelopment.kidsscore.data.model.Student;
 import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
+import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointsSpentProvider;
 import java.time.LocalDate;
 
 public class PointsSpentProviderImpl implements PointsSpentProvider {
 
     private final PointsSpentRepository repository;
+    private final RunningTotalsRepository rtRepository;
     
-    public PointsSpentProviderImpl(PointsSpentRepository repository) {
+    public PointsSpentProviderImpl(PointsSpentRepository repository, 
+                                    RunningTotalsRepository rtRepository) {
         this.repository = repository;
+        this.rtRepository = rtRepository;
     }
 
     @Override
@@ -27,7 +32,24 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
             newItem.setCreatedAt(LocalDateTime.now());
             newItem.setModifiedAt(LocalDateTime.now());
         }
-        return this.repository.save(newItem);
+        PointsSpent sp = this.repository.save(newItem);
+        updateRunningTotal(sp);
+        return sp;
+    }
+    
+    private void updateRunningTotal(PointsSpent newItem) {
+        Optional<RunningTotals> runningTotal = rtRepository.findByStudent(newItem.getStudent());
+        if(runningTotal.isPresent()) {
+            RunningTotals rt = runningTotal.get();
+            rt.setTotal(rt.getTotal() - newItem.getPoints());
+            rtRepository.save(rt);
+        } else {
+            RunningTotals rt = new RunningTotals();
+            rt.setCreatedAt(LocalDateTime.now());
+            rt.setStudent(newItem.getStudent());
+            rt.setTotal(0 - newItem.getPoints());
+            rtRepository.save(rt);
+        }
     }
 
     @Override
@@ -57,10 +79,14 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
                     item.setPoints(replaceItem.getPoints());
                     item.setStudent(replaceItem.getStudent());
                     item.setModifiedAt(LocalDateTime.now());
-                    return repository.save(item);
+                    PointsSpent sp = this.repository.save(item);
+                    updateRunningTotal(sp);
+                    return sp;
                 }) //
                 .orElseGet(() -> {
-                    return repository.save(replaceItem);
+                    PointsSpent sp = this.repository.save(replaceItem);
+                    updateRunningTotal(sp);
+                    return sp;
                 });
     }
 

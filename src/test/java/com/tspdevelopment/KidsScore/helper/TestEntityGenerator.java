@@ -258,7 +258,7 @@ public class TestEntityGenerator {
         PointsEarned pe = new PointsEarned();
         pe.setStudent(generateStudent());
         pe.setPointCategory(generatePointCategory());
-        pe.setEventDate(LocalDateTime.now());
+        pe.setEventDate(LocalDate.now());
         pe.setTotal(getRandomInt(8));
         pe = this.pointsEarnedRepository.save(pe);
         this.peList.add(pe);
@@ -267,7 +267,7 @@ public class TestEntityGenerator {
     
     public PointsSpent generatePointsSpent() {
         PointsSpent ps = new PointsSpent();
-        ps.setEventDate(LocalDateTime.now());
+        ps.setEventDate(LocalDate.now());
         ps.setPoints(this.getRandomInt(20));
         ps.setStudent(generateStudent());
         ps = this.pointsSpentRepository.save(ps);

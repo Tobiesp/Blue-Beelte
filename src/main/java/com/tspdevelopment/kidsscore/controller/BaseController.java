@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
@@ -54,8 +56,8 @@ public abstract class BaseController<T extends BaseItem> {
         .collect(Collectors.toList());
 
         return CollectionModel.of(cList, 
-                    linkTo(methodOn(StudentController.class).search(null)).withSelfRel(),
-                    linkTo(methodOn(StudentController.class).all()).withSelfRel());
+                    linkTo(methodOn(this.getClass()).search(null)).withSelfRel(),
+                    linkTo(methodOn(this.getClass()).all()).withSelfRel());
     }
     
     @PostMapping("/")
@@ -96,14 +98,14 @@ public abstract class BaseController<T extends BaseItem> {
 				.map(c -> getModel(c))
 				.collect(Collectors.toList());
 
-		return CollectionModel.of(cList, linkTo(methodOn(StudentController.class).all()).withSelfRel());
+		return CollectionModel.of(cList, linkTo(methodOn(this.getClass()).all()).withSelfRel());
     }
     
     protected EntityModel<T> getModel(T c) {
         return EntityModel.of(c, //
-                linkTo(methodOn(StudentController.class).one(c.getId())).withSelfRel(),
-                linkTo(methodOn(StudentController.class).search(null)).withSelfRel(),
-                linkTo(methodOn(StudentController.class).all()).withSelfRel());
+                linkTo(methodOn(this.getClass()).one(c.getId())).withSelfRel(),
+                linkTo(methodOn(this.getClass()).search(null)).withSelfRel(),
+                linkTo(methodOn(this.getClass()).all()).withSelfRel());
     }
     
     private String getGenericName()
@@ -144,15 +146,22 @@ public abstract class BaseController<T extends BaseItem> {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "File must be of type CSV!");
         }
         List<K> results = new ArrayList<>();
+        Reader reader = null;
         try {
-            Reader reader = new InputStreamReader(file.getInputStream());
+            reader = new InputStreamReader(file.getInputStream(),"UTF-8");
             CSVReader csvReader = new CSVReader(reader, CSVPreference.STANDARD_PREFERENCE);
             while(csvReader.hasRow()) {
                 results.add(csvReader.readItemRow(clazz));
             }
-        } catch (IOException ex) {
-            logger.error("Uable to read CSV file: " + file.getOriginalFilename(), ex);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Uable to read CSV file.");
+        } catch (Exception ex) {
+            if(reader != null)
+                try {
+                    reader.close();
+            } catch (IOException ex1) {
+                logger.error("Unable to close CSV file: " + file.getOriginalFilename(), ex);
+            }
+            logger.error("Unable to read CSV file: " + file.getOriginalFilename(), ex);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to read CSV file.");
         }
         return results;
     }

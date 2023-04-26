@@ -1,7 +1,5 @@
 package com.tspdevelopment.kidsscore.controller;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 
 import java.util.Optional;
 import java.util.List;
@@ -9,13 +7,11 @@ import java.util.List;
 import javax.annotation.security.RolesAllowed;
 
 import org.slf4j.LoggerFactory;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,6 +31,7 @@ import com.tspdevelopment.kidsscore.docs.GenerateReportDocs;
 import com.tspdevelopment.kidsscore.data.model.Group;
 import com.tspdevelopment.kidsscore.data.model.Student;
 import com.tspdevelopment.kidsscore.data.model.PointType;
+import com.tspdevelopment.kidsscore.data.model.PointsEarned;
 import com.tspdevelopment.kidsscore.provider.interfaces.GroupProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointCategoryProvider;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointTypeProvider;
@@ -53,6 +50,10 @@ import com.tspdevelopment.kidsscore.provider.sqlprovider.RoleProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.RunningTotalsProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.StudentProviderImpl;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.UserProviderImpl;
+import com.tspdevelopment.kidsscore.views.GroupCountView;
+import com.tspdevelopment.kidsscore.views.LastEventView;
+import java.time.LocalDate;
+import java.util.HashMap;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -87,8 +88,8 @@ public class ReportController {
         this.groupProvider = new GroupProviderImpl(groupRepository);
         this.pointCategoryProvider = new PointCategoryProviderImpl(pointCategoryRepository);
         this.pointsEarnedProvider = new PointsEarnedProviderImpl(pointsEarnedRepository, pointTableRepository,
-                pointsSpentProvider, runningTotalsRepository);
-        this.pointsSpentProvider = new PointsSpentProviderImpl(pointsSpentProvider);
+                runningTotalsRepository);
+        this.pointsSpentProvider = new PointsSpentProviderImpl(pointsSpentProvider, runningTotalsRepository);
         this.pointTableProvider = new PointTypeProviderImpl(pointTableRepository);
         this.roleProvider = new RoleProviderImpl(roleRepository);
         this.userProvider = new UserProviderImpl(userRepository);
@@ -97,7 +98,7 @@ public class ReportController {
     }
 
     @GetMapping("/getTestHTML")
-    @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     ResponseEntity<?> getTestHTML() {
         String page = GenerateReportDocs.getInstance().generateTestHTML();
         byte[] contents = page.getBytes();
@@ -108,8 +109,46 @@ public class ReportController {
         return response;
     }
 
+    @GetMapping("/getLastEventSnapshot")
+    @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    ResponseEntity<LastEventView> getLastEventSnapshot() {
+        LocalDate EventDate = pointsEarnedProvider.getLastEventDate();
+        LastEventView lew = new LastEventView();
+        if(EventDate != null) {
+            lew.setEventDate(EventDate);
+            List<PointsEarned> points = pointsEarnedProvider.findByEventDate(EventDate);
+            HashMap<String, Integer> countMap = new HashMap<>();
+            int total = 0;
+            for(PointsEarned p : points) {
+                String g = p.getStudent().getGroup().getName();
+                if(countMap.containsKey(g)) {
+                    Integer i = countMap.get(g);
+                    countMap.put(g, i+1);
+                    total = total + 1;
+                } else {
+                    if(!"Graduated".equals(g)) {
+                        countMap.put(g, 1);
+                        total = total + 1;
+                    }
+                }
+            }
+            for(String key : countMap.keySet()) {
+                GroupCountView gcv = new GroupCountView();
+                gcv.setGroup(key);
+                gcv.setCount(countMap.get(key));
+                lew.addGroup(gcv);
+            }
+            lew.setTotal(total);
+        }
+        HttpHeaders ResponseHeaders = new HttpHeaders();
+        ResponseHeaders.setContentType(MediaType.APPLICATION_JSON);
+        ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        ResponseEntity<LastEventView> response = new ResponseEntity<>(lew, ResponseHeaders, HttpStatus.OK);
+        return response;
+    }
+
     @GetMapping("/checkout")
-    @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     ResponseEntity<?> getCheckout(@RequestParam String group, @RequestHeader HttpHeaders headers) {
         Optional<Group> grp = groupProvider.findByName(group);
         if (grp.isPresent()) {
@@ -137,7 +176,7 @@ public class ReportController {
     }
 
     @GetMapping("/checkin")
-    @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     ResponseEntity<?> getCheckin(@RequestParam String group, @RequestHeader HttpHeaders headers) {
         Optional<Group> grp = groupProvider.findByName(group);
         if (grp.isPresent()) {

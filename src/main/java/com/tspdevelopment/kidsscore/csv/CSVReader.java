@@ -44,18 +44,21 @@ public class CSVReader {
         try {
             Object item = clazz.getConstructors()[0].newInstance();
             List<String> rowData = readRow();
-            System.out.println("Row data lenght: " + rowData.size());
+            LOGGER.log(Level.FINEST, "Row data lenght: {0}", rowData.size());
             Field[] fields = item.getClass().getDeclaredFields();
             for(Field f : fields) {
                 f.setAccessible(true);
                 String fieldName = f.getName().trim().toLowerCase();
-                System.out.println("Field Name: " + fieldName);
+                LOGGER.log(Level.FINEST, "Field Name: {0}", fieldName);
                 for(int i=0;i<map.length;i++) {
+                    if(i >= rowData.size()) {
+                        continue;
+                    }
                     String header = map[i];
-                    System.out.println("Map Name: " + fieldName + "-" + header.trim().toLowerCase());
+                    LOGGER.log(Level.INFO, "Map Name: {0}-{1}", new Object[]{fieldName, header.trim().toLowerCase()});
                     if(fieldName.equals(header.trim().toLowerCase())) {
                         Object value = getValue(rowData.get(i), f.getType());
-                        System.out.println("Value: " + String.valueOf(value));
+                        LOGGER.log(Level.INFO, "Value: {0}", String.valueOf(value));
                         f.set(item, value);
                     }
                 }
@@ -99,13 +102,13 @@ public class CSVReader {
             c = (char) reader.read();
             this.lastRead = c;
             if((int)c == 65535) {
-                System.out.println("Line EOF: " + sb.toString());
+                LOGGER.log(Level.INFO, "Line EOF: {0}", sb.toString());
                 this.rowIndex += 1;
                 break;
             }
             sb.append(c);
             if (sb.toString().endsWith(preference.getEndOfLineSymbols())) {
-                System.out.println("Line NL: " + sb.toString());
+                LOGGER.log(Level.INFO, "Line NL: {0}", sb.toString());
                 this.rowIndex += 1;
                 break;
             }
@@ -117,7 +120,12 @@ public class CSVReader {
         List<String> list = new ArrayList();
         StringBuilder value = new StringBuilder();
         boolean quote = false;
+        boolean first = true;
         for(char c : str.toCharArray()) {
+            if(first && !validSymbol(c)){
+                continue;
+            } 
+            first = false;
             if((c == '"') && !quote) {
                 quote = true;
                 continue;
@@ -131,7 +139,7 @@ public class CSVReader {
                 continue;
             }
             if((c == ',') && !quote) {
-                System.out.println("String value: " + value.toString());
+                LOGGER.log(Level.INFO, "String value: {0}", value.toString());
                 list.add(value.toString());
                 value = new StringBuilder();
                 continue;
@@ -139,22 +147,26 @@ public class CSVReader {
             value.append(c);
         }
         if(value.length() > 0) {
-            System.out.println("Last String value: " + value.toString());
+            LOGGER.log(Level.INFO, "Last String value: {0}", value.toString());
             list.add(value.toString());
         }
         return list;
     }
+    
+    private boolean validSymbol(char c) {
+        return Character.isLetterOrDigit(c) || Character.isWhitespace(c);
+    }
 
     private Object getValue(String value, Class<?> clazz) {
-        System.out.println("Value Class: " + clazz.getName());
+        LOGGER.log(Level.INFO, "Value Class: {0}", clazz.getName());
         if(clazz.equals(int.class) || clazz.equals(Integer.class)) {
-            return Integer.valueOf(value);
+            return Integer.valueOf(value.trim());
         } else if(clazz.equals(Double.class) || clazz.equals(double.class)) {
-            return Double.valueOf(value);
+            return Double.valueOf(value.trim());
         } else if(clazz.equals(Float.class) || clazz.equals(float.class)) {
-            return Float.valueOf(value);
+            return Float.valueOf(value.trim());
         } else if(clazz.equals(Long.class) || clazz.equals(long.class)) {
-            return Long.valueOf(value);
+            return Long.valueOf(value.trim());
         } else if(clazz.equals(Boolean.class) || clazz.equals(boolean.class)) {
             return ((value.toLowerCase().charAt(0) == 't') || (value.toLowerCase().charAt(0) == 'y'));
         } else if(clazz.equals(String.class)) {

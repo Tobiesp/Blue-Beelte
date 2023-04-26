@@ -18,6 +18,8 @@ import com.tspdevelopment.kidsscore.data.model.PointType;
  * @author tobiesp
  */
 public interface PointTypeRepository extends JpaRepository<PointType, UUID> {
+    public List<PointType> findByPointCategoryAndGroup(PointCategory category, Group group);
+    
     public List<PointType> findByPointCategory(PointCategory category);
 
     public List<PointType> findByGroup(Group group);
