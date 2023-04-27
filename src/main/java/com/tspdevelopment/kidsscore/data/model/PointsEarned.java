@@ -46,7 +46,7 @@ public class PointsEarned implements BaseItem {
     private LocalDateTime modifiedAt;
     
     @Column(nullable = false)
-    private LocalDateTime eventDate;
+    private LocalDate eventDate;
     
     @ManyToOne
     private Student student;

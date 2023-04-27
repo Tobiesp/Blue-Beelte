@@ -5,7 +5,6 @@ import com.tspdevelopment.kidsscore.data.model.PointsEarned;
 import com.tspdevelopment.kidsscore.data.model.Role;
 import com.tspdevelopment.kidsscore.data.repository.PointTypeRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsEarnedRepository;
-import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
 import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.kidsscore.provider.sqlprovider.PointsEarnedProviderImpl;
 import com.tspdevelopment.kidsscore.services.CSVImportService;
@@ -33,8 +32,8 @@ public class PointsEarnedController extends BaseController<PointsEarned>{
     @Autowired
     private CSVImportService importService;
     
-    public PointsEarnedController(PointsEarnedRepository repository, PointTypeRepository ptRepository, PointsSpentRepository psRepository, RunningTotalsRepository rtRepository) {
-        this.provider = new PointsEarnedProviderImpl(repository, ptRepository, psRepository, rtRepository);
+    public PointsEarnedController(PointsEarnedRepository repository, PointTypeRepository ptRepository, RunningTotalsRepository rtRepository) {
+        this.provider = new PointsEarnedProviderImpl(repository, ptRepository, rtRepository);
     }
     
     @GetMapping("/export")
@@ -45,7 +44,7 @@ public class PointsEarnedController extends BaseController<PointsEarned>{
         return this.exportToCSV(response, csvHeader, nameMapping);
     }
     
-    @GetMapping("/import")
+    @PostMapping("/import")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity CSVImport(@RequestParam("file") MultipartFile file) throws IOException {
         return this.CSVImportV1(file);

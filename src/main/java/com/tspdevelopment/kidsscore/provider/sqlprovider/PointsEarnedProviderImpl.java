@@ -9,12 +9,11 @@ import java.util.UUID;
 import org.springframework.data.domain.Example;
 
 import com.tspdevelopment.kidsscore.data.model.PointsEarned;
+import com.tspdevelopment.kidsscore.data.model.RunningTotals;
 import com.tspdevelopment.kidsscore.data.model.Student;
 import com.tspdevelopment.kidsscore.data.repository.PointTypeRepository;
 import com.tspdevelopment.kidsscore.data.repository.PointsEarnedRepository;
-import com.tspdevelopment.kidsscore.data.repository.PointsSpentRepository;
 import com.tspdevelopment.kidsscore.data.repository.RunningTotalsRepository;
-import com.tspdevelopment.kidsscore.helpers.UpdateTotals;
 import com.tspdevelopment.kidsscore.provider.interfaces.PointsEarnedProvider;
 import java.time.LocalDate;
 
@@ -22,16 +21,13 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
 
     private final PointsEarnedRepository repository;
     private final PointTypeRepository ptRepository;
-    private final PointsSpentRepository psRepository;
     private final RunningTotalsRepository rtRepository;
     
     public PointsEarnedProviderImpl(PointsEarnedRepository repository, 
                                     PointTypeRepository ptRepository, 
-                                    PointsSpentRepository psRepository, 
                                     RunningTotalsRepository rtRepository) {
         this.repository = repository;
         this.ptRepository = ptRepository;
-        this.psRepository = psRepository;
         this.rtRepository = rtRepository;
     }
     
@@ -57,7 +53,7 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
         return 0;
     }
     
-    private void updateTotals(PointsEarned item) {
+    private void updatePointValue(PointsEarned item) {
         if(item.getStudent() == null) {
             return;
         }
@@ -71,12 +67,36 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
             newItem.setCreatedAt(LocalDateTime.now());
             newItem.setModifiedAt(LocalDateTime.now());
         }
-        updateTotals(newItem);
+        updatePointValue(newItem);
         PointsEarned pe = this.repository.save(newItem);
-        UpdateTotals.getInstance().setPointsEarnedRepository(repository);
-        UpdateTotals.getInstance().setPointsSpentRepository(psRepository);
-        UpdateTotals.getInstance().setRunningTotalsRepository(rtRepository);
-        UpdateTotals.getInstance().updateTotal(pe.getStudent());
+        updateRunningTotal(pe);
+        return pe;
+    }
+    
+    private void updateRunningTotal(PointsEarned newItem) {
+        Optional<RunningTotals> runningTotal = rtRepository.findByStudent(newItem.getStudent());
+        if(runningTotal.isPresent()) {
+            RunningTotals rt = runningTotal.get();
+            rt.setTotal(rt.getTotal()+newItem.getTotal());
+            rtRepository.save(rt);
+        } else {
+            RunningTotals rt = new RunningTotals();
+            rt.setCreatedAt(LocalDateTime.now());
+            rt.setStudent(newItem.getStudent());
+            rt.setTotal(newItem.getTotal());
+            rtRepository.save(rt);
+        }
+    }
+    
+
+    @Override
+    public PointsEarned createNoTotalUpdate(PointsEarned newItem) {
+        if((newItem != null) && (newItem.getCreatedAt() == null)) {
+            newItem.setCreatedAt(LocalDateTime.now());
+            newItem.setModifiedAt(LocalDateTime.now());
+        }
+        PointsEarned pe = this.repository.save(newItem);
+        updateRunningTotal(pe);
         return pe;
     }
 
@@ -97,20 +117,14 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
                     item.setStudent(replaceItem.getStudent());
                     item.setPointCategory(replaceItem.getPointCategory());
                     item.setModifiedAt(LocalDateTime.now());
-                    updateTotals(item);
+                    updatePointValue(item);
                     PointsEarned i = repository.save(item);
-                    UpdateTotals.getInstance().setPointsEarnedRepository(repository);
-                    UpdateTotals.getInstance().setPointsSpentRepository(psRepository);
-                    UpdateTotals.getInstance().setRunningTotalsRepository(rtRepository);
-                    UpdateTotals.getInstance().updateTotal(item.getStudent());
+                    updateRunningTotal(i);
                     return i;
                 }) //
                 .orElseGet(() -> {
                     PointsEarned i = repository.save(replaceItem);
-                    UpdateTotals.getInstance().setPointsEarnedRepository(repository);
-                    UpdateTotals.getInstance().setPointsSpentRepository(psRepository);
-                    UpdateTotals.getInstance().setRunningTotalsRepository(rtRepository);
-                    UpdateTotals.getInstance().updateTotal(replaceItem.getStudent());
+                    updateRunningTotal(i);
                     return i;
                 });
     }
@@ -139,6 +153,12 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
     @Override
     public List<PointsEarned> searchStudentEventDate(Student student, LocalDate start, LocalDate end) {
         return this.repository.searchStudentEventDate(student, start, end);
+    }
+
+    @Override
+    public LocalDate getLastEventDate() {
+        List<LocalDate> dates = this.repository.getLastEventDate();
+        return dates.isEmpty()?null:dates.get(0);
     }
 
     

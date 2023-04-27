@@ -20,5 +20,9 @@ public interface PointsEarnedRepository extends JpaRepository<PointsEarned, UUID
     public List<PointsEarned> searchEventDate(LocalDate start, LocalDate end);
     @Query("SELECT u FROM PointsEarned u WHERE u.student = ?1 and u.eventDate >= ?2 and u.eventDate <= ?3")
     public List<PointsEarned> searchStudentEventDate(Student student, LocalDate start, LocalDate end);
+    @Query("SELECT u.eventDate FROM PointsEarned u ORDER BY u.eventDate DESC")
+    public List<LocalDate> getLastEventDate();
+    @Query("SELECT sum(u.total) FROM PointsEarned u WHERE u.student = ?1")
+    public Long getPointSum(Student student);
     
 }

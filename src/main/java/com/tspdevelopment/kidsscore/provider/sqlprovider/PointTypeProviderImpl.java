@@ -77,8 +77,13 @@ public class PointTypeProviderImpl implements PointTypeProvider{
     }
 
     @Override
-    public List<PointType> findByPointCategory(PointCategory pointCategory) {
+    public List<PointType> findByCategory(PointCategory pointCategory) {
         return this.repository.findByPointCategory(pointCategory);
+    }
+
+    @Override
+    public List<PointType> findByCategoryAndGroup(PointCategory pointCategory, Group group) {
+        return this.repository.findByPointCategoryAndGroup(pointCategory, group);
     }
     
 }
