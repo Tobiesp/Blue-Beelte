@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/blue-beetle",
+            "outputPath": "src/main/resources/static",
             "index": "src/main/app/index.html",
             "main": "src/main/app/main.ts",
             "polyfills": "src/main/app/polyfills.ts",

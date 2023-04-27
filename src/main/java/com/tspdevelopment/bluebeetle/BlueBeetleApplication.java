@@ -1,13 +1,13 @@
-package com.tspdevelopment.kidsscore;
+package com.tspdevelopment.bluebeetle;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class KidsScoreApplication {
+public class BlueBeetleApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(KidsScoreApplication.class, args);
+		SpringApplication.run(BlueBeetleApplication.class, args);
 	}
 
 }

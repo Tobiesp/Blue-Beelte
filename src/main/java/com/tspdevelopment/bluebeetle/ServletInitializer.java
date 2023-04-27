@@ -1,4 +1,4 @@
-package com.tspdevelopment.kidsscore;
+package com.tspdevelopment.bluebeetle;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -7,7 +7,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(KidsScoreApplication.class);
+		return application.sources(BlueBeetleApplication.class);
 	}
 
 }
