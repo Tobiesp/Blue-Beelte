@@ -3,7 +3,7 @@
     "compileOnSave": false,
     "compilerOptions": {
         "baseUrl": "./",
-        "outDir": "./dist/out-tsc",
+        "outDir": "./main/app/dist/out-tsc",
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "noImplicitOverride": true,
@@ -23,8 +23,8 @@
             "dom"
         ],
         "paths": {
-            "@app/*": ["src/app/*"],
-            "@environments/*": ["src/environments/*"]
+            "@app/*": ["src/main/app/app/*"],
+            "@environments/*": ["src/main/app/environments/*"]
         }
     },
     "angularCompilerOptions": {

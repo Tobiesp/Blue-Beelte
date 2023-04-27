@@ -1,6 +1,6 @@
 {
-    "name": "angular-registration-login-example",
-    "version": "0.0.0",
+    "name": "blue-beetle",
+    "version": "0.0.1",
     "scripts": {
         "ng": "ng",
         "start": "ng serve --open",

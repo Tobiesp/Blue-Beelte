@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular-registration-login-example": {
+    "blue-beetle": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/angular-registration-login-example",
+            "outputPath": "dist/blue-beetle",
             "index": "src/main/app/index.html",
             "main": "src/main/app/main.ts",
             "polyfills": "src/main/app/polyfills.ts",
@@ -69,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "angular-registration-login-example:build:production"
+              "browserTarget": "blue-beetle:build:production"
             },
             "development": {
-              "browserTarget": "angular-registration-login-example:build:development"
+              "browserTarget": "blue-beetle:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -80,7 +80,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular-registration-login-example:build"
+            "browserTarget": "blue-beetle:build"
           }
         },
         "test": {
