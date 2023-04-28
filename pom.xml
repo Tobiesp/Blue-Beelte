@@ -18,6 +18,9 @@
         <java.version>17</java.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <frontend-src-dir>${project.basedir}/src/main/app</frontend-src-dir>
+        <node.version>v18.15.0</node.version>
+        <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
     </properties>
     <dependencies>
 
@@ -125,9 +128,11 @@
             <plugin>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
-            <version>1.12.1</version>
+            <version>${frontend-maven-plugin.version}</version>
             <configuration>
-                <nodeVersion>v18.15.0</nodeVersion>
+                <nodeVersion>${node.version}</nodeVersion>
+                <workingDirectory>${frontend-src-dir}</workingDirectory>
+                <installDirectory>${project.build.directory}</installDirectory>
             </configuration>
             <executions>
                 <execution>
@@ -153,6 +158,28 @@
                 </execution>
             </executions>
         </plugin>
+        <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>position-react-build</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${frontend-src-dir}/build</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
