@@ -7,11 +7,12 @@ import lombok.Data;
  * @author tobiesp
  */
 @Data
-public class UserView {
+public class UserLoginView {
 
     private String id;
 
     private String username;
     private String fullName;
+    private String token;
 
 }

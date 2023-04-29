@@ -32,7 +32,7 @@ import com.tspdevelopment.bluebeetle.helpers.SecurityHelper;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.RoleProviderImpl;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.UserProviderImpl;
 import com.tspdevelopment.bluebeetle.views.AuthRequest;
-import com.tspdevelopment.bluebeetle.response.UserView;
+import com.tspdevelopment.bluebeetle.response.UserLoginView;
 
 /**
  *
@@ -59,7 +59,7 @@ public class AuthController {
     }
     
     @PostMapping("/login")
-    public ResponseEntity<UserView> login(@RequestBody @Validated AuthRequest request){
+    public ResponseEntity<UserLoginView> login(@RequestBody @Validated AuthRequest request){
         try {
             logger.info("Auth Request: " + request.toString());
             Authentication authenticate = authenticationManager
@@ -82,7 +82,7 @@ public class AuthController {
                     HttpHeaders.AUTHORIZATION,
                     token.getToken()
                 )
-                .body(toUserView(user));
+                .body(toUserView(user, token.getToken()));
         } catch (BadCredentialsException ex) {
             this.userProvider.increaseLoginAttempt(request.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -114,17 +114,18 @@ public class AuthController {
         return userProvider.create(newItem);
     }
     
-    private UserView toUserView(User user) {
+    private UserLoginView toUserView(User user, String token) {
         UUID id = user.getId();
         if (id == null) {
             return null;
         }
         Optional<User> u = userProvider.findById(id);
         if(u.isPresent()) {
-            UserView view = new UserView();
+            UserLoginView view = new UserLoginView();
             view.setFullName(u.get().getFirstName() + " " + u.get().getLastName());
             view.setUsername(u.get().getUsername());
             view.setId(u.get().getId().toString());
+            view.setToken(token);
             return view;
         } else {
             return null;

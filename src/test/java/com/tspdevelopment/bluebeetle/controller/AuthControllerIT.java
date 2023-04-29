@@ -2,7 +2,7 @@ package com.tspdevelopment.bluebeetle.controller;
 
 import com.tspdevelopment.bluebeetle.controller.AuthController;
 import com.tspdevelopment.bluebeetle.views.AuthRequest;
-import com.tspdevelopment.bluebeetle.response.UserView;
+import com.tspdevelopment.bluebeetle.response.UserLoginView;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,8 +30,8 @@ public class AuthControllerIT {
         System.out.println("login");
         AuthRequest request = null;
         AuthController instance = null;
-        ResponseEntity<UserView> expResult = null;
-        ResponseEntity<UserView> result = instance.login(request);
+        ResponseEntity<UserLoginView> expResult = null;
+        ResponseEntity<UserLoginView> result = instance.login(request);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
