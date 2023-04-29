@@ -70,6 +70,18 @@ public class CSVImportService {
         this.studentProvider = new StudentProviderImpl(studentRepository);
     }
     
+    public <K> void importItems(List<K> items, Class<K> clazz) {
+        if(clazz == StudentV1.class) {
+            importStudents((List<StudentV1>) items);
+        } else if(clazz == GroupV1.class) {
+            importGroups((List<GroupV1>) items);
+        } else if(clazz == PointsEarnedV1.class) {
+            importPointsEarned((List<PointsEarnedV1>) items);
+        } else if(clazz == PointsSpentV1.class) {
+            importPointsSpent((List<PointsSpentV1>) items);
+        }
+    }
+    
     public void importStudents(List<StudentV1> students) {
         for(StudentV1 s: students) {
             Optional<Student> student = ((StudentProviderImpl)this.studentProvider).findByName(s.getStudent_name());

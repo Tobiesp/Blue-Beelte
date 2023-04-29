@@ -35,7 +35,7 @@ import com.tspdevelopment.bluebeetle.exception.ItemNotFound;
 import com.tspdevelopment.bluebeetle.helpers.JwtTokenUtil;
 import com.tspdevelopment.bluebeetle.provider.interfaces.UserProvider;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.UserProviderImpl;
-import com.tspdevelopment.bluebeetle.views.UserUpdateView;
+import com.tspdevelopment.bluebeetle.response.UserUpdateView;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

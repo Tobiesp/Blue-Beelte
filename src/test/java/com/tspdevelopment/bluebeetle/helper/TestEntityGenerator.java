@@ -172,7 +172,8 @@ public class TestEntityGenerator {
         User user = new User();
         if (this.userList.isEmpty()) {
             user.setUsername("ksAdmin_001");
-            user.setFullName("Admin User");
+            user.setFirstName("Admin");
+            user.setLastName("User");
             String pass = generatePassword();
             log.info(String.format("Admin User: ksAdmin_001 \nAdmin Password: %s", pass));
             user.setPassword(pass);
@@ -180,14 +181,16 @@ public class TestEntityGenerator {
             log.info(user.toString());
         } else if (this.userList.size() == 1) {
             user.setUsername("ksWriter_001");
-            user.setFullName("Writer User");
+            user.setFirstName("Writer");
+            user.setLastName("User");
             String pass = generatePassword();
             log.info(String.format("Writer User: ksAdmin_001 \nWriter Password: %s", pass));
             user.setPassword(pass);
             user.setAuthorities(generateRole());
         } else {
             user.setUsername(generateUsername());
-            user.setFullName(generateName());
+            user.setFirstName(generateName());
+            user.setLastName(generateName());
             String pass = generatePassword();
             user.setPassword(pass);
             user.setAuthorities(generateRole());

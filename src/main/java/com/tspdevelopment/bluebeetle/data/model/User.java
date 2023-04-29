@@ -81,7 +81,10 @@ public class User implements UserDetails {
     private LocalDateTime lockedTime;
 
     @Column()
-    private String fullName;
+    private String firstName;
+
+    @Column()
+    private String lastName;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -128,7 +131,7 @@ public class User implements UserDetails {
         StringBuilder sb = new StringBuilder();
         sb.append("User: {\n");
         sb.append("username: ").append(this.username).append(",\n");
-        sb.append("fullname: ").append(this.fullName).append(",\n");
+        sb.append("fullname: ").append(this.firstName).append("").append(this.lastName).append(",\n");
         sb.append("password: ").append(this.password.trim()).append(",\n");
         if(!this.roles.isEmpty()) {
             for(Role r : roles) {
@@ -180,11 +183,18 @@ public class User implements UserDetails {
         } else if (!password.equals(other.password)){
             return false;
         }
-        if (fullName == null) {
-            if (other.fullName != null){
+        if (firstName == null) {
+            if (other.firstName != null){
                 return false;
             }
-        } else if (!fullName.equals(other.fullName)){
+        } else if (!firstName.equals(other.firstName)){
+            return false;
+        }
+        if (lastName == null) {
+            if (other.lastName != null){
+                return false;
+            }
+        } else if (!lastName.equals(other.lastName)){
             return false;
         }
         if (roles == null) {
@@ -214,7 +224,8 @@ public class User implements UserDetails {
         result = prime * result + ((username == null) ? 0 : username.hashCode());
         result = prime * result + ((email == null) ? 0 : email.hashCode());
         result = prime * result + ((password == null) ? 0 : password.hashCode());
-        result = prime * result + ((fullName == null) ? 0 : fullName.hashCode());
+        result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+        result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((roles == null) ? 0 : roles.hashCode());
         return result;
     }

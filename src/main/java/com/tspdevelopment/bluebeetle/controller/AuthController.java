@@ -32,7 +32,7 @@ import com.tspdevelopment.bluebeetle.helpers.SecurityHelper;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.RoleProviderImpl;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.UserProviderImpl;
 import com.tspdevelopment.bluebeetle.views.AuthRequest;
-import com.tspdevelopment.bluebeetle.views.UserView;
+import com.tspdevelopment.bluebeetle.response.UserView;
 
 /**
  *
@@ -122,7 +122,7 @@ public class AuthController {
         Optional<User> u = userProvider.findById(id);
         if(u.isPresent()) {
             UserView view = new UserView();
-            view.setFullName(u.get().getFullName());
+            view.setFullName(u.get().getFirstName() + " " + u.get().getLastName());
             view.setUsername(u.get().getUsername());
             view.setId(u.get().getId().toString());
             return view;

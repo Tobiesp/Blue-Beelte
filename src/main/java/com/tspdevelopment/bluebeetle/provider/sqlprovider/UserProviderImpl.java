@@ -39,7 +39,8 @@ public class UserProviderImpl implements UserProvider {
             return repository.save(replaceItem);
         } else {
             User user = oUser.get();
-            user.setFullName(replaceItem.getFullName());
+            user.setFirstName(replaceItem.getFirstName());
+            user.setLastName(replaceItem.getLastName());
             user.setRoles(replaceItem.getRoles());
             user.setEmail(replaceItem.getEmail());
             user.setModifiedAt(LocalDateTime.now());

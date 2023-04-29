@@ -7,13 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.repository.StudentRepository;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.StudentProviderImpl;
-import com.tspdevelopment.bluebeetle.services.CSVImportService;
-import com.tspdevelopment.bluebeetle.views.ResponseMessage;
+import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import java.io.IOException;
-import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/student")
 public class StudentController extends BaseController<Student>{
-    @Autowired
-    private CSVImportService importService;
-    
     
     public StudentController(StudentRepository repository) {
         this.provider = new StudentProviderImpl(repository);
@@ -43,21 +37,17 @@ public class StudentController extends BaseController<Student>{
         this.exportToCSV(response, csvHeader, nameMapping);
     }
     
-    
     @PostMapping("/import")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity CSVImport(@RequestParam("file") MultipartFile file) throws IOException {
         return this.CSVImportV1(file);
     }
     
-    
     @PostMapping("/import/v1")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity CSVImportV1(@RequestParam("file") MultipartFile file) throws IOException {
-        List<StudentV1> results = this.importCSV(file, StudentV1.class);
-        importService.importStudents(results);
-        String message = "File successfully imported: " + file.getOriginalFilename();
-        return ResponseEntity.ok().body(new ResponseMessage(message));
+        ImportJobResponse response = this.importCSV(file, StudentV1.class);
+        return ResponseEntity.ok().body(response);
     }
     
     

@@ -1,4 +1,4 @@
-package com.tspdevelopment.bluebeetle.views;
+package com.tspdevelopment.bluebeetle.response;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

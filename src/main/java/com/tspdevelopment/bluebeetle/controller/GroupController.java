@@ -8,13 +8,10 @@ import com.tspdevelopment.bluebeetle.data.model.Group;
 import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.data.repository.GroupRepository;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.GroupProviderImpl;
-import com.tspdevelopment.bluebeetle.services.CSVImportService;
-import com.tspdevelopment.bluebeetle.views.ResponseMessage;
+import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import java.io.IOException;
-import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,8 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/group")
 public class GroupController extends BaseController<Group>{
-    @Autowired
-    private CSVImportService importService;
 
     public GroupController(GroupRepository repository) {
         this.provider = new GroupProviderImpl(repository);
@@ -56,10 +51,8 @@ public class GroupController extends BaseController<Group>{
     @PostMapping("/import/v1")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity CSVImportV1(@RequestParam("file") MultipartFile file) throws IOException {
-        List<GroupV1> results = this.importCSV(file, GroupV1.class);
-        importService.importGroups(results);
-        String message = "File successfully imported: " + file.getOriginalFilename();
-        return ResponseEntity.ok().body(new ResponseMessage(message));
+        ImportJobResponse response = this.importCSV(file, GroupV1.class);
+        return ResponseEntity.ok().body(response);
     }
 
 }

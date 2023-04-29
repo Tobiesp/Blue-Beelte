@@ -2,7 +2,7 @@ package com.tspdevelopment.bluebeetle.controller;
 
 import com.tspdevelopment.bluebeetle.controller.AuthController;
 import com.tspdevelopment.bluebeetle.views.AuthRequest;
-import com.tspdevelopment.bluebeetle.views.UserView;
+import com.tspdevelopment.bluebeetle.response.UserView;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

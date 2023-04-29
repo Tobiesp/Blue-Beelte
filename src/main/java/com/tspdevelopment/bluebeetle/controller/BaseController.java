@@ -1,29 +1,27 @@
 package com.tspdevelopment.bluebeetle.controller;
 
 import com.tspdevelopment.bluebeetle.csv.CSVPreference;
-import com.tspdevelopment.bluebeetle.csv.CSVReader;
 import com.tspdevelopment.bluebeetle.csv.CSVWriter;
 import com.tspdevelopment.bluebeetle.data.model.BaseItem;
+import com.tspdevelopment.bluebeetle.data.model.ImportJob;
 import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.provider.interfaces.BaseProvider;
-import com.tspdevelopment.bluebeetle.views.ResponseMessage;
+import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
+import com.tspdevelopment.bluebeetle.response.RequestStatus;
+import com.tspdevelopment.bluebeetle.services.ImportJobService;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.ParameterizedType;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -46,6 +44,8 @@ import org.springframework.web.server.ResponseStatusException;
  */
 public abstract class BaseController<T extends BaseItem> {
     protected BaseProvider<T> provider;
+    @Autowired
+    protected ImportJobService importService;
     protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getGenericName());
     
     @GetMapping("/")
@@ -140,30 +140,27 @@ public abstract class BaseController<T extends BaseItem> {
         return ResponseEntity.ok().build();
     }
     
-    protected <K> List<K> importCSV(MultipartFile file, Class<K> clazz) {
+    protected <K> ImportJobResponse importCSV(MultipartFile file, Class<K> clazz) {
         if(!isCSVFile(file)) {
             logger.error("File not of type CSV: " + file.getOriginalFilename());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "File must be of type CSV!");
         }
-        List<K> results = new ArrayList<>();
-        Reader reader = null;
+        
+        ImportJob jobImport = new ImportJob();
+        jobImport.setFileName(file.getOriginalFilename());
         try {
-            reader = new InputStreamReader(file.getInputStream(),"UTF-8");
-            CSVReader csvReader = new CSVReader(reader, CSVPreference.STANDARD_PREFERENCE);
-            while(csvReader.hasRow()) {
-                results.add(csvReader.readItemRow(clazz));
-            }
+            jobImport.setContent(file.getBytes());
+            jobImport = importService.addJobToDB(jobImport);
+            importService.postJobWithFile(jobImport.getId(), clazz);
+            ImportJobResponse response = new ImportJobResponse(jobImport.getId(), RequestStatus.SUBMITTED);
+            return response;
         } catch (Exception ex) {
-            if(reader != null)
-                try {
-                    reader.close();
-            } catch (IOException ex1) {
-                logger.error("Unable to close CSV file: " + file.getOriginalFilename(), ex);
-            }
-            logger.error("Unable to read CSV file: " + file.getOriginalFilename(), ex);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to read CSV file.");
+            logger.error("Unable to read the CSV file", ex);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Import failed!");
+        } catch (Throwable ex) {
+            logger.error("Unable to get job status", ex);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Import failed!");
         }
-        return results;
     }
     
     private boolean isCSVFile(MultipartFile file) {

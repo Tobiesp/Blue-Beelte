@@ -98,7 +98,8 @@ public class LoadDatabase {
         if (!ur.findByUsername("ksAdmin").isPresent()) {
             User user_a = new User();
             user_a.setUsername("ksAdmin");
-            user_a.setFullName("Admin User");
+            user_a.setFirstName("Admin");
+            user_a.setLastName("User");
             String pass = "Admin_Passw0rd!";
             log.info(String.format("Admin User: %s \nAdmin Password: %s", user_a.getUsername(), pass));
             user_a.setPassword(pass);
@@ -112,17 +113,17 @@ public class LoadDatabase {
     }
 
     private void createGroups(GroupRepository gr) {
-        saveGroup(gr, "K-2 Boys");
-        saveGroup(gr, "K-2 Girls");
-        saveGroup(gr, "3-6 Boys");
-        saveGroup(gr, "3-6 Girls");
-        saveGroup(gr, "Graduated");
+        saveGroup(gr, "K-2 Boys", true);
+        saveGroup(gr, "K-2 Girls", true);
+        saveGroup(gr, "3-6 Boys", true);
+        saveGroup(gr, "3-6 Girls", true);
+        saveGroup(gr, "Graduated", false);
         gr.flush();
     }
 
-    private void saveGroup(GroupRepository gr, String name) {
+    private void saveGroup(GroupRepository gr, String name, boolean isActive) {
         if (!hasGroup(gr, name)) {
-            gr.save(createGroup(name));
+            gr.save(createGroup(name, isActive));
         }
     }
 
@@ -130,9 +131,10 @@ public class LoadDatabase {
         return gr.findByName(name).isPresent();
     }
 
-    private Group createGroup(String name) {
+    private Group createGroup(String name, boolean isActive) {
         Group grp = new Group();
         grp.setName(name);
+        grp.setGroupActive(isActive);
         grp.setCreatedAt(LocalDateTime.now());
         return grp;
     }

@@ -75,7 +75,8 @@ public class UserProviderImplIT {
     public void testUpdate() {
         System.out.println("update");
         User replaceItem = userRepository.findAll().get(0);
-        replaceItem.setFullName("Thomas James");
+        replaceItem.setFirstName("Thomas");
+        replaceItem.setLastName("James");
         UUID id = userRepository.findAll().get(0).getId();
         UserProviderImpl instance = new UserProviderImpl(userRepository);
         User expResult = replaceItem;
@@ -118,7 +119,8 @@ public class UserProviderImplIT {
         System.out.println("create");
         User item = new User();
         item.setEmail("Test@email.com");
-        item.setFullName("Test User");
+        item.setFirstName("Test");
+        item.setLastName("User");
         item.setPassword("Password_1test!");
         item.setUsername("testUser");
         UserProviderImpl instance = new UserProviderImpl(userRepository);

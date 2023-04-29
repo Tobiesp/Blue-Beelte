@@ -49,6 +49,9 @@ public class Group implements BaseItem {
     @Column(unique=true, length=1024)
     private String name;
     
+    @Column
+    private boolean groupActive;
+    
     @Override
     public String toString() {
         return "{Id: " + String.valueOf(id) + 

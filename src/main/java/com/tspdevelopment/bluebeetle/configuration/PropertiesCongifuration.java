@@ -19,7 +19,7 @@ import com.tspdevelopment.bluebeetle.properties.JwtProperties;
 public class PropertiesCongifuration {
     
     @Bean
-    @ConfigurationProperties(prefix = "kids.score.jwt")
+    @ConfigurationProperties(prefix = "blue.beetle.jwt")
     public JwtProperties jwtProperties() {
         return new JwtProperties();
     }

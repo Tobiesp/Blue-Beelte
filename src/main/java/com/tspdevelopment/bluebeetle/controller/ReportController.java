@@ -50,9 +50,10 @@ import com.tspdevelopment.bluebeetle.provider.sqlprovider.RoleProviderImpl;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.RunningTotalsProviderImpl;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.StudentProviderImpl;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.UserProviderImpl;
-import com.tspdevelopment.bluebeetle.views.GroupCountView;
-import com.tspdevelopment.bluebeetle.views.LastEventView;
+import com.tspdevelopment.bluebeetle.response.GroupCountView;
+import com.tspdevelopment.bluebeetle.response.LastEventView;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -117,17 +118,22 @@ public class ReportController {
         if(EventDate != null) {
             lew.setEventDate(EventDate);
             List<PointsEarned> points = pointsEarnedProvider.findByEventDate(EventDate);
-            HashMap<String, Integer> countMap = new HashMap<>();
+            HashMap<String, List<String>> countMap = new HashMap<>();
             int total = 0;
             for(PointsEarned p : points) {
                 String g = p.getStudent().getGroup().getName();
                 if(countMap.containsKey(g)) {
-                    Integer i = countMap.get(g);
-                    countMap.put(g, i+1);
-                    total = total + 1;
+                    List<String> i = countMap.get(g);
+                    if(!i.contains(p.getStudent().getName())) {
+                        i.add(p.getStudent().getName());
+                        countMap.put(g, i);
+                        total = total + 1;
+                    }
                 } else {
-                    if(!"Graduated".equals(g)) {
-                        countMap.put(g, 1);
+                    if(p.getStudent().getGroup().isGroupActive()) {
+                        List<String> i = new ArrayList<>();
+                        i.add(p.getStudent().getName());
+                        countMap.put(g, i);
                         total = total + 1;
                     }
                 }
@@ -135,7 +141,7 @@ public class ReportController {
             for(String key : countMap.keySet()) {
                 GroupCountView gcv = new GroupCountView();
                 gcv.setGroup(key);
-                gcv.setCount(countMap.get(key));
+                gcv.setCount(countMap.get(key).size());
                 lew.addGroup(gcv);
             }
             lew.setTotal(total);

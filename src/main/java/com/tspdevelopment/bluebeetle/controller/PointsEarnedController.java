@@ -7,13 +7,10 @@ import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointsEarnedProviderImpl;
-import com.tspdevelopment.bluebeetle.services.CSVImportService;
-import com.tspdevelopment.bluebeetle.views.ResponseMessage;
+import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import java.io.IOException;
-import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,8 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/points/earned")
 public class PointsEarnedController extends BaseController<PointsEarned>{
-    @Autowired
-    private CSVImportService importService;
     
     public PointsEarnedController(PointsEarnedRepository repository, PointTypeRepository ptRepository, RunningTotalsRepository rtRepository) {
         this.provider = new PointsEarnedProviderImpl(repository, ptRepository, rtRepository);
@@ -53,10 +48,8 @@ public class PointsEarnedController extends BaseController<PointsEarned>{
     @PostMapping("/import/v1")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity CSVImportV1(@RequestParam("file") MultipartFile file) throws IOException {
-        List<PointsEarnedV1> results = this.importCSV(file, PointsEarnedV1.class);
-        importService.importPointsEarned(results);
-        String message = "File successfully imported: " + file.getOriginalFilename();
-        return ResponseEntity.ok().body(new ResponseMessage(message));
+        ImportJobResponse response = this.importCSV(file, PointsEarnedV1.class);
+        return ResponseEntity.ok().body(response);
     }
     
 }
