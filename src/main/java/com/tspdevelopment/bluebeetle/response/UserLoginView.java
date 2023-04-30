@@ -12,7 +12,8 @@ public class UserLoginView {
     private String id;
 
     private String username;
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private String token;
 
 }

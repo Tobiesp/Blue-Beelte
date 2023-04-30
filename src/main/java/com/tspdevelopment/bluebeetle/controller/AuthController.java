@@ -122,7 +122,8 @@ public class AuthController {
         Optional<User> u = userProvider.findById(id);
         if(u.isPresent()) {
             UserLoginView view = new UserLoginView();
-            view.setFullName(u.get().getFirstName() + " " + u.get().getLastName());
+            view.setFirstName(u.get().getFirstName());
+            view.setLastName(u.get().getLastName());
             view.setUsername(u.get().getUsername());
             view.setId(u.get().getId().toString());
             view.setToken(token);
