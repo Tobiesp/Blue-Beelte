@@ -29,7 +29,7 @@ public class RunningTotalsController extends BaseController<RunningTotals>{
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Student", "Group", "Grade", "Totals"};
         String[] nameMapping = {"student:name", "student:group:name", "student:grade", "total"};
-        return this.exportToCSV(response, csvHeader, nameMapping);
+        return this.baseExportToCSV(response, csvHeader, nameMapping);
     }
     
 }

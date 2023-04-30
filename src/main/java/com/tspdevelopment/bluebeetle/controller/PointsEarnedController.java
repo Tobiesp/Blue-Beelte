@@ -36,7 +36,7 @@ public class PointsEarnedController extends BaseController<PointsEarned>{
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Student", "Group", "Grade", "Event Date", "Category", "Points"};
         String[] nameMapping = {"student:name", "student:group:name", "student:grade", "eventDate", "pointCategory:category", "total"};
-        return this.exportToCSV(response, csvHeader, nameMapping);
+        return this.baseExportToCSV(response, csvHeader, nameMapping);
     }
     
     @PostMapping("/import")
@@ -48,7 +48,7 @@ public class PointsEarnedController extends BaseController<PointsEarned>{
     @PostMapping("/import/v1")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity<?> CSVImportV1(@RequestParam("file") MultipartFile file) throws IOException {
-        ImportJobResponse response = this.importCSV(file, PointsEarnedV1.class);
+        ImportJobResponse response = this.baseImportCSV(file, PointsEarnedV1.class);
         return ResponseEntity.ok().body(response);
     }
     

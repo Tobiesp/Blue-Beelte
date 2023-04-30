@@ -29,7 +29,7 @@ public class PointCategoryController extends BaseController<PointCategory>{
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Category"};
         String[] nameMapping = {"category"};
-        return this.exportToCSV(response, csvHeader, nameMapping);
+        return this.baseExportToCSV(response, csvHeader, nameMapping);
     }
     
 }

@@ -49,12 +49,13 @@ public class PointTypeController extends BaseController<PointType>{
         Optional<PointCategory> pc = pointCategoryProvider.findByCategory(category);
         if(pc.isPresent()) {
             List<EntityModel<PointType>> ptList = prov.findByCategory(pc.get()).stream()
-                .map(c -> this.getModel(c))
+                .map(c -> this.getModelForList(c))
                 .collect(Collectors.toList());
 
             return CollectionModel.of(ptList, 
-                        linkTo(methodOn(StudentController.class).search(null)).withSelfRel(),
-                        linkTo(methodOn(StudentController.class).all()).withSelfRel());
+                        linkTo(methodOn(PointTypeController.class).search(null)).withSelfRel(),
+                        linkTo(methodOn(PointTypeController.class).findByCategory(null)).withSelfRel(),
+                        linkTo(methodOn(PointTypeController.class).all()).withSelfRel());
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
@@ -66,7 +67,7 @@ public class PointTypeController extends BaseController<PointType>{
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Group", "Category", "points"};
         String[] nameMapping = {"group:name", "pointCategory:category", "totalPoints"};
-        return this.exportToCSV(response, csvHeader, nameMapping);
+        return this.baseExportToCSV(response, csvHeader, nameMapping);
     }
     
 }

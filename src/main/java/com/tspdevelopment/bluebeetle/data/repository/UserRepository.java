@@ -8,8 +8,6 @@ package com.tspdevelopment.bluebeetle.data.repository;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.jpa.repository.*;
 
 import com.tspdevelopment.bluebeetle.data.model.User;
 

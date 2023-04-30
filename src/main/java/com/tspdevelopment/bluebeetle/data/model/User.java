@@ -35,7 +35,7 @@ import org.springframework.security.core.GrantedAuthority;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User implements UserDetails {
+public class User implements UserDetails, BaseItem{
     
     @Id
     @GeneratedValue(generator = "UUID")

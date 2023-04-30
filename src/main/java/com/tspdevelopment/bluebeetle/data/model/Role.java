@@ -25,7 +25,7 @@ import org.springframework.security.core.GrantedAuthority;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Role implements GrantedAuthority {
+public class Role implements GrantedAuthority, BaseItem {
     
     public static final String NO_ROLE = "ROLE_NO_ROLE";
     public static final String ADMIN_ROLE = "ROLE_ADMIN_ROLE";

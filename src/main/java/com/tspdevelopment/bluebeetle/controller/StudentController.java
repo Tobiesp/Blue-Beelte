@@ -31,10 +31,10 @@ public class StudentController extends BaseController<Student>{
     
     @GetMapping("/export")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public void exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Student", "Group", "Grade"};
         String[] nameMapping = {"name", "group:name", "grade"};
-        this.exportToCSV(response, csvHeader, nameMapping);
+        return this.baseExportToCSV(response, csvHeader, nameMapping);
     }
     
     @PostMapping("/import")
@@ -46,7 +46,7 @@ public class StudentController extends BaseController<Student>{
     @PostMapping("/import/v1")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity<?> CSVImportV1(@RequestParam("file") MultipartFile file) throws IOException {
-        ImportJobResponse response = this.importCSV(file, StudentV1.class);
+        ImportJobResponse response = this.baseImportCSV(file, StudentV1.class);
         return ResponseEntity.ok().body(response);
     }
     
