@@ -34,7 +34,7 @@ public class GroupController extends BaseController<Group>{
     
     @GetMapping("/export")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public ResponseEntity exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Name"};
         String[] nameMapping = {"name"};
         return this.exportToCSV(response, csvHeader, nameMapping);
@@ -43,14 +43,14 @@ public class GroupController extends BaseController<Group>{
     
     @PostMapping("/import")
     @RolesAllowed({Role.ADMIN_ROLE })
-    public ResponseEntity CSVImport(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> CSVImport(@RequestParam("file") MultipartFile file) throws IOException {
         return this.CSVImportV1(file);
     }
     
     
     @PostMapping("/import/v1")
     @RolesAllowed({Role.ADMIN_ROLE })
-    public ResponseEntity CSVImportV1(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> CSVImportV1(@RequestParam("file") MultipartFile file) throws IOException {
         ImportJobResponse response = this.importCSV(file, GroupV1.class);
         return ResponseEntity.ok().body(response);
     }

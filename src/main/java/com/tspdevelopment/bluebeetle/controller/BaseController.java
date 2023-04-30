@@ -86,7 +86,7 @@ public abstract class BaseController<T extends BaseItem> {
     
     @DeleteMapping("/{id}")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity deleteItem(@PathVariable UUID id){
+    ResponseEntity<?> deleteItem(@PathVariable UUID id){
         this.provider.delete(id);
         return ResponseEntity.ok().build();
     }
@@ -114,7 +114,7 @@ public abstract class BaseController<T extends BaseItem> {
                 .getGenericSuperclass()).getActualTypeArguments()[0]).getTypeName();
     }
     
-    protected ResponseEntity exportToCSV(HttpServletResponse response, String[] csvHeader, String[] nameMapping) throws IOException {
+    protected ResponseEntity<?> exportToCSV(HttpServletResponse response, String[] csvHeader, String[] nameMapping) throws IOException {
         response.setContentType("text/csv");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateTime = dateFormatter.format(new Date());

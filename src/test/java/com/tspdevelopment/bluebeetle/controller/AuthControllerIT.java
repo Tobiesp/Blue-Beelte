@@ -45,8 +45,8 @@ public class AuthControllerIT {
         System.out.println("logout");
         HttpHeaders headers = null;
         AuthController instance = null;
-        ResponseEntity expResult = null;
-        ResponseEntity result = instance.logout(headers);
+        ResponseEntity<?> expResult = null;
+        ResponseEntity<?> result = instance.logout(headers);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

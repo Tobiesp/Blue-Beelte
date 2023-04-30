@@ -39,13 +39,13 @@ public class StudentController extends BaseController<Student>{
     
     @PostMapping("/import")
     @RolesAllowed({Role.ADMIN_ROLE })
-    public ResponseEntity CSVImport(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> CSVImport(@RequestParam("file") MultipartFile file) throws IOException {
         return this.CSVImportV1(file);
     }
     
     @PostMapping("/import/v1")
     @RolesAllowed({Role.ADMIN_ROLE })
-    public ResponseEntity CSVImportV1(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> CSVImportV1(@RequestParam("file") MultipartFile file) throws IOException {
         ImportJobResponse response = this.importCSV(file, StudentV1.class);
         return ResponseEntity.ok().body(response);
     }

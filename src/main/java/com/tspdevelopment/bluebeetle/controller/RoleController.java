@@ -96,7 +96,7 @@ public class RoleController {
     
     @GetMapping("/export")
     @RolesAllowed({Role.ADMIN_ROLE })
-    public ResponseEntity exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         response.setContentType("text/csv");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateTime = dateFormatter.format(new Date());

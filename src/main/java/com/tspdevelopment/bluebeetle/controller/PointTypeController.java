@@ -63,7 +63,7 @@ public class PointTypeController extends BaseController<PointType>{
     
     @GetMapping("/export")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public ResponseEntity exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Group", "Category", "points"};
         String[] nameMapping = {"group:name", "pointCategory:category", "totalPoints"};
         return this.exportToCSV(response, csvHeader, nameMapping);
