@@ -10,7 +10,6 @@ import com.tspdevelopment.bluebeetle.data.model.ImportJob;
 import com.tspdevelopment.bluebeetle.data.repository.ImportJobRepository;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import com.tspdevelopment.bluebeetle.response.RequestStatus;
-import static com.tspdevelopment.bluebeetle.services.BaseJobService.JOB_WITH_SUPPLIED_JOB_ID_NOT_FOUND;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -144,7 +143,28 @@ public class ImportJobService extends BaseJobService {
 		return new ImportJobResponse(jobId, RequestStatus.DELETED);
 	}
         
-        public ImportJob addJobToDB(ImportJob job) {
-            return this.repository.saveAndFlush(job);
-        }
+	public ImportJob addJobToDB(ImportJob job) {
+		return this.repository.saveAndFlush(job);
+	}
+
+	public void deleteCompletedAsyncJobs() {
+		List<UUID> allJobs = this.asyncJobsManager.getAllJobs();
+		List<ImportJob> dbJobs = this.repository.findAll();
+		if(dbJobs.isEmpty()) {
+			return;
+		}
+		for(ImportJob job : dbJobs) {
+			if(allJobs.contains(job.getId())) {
+				try {
+					if(this.getJobStatus(job.getId()).getRequestStatus() == RequestStatus.COMPLETE) {
+						this.deleteJobAndAssociatedData(job.getId());
+					}
+				} catch (Throwable t) {
+					logger.error("Failed to remove completed job.", t);
+				}
+			} else {
+				this.repository.delete(job);
+			}
+		}
+	}
 }

@@ -4,6 +4,9 @@
  */
 package com.tspdevelopment.bluebeetle.services;
 import com.tspdevelopment.bluebeetle.response.BaseResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +29,14 @@ public class AsyncJobsManager {
 
 	public CompletableFuture<? extends BaseResponse> getJob(UUID jobId) {
 		return mapOfJobs.get(jobId);
+	}
+
+	public List<UUID> getAllJobs() {
+		List<UUID> result = new ArrayList<>();
+		for(UUID id : mapOfJobs.keySet()) {
+			result.add(id);
+		}
+		return result;
 	}
 
 	public void removeJob(UUID jobId) {
