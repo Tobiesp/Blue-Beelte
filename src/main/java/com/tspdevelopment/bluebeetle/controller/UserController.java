@@ -68,12 +68,11 @@ public class UserController {
         List<EntityModel<User>> users = provider.findAll().stream()
         .map(user -> EntityModel.of(user,
                 linkTo(methodOn(UserController.class).one(null, user.getId())).withSelfRel(),
-                                        linkTo(methodOn(UserController.class).updatePassword(null, user.getId(), null)).withRel("updatepassword"),
-                linkTo(methodOn(UserController.class).all()).withRel("user")))
+                linkTo(methodOn(UserController.class).updatePassword(null, user.getId(), null)).withRel("updatepassword")))
         .collect(Collectors.toList());
 
         return CollectionModel.of(users, 
-                    Link.of(linkTo(methodOn(UserController.class).all()).withRel("user").getHref() + "search", "search"),
+                    linkTo(methodOn(UserController.class).search(null)).withSelfRel(),
                     linkTo(methodOn(UserController.class).all()).withSelfRel());
     }
     
@@ -101,7 +100,7 @@ public class UserController {
 		return EntityModel.of(user, //
 				linkTo(methodOn(UserController.class).one(null, id)).withSelfRel(),
                                 linkTo(methodOn(UserController.class).updatePassword(null, user.getId(), null)).withRel("updatepassword"),
-                                Link.of(linkTo(methodOn(UserController.class).all()).withRel("user").getHref() + "search", "search"),
+                                linkTo(methodOn(UserController.class).search(null)).withSelfRel(),
 				linkTo(methodOn(UserController.class).all()).withRel("users"));
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access user.");
@@ -124,7 +123,7 @@ public class UserController {
              User user = this.provider.updatePassowrd(id, userUpdateView.getPassword());
 		return EntityModel.of(user, //
 				linkTo(methodOn(UserController.class).one(null, id)).withSelfRel(),
-                                Link.of(linkTo(methodOn(UserController.class).all()).withRel("user").getHref() + "search", "search"),
+                                linkTo(methodOn(UserController.class).search(null)).withSelfRel(),
                                 linkTo(methodOn(UserController.class).updatePassword(null, user.getId(), null)).withRel("updatepassword"),
 				linkTo(methodOn(UserController.class).all()).withRel("users"));
         } else {
@@ -160,8 +159,7 @@ public class UserController {
         List<EntityModel<User>> companies = provider.search(item).stream()
 				.map(c -> EntityModel.of(c,
 						linkTo(methodOn(UserController.class).one(null, c.getId())).withSelfRel(),
-                                                linkTo(methodOn(UserController.class).updatePassword(null, c.getId(), null)).withRel("updatepassword"),
-						linkTo(methodOn(UserController.class).all()).withRel("user")))
+                                                linkTo(methodOn(UserController.class).updatePassword(null, c.getId(), null)).withRel("updatepassword")))
 				.collect(Collectors.toList());
 
 		return CollectionModel.of(companies, linkTo(methodOn(UserController.class).all()).withSelfRel());

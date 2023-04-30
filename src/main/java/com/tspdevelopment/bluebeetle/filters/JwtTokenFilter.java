@@ -35,7 +35,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final UserRepository userRepo;
-    private final Logger logger = LoggerFactory.getLogger(JwtTokenFilter.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(JwtTokenFilter.class);
 
     public JwtTokenFilter(JwtTokenUtil jwtTokenUtil,
             UserRepository userRepo) {
@@ -52,7 +52,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         // Get jwt token and validate
         final String token = getToken(request);
         if (!jwtTokenUtil.validate(token)) {
-            logger.info("Invalid JWT token!");
+            LOGGER.info("Invalid JWT token!");
             filterChain.doFilter(request, response);
             return;
         }
@@ -63,13 +63,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     .findById(jwtTokenUtil.getUserId(token))
                     .orElse(null);
             if(userDetails == null) {
-                logger.info("Null user for: " + jwtTokenUtil.getUserId(token));
+                LOGGER.info("Null user for: " + jwtTokenUtil.getUserId(token));
                 filterChain.doFilter(request, response);
                 return;
             }
             User user = (User)userDetails;
             if(user.getTokenId() == null) {
-                logger.info("user has no token Id.");
+                LOGGER.info("user has no token Id.");
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -79,7 +79,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
             UUID tokenId = jwtTokenUtil.getTokenId(token);
             if(!user.getTokenId().toString().equals(tokenId.toString())){
-                logger.info("user token Id does not match jwt id: " + user.getTokenId().toString() + " != " + tokenId.toString());
+                LOGGER.info("user token Id does not match jwt id: " + user.getTokenId().toString() + " != " + tokenId.toString());
                 filterChain.doFilter(request, response);
                 return;
             }
