@@ -78,3 +78,5 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+src/main/resources/static/index.html
+src/main/resources/static/main.717dbc45ec8b7f19.js
