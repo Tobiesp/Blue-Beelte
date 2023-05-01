@@ -6,7 +6,7 @@ import com.tspdevelopment.bluebeetle.data.model.User;
 
 public interface UserProvider extends BaseProvider<User>{
 
-    public User updatePassowrd(UUID id, String password);
+    public User updatePassword(UUID id, String password);
 
     public void updateJwtTokenId(UUID userId, UUID tokenId);
 }

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.repository.StudentRepository;
+import com.tspdevelopment.bluebeetle.provider.interfaces.StudentProvider;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.StudentProviderImpl;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api/student")
-public class StudentController extends BaseController<Student>{
+public class StudentController extends BaseController<Student, StudentProvider>{
     
     public StudentController(StudentRepository repository) {
         this.provider = new StudentProviderImpl(repository);

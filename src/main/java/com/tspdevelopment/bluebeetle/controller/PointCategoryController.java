@@ -3,6 +3,7 @@ package com.tspdevelopment.bluebeetle.controller;
 import com.tspdevelopment.bluebeetle.data.model.PointCategory;
 import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.data.repository.PointCategoryRepository;
+import com.tspdevelopment.bluebeetle.provider.interfaces.PointCategoryProvider;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointCategoryProviderImpl;
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/category")
-public class PointCategoryController extends BaseController<PointCategory>{
+public class PointCategoryController extends BaseController<PointCategory, PointCategoryProvider>{
 
     public PointCategoryController(PointCategoryRepository repository) {
         this.provider = new PointCategoryProviderImpl(repository);

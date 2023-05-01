@@ -1,5 +1,6 @@
 package com.tspdevelopment.bluebeetle.data.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -41,8 +42,11 @@ public class Role implements GrantedAuthority, BaseItem {
     @Type(type="uuid-char")
     @Column(updatable = false, nullable = false)
     private UUID id;
+    
     @Column(unique=true, nullable=false)
     private String authority;
+
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
     

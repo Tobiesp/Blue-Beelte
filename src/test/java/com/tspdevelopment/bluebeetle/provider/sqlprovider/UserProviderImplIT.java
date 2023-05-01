@@ -130,7 +130,7 @@ public class UserProviderImplIT {
     }
 
     /**
-     * Test of updatePassowrd method, of class UserProviderImpl.
+     * Test of updatePassword method, of class UserProviderImpl.
      */
     @Test
     public void testUpdatePassowrd() {
@@ -139,7 +139,7 @@ public class UserProviderImplIT {
         String password = "test#Password1$";
         UserProviderImpl instance = new UserProviderImpl(userRepository);
         String expResult = userRepository.findById(id).get().getPassword();
-        String result = instance.updatePassowrd(id, password).getPassword();
+        String result = instance.updatePassword(id, password).getPassword();
         assertNotEquals(expResult, result);
     }
 

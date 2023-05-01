@@ -33,7 +33,7 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 @RequestMapping("/api/points/config")
-public class PointTypeController extends BaseController<PointType>{
+public class PointTypeController extends BaseController<PointType, PointTypeProvider>{
     
     private final PointCategoryProvider pointCategoryProvider;
     

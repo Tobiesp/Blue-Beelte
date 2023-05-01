@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tspdevelopment.bluebeetle.data.model.Group;
 import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.data.repository.GroupRepository;
+import com.tspdevelopment.bluebeetle.provider.interfaces.GroupProvider;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.GroupProviderImpl;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import java.io.IOException;
@@ -24,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api/group")
-public class GroupController extends BaseController<Group>{
+public class GroupController extends BaseController<Group, GroupProvider>{
 
     public GroupController(GroupRepository repository) {
         this.provider = new GroupProviderImpl(repository);

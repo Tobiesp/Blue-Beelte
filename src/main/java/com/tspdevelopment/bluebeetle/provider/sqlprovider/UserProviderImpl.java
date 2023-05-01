@@ -69,7 +69,7 @@ public class UserProviderImpl implements UserProvider {
     }
 
     @Override
-    public User updatePassowrd(UUID id, String password) {
+    public User updatePassword(UUID id, String password) {
         if (id == null) {
             throw new IllegalArgumentException("User id can not be null.");
         }

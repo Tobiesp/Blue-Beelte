@@ -4,6 +4,8 @@ import com.tspdevelopment.bluebeetle.csv.CSVPreference;
 import com.tspdevelopment.bluebeetle.csv.CSVWriter;
 import com.tspdevelopment.bluebeetle.data.model.BaseItem;
 import com.tspdevelopment.bluebeetle.data.model.Role;
+import com.tspdevelopment.bluebeetle.data.model.User;
+import com.tspdevelopment.bluebeetle.helpers.JwtTokenUtil;
 import com.tspdevelopment.bluebeetle.provider.interfaces.BaseProvider;
 import com.tspdevelopment.bluebeetle.services.ImportJobService;
 import java.io.IOException;
@@ -43,11 +45,13 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * @author tobiesp
  * @param <T>
+ * @param <R>
  */
-public abstract class AdminBaseController<T extends BaseItem> {
-    protected BaseProvider<T> provider;
+public abstract class AdminBaseController<T extends BaseItem, R extends BaseProvider<T>> {
+    protected R provider;
     @Autowired
     protected ImportJobService importService;
+    protected JwtTokenUtil jwtUtillity;
     protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getGenericName());
 
     private List<Link> SingleBuilderLinkList = null;
@@ -55,7 +59,7 @@ public abstract class AdminBaseController<T extends BaseItem> {
 
     @GetMapping("/")
     @RolesAllowed({ Role.ADMIN_ROLE })
-    CollectionModel<EntityModel<T>> all(){
+    public CollectionModel<EntityModel<T>> all(){
         List<EntityModel<T>> cList = provider.findAll().stream()
         .map(c -> getModelForList(c))
         .collect(Collectors.toList());
@@ -67,13 +71,14 @@ public abstract class AdminBaseController<T extends BaseItem> {
     
     @PostMapping("/")
     @RolesAllowed({ Role.ADMIN_ROLE })
-    EntityModel<T> newItem(@RequestBody T newItem){
+    public EntityModel<T> newItem(@RequestBody T newItem){
         return getModelForSingle(provider.create(newItem));
     }
     
     @GetMapping("/{id}")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
-    EntityModel<T> one(@RequestHeader HttpHeaders headers, @PathVariable UUID id){
+    public EntityModel<T> one(@RequestHeader HttpHeaders headers, @PathVariable UUID id){
+        
         Optional<T> c = provider.findById(id);
         if(c.isPresent()){
             return getModelForSingle(c.get());
@@ -84,26 +89,28 @@ public abstract class AdminBaseController<T extends BaseItem> {
     
     @PutMapping("/{id}")
     @RolesAllowed({ Role.ADMIN_ROLE })
-    EntityModel<T> replaceItem(@RequestBody T replaceItem, @PathVariable UUID id){
+    public EntityModel<T> replaceItem(@RequestBody T replaceItem, @PathVariable UUID id){
         T c = provider.update(replaceItem, id);
             return getModelForSingle(c);
     }
     
     @DeleteMapping("/{id}")
     @RolesAllowed({ Role.ADMIN_ROLE })
-    ResponseEntity<?> deleteItem(@PathVariable UUID id){
+    public ResponseEntity<?> deleteItem(@PathVariable UUID id){
         this.provider.delete(id);
         return ResponseEntity.accepted().build();
     }
     
     @PostMapping("/search")
     @RolesAllowed({ Role.ADMIN_ROLE })
-    CollectionModel<EntityModel<T>> search(@RequestBody T item){
+    public CollectionModel<EntityModel<T>> search(@RequestBody T item){
         List<EntityModel<T>> cList = provider.search(item).stream()
 				.map(c -> getModelForList(c))
 				.collect(Collectors.toList());
 
-		return CollectionModel.of(cList, linkTo(methodOn(this.getClass()).all()).withSelfRel());
+		return CollectionModel.of(cList, 
+                    linkTo(methodOn(this.getClass()).search(null)).withSelfRel(),
+                    linkTo(methodOn(this.getClass()).all()).withSelfRel());
     }
     
     protected EntityModel<T> getModelForSingle(T c) {
@@ -131,7 +138,7 @@ public abstract class AdminBaseController<T extends BaseItem> {
             list = new Link[1+this.ListBuilderLinkList.size()];
             list[0] = linkTo(methodOn(this.getClass()).one(null, c.getId())).withSelfRel();
             for(int i = 0; i<this.ListBuilderLinkList.size(); i++) {
-                list[i+1] = this.ListBuilderLinkList.get(i);
+                list[i+3] = this.ListBuilderLinkList.get(i);
             }
         } else {
            list = new Link[1];
@@ -184,5 +191,22 @@ public abstract class AdminBaseController<T extends BaseItem> {
             }
         }
         return ResponseEntity.ok().build();
+    }
+    
+    protected abstract User getUser(UUID id);
+    
+    protected UUID getUserIdFromToken(HttpHeaders headers) {
+        List<String> authHeader = headers.get(HttpHeaders.AUTHORIZATION);
+        if(authHeader == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
+        }
+        if(authHeader.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
+        }
+        String[] s = authHeader.get(0).split(" ");
+        if(s.length == 1) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
+        }
+        return this.jwtUtillity.getUserId(s[1]);
     }
 }

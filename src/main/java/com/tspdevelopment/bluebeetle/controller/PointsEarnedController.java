@@ -6,6 +6,7 @@ import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
+import com.tspdevelopment.bluebeetle.provider.interfaces.PointsEarnedProvider;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointsEarnedProviderImpl;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import java.io.IOException;
@@ -25,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api/points/earned")
-public class PointsEarnedController extends BaseController<PointsEarned>{
+public class PointsEarnedController extends BaseController<PointsEarned, PointsEarnedProvider>{
     
     public PointsEarnedController(PointsEarnedRepository repository, PointTypeRepository ptRepository, RunningTotalsRepository rtRepository) {
         this.provider = new PointsEarnedProviderImpl(repository, ptRepository, rtRepository);

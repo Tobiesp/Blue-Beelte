@@ -3,7 +3,6 @@ package com.tspdevelopment.bluebeetle.controller;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,10 +38,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/users")
-public class UserController extends AdminBaseController<User>{
-    private final JwtTokenUtil jwtUtillity;
+public class UserController extends AdminBaseController<User, UserProvider>{
     
-    UserController(UserRepository repository, JwtTokenUtil jwtUtillity) {
+    public UserController(UserRepository repository, JwtTokenUtil jwtUtillity) {
         this.provider = new UserProviderImpl(repository);
         this.jwtUtillity = jwtUtillity;
     }
@@ -50,42 +48,35 @@ public class UserController extends AdminBaseController<User>{
     @Override
     @GetMapping("/{id}")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
-    EntityModel<User> one(@RequestHeader HttpHeaders headers, @PathVariable UUID id){
-        List<String> authHeader = headers.get(HttpHeaders.AUTHORIZATION);
-        if(authHeader == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access user.");
-        }
-        UUID userId = this.jwtUtillity.getUserId(authHeader.get(0));
+    public EntityModel<User> one(@RequestHeader HttpHeaders headers, @PathVariable UUID id){
+        UUID userId = getUserIdFromToken(headers);
         User u = getUser(userId);
-        if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getId().equals(id))){
+        if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getId().equals(id))) {
             User user = provider.findById(id).orElseThrow();
-		    return getModelForSingle(user);
+            return getModelForSingle(user);
         } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access user.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
         }
     }
     
     @PostMapping("/{id}/updatepassword")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
-    EntityModel<User> updatePassword(@RequestHeader HttpHeaders headers, 
+    public EntityModel<User> updatePassword(@RequestHeader HttpHeaders headers, 
                                      @PathVariable UUID id, 
                                      @RequestBody UserUpdateView userUpdateView)
     {
-        List<String> authHeader = headers.get(HttpHeaders.AUTHORIZATION);
-        if(authHeader == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access user.");
-        }
-        UUID userId = this.jwtUtillity.getUserId(authHeader.get(0).split(" ")[1]);
+        UUID userId = getUserIdFromToken(headers);
         User u = getUser(userId);
         if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getId().equals(id))) {
-            User user = ((UserProvider) this.provider).updatePassowrd(id, userUpdateView.getPassword());
-		    return getModelForSingle(user);
+            User user = this.provider.updatePassword(id, userUpdateView.getPassword());
+            return getModelForSingle(user);
         } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access user.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
         }
     }
 
-    private User getUser(UUID id) {
+    @Override
+    protected User getUser(UUID id) {
         Optional<User> u = this.provider.findById(id);
         if(u.isPresent()) {
             return u.get();
@@ -97,11 +88,12 @@ public class UserController extends AdminBaseController<User>{
     @GetMapping("/export")
     @RolesAllowed({Role.ADMIN_ROLE })
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
-        String[] csvHeader = {"Username", "Full Name"};
-        String[] nameMapping = {"username", "fullName"};
+        String[] csvHeader = {"Username", "FirstName", "LastName", "email"};
+        String[] nameMapping = {"username", "firstName", "lastName", "email"};
         return this.baseExportToCSV(response, csvHeader, nameMapping);
     }
     
+    @Override
     protected EntityModel<User> getModelForSingle(User c) {
         return EntityModel.of(c, //
                 linkTo(methodOn(UserController.class).one(null, c.getId())).withSelfRel(),
@@ -110,6 +102,7 @@ public class UserController extends AdminBaseController<User>{
                 linkTo(methodOn(UserController.class).all()).withSelfRel());
     }
     
+    @Override
     protected EntityModel<User> getModelForList(User c) {
         return EntityModel.of(c, //
                 linkTo(methodOn(UserController.class).one(null, c.getId())).withSelfRel(),

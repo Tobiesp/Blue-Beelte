@@ -3,6 +3,7 @@ package com.tspdevelopment.bluebeetle.controller;
 import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.data.model.RunningTotals;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
+import com.tspdevelopment.bluebeetle.provider.interfaces.RunningTotalsProvider;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.RunningTotalsProviderImpl;
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/points/total/running")
-public class RunningTotalsController extends BaseController<RunningTotals>{
+public class RunningTotalsController extends BaseController<RunningTotals, RunningTotalsProvider>{
     
     public RunningTotalsController(RunningTotalsRepository repository) {
         this.provider = new RunningTotalsProviderImpl(repository);

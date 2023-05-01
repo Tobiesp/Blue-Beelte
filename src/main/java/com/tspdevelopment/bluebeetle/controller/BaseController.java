@@ -44,9 +44,10 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * @author tobiesp
  * @param <T>
+ * @param <R>
  */
-public abstract class BaseController<T extends BaseItem> {
-    protected BaseProvider<T> provider;
+public abstract class BaseController<T extends BaseItem, R extends BaseProvider<T>> {
+    protected R provider;
     @Autowired
     protected ImportJobService importService;
     protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getGenericName());
@@ -68,13 +69,13 @@ public abstract class BaseController<T extends BaseItem> {
     
     @PostMapping("/")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    EntityModel<T> newItem(@RequestBody T newItem){
+    public EntityModel<T> newItem(@RequestBody T newItem){
         return getModelForSingle(provider.create(newItem));
     }
     
     @GetMapping("/{id}")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
-    EntityModel<T> one(@PathVariable UUID id){
+    public EntityModel<T> one(@PathVariable UUID id){
         Optional<T> c = provider.findById(id);
         if(c.isPresent()){
             return getModelForSingle(c.get());
@@ -85,21 +86,21 @@ public abstract class BaseController<T extends BaseItem> {
     
     @PutMapping("/{id}")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    EntityModel<T> replaceItem(@RequestBody T replaceItem, @PathVariable UUID id){
+    public EntityModel<T> replaceItem(@RequestBody T replaceItem, @PathVariable UUID id){
         T c = provider.update(replaceItem, id);
             return getModelForSingle(c);
     }
     
     @DeleteMapping("/{id}")
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity<?> deleteItem(@PathVariable UUID id){
+    public ResponseEntity<?> deleteItem(@PathVariable UUID id){
         this.provider.delete(id);
         return ResponseEntity.accepted().build();
     }
     
     @PostMapping("/search")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    CollectionModel<EntityModel<T>> search(@RequestBody T item){
+    public CollectionModel<EntityModel<T>> search(@RequestBody T item){
         List<EntityModel<T>> cList = provider.search(item).stream()
 				.map(c -> getModelForList(c))
 				.collect(Collectors.toList());
