@@ -24,6 +24,10 @@ export class GroupService {
         return this.http.get<Group>(`${environment.apiUrl}/api/group/${id}`);
     }
 
+    getGroupByName(name: string | undefined) {
+        return this.http.get<Group>(`${environment.apiUrl}/api/group/findByName?name=${name}`);
+    }
+
     updateGroup(id: string, params: any) {
         return this.http.put(`${environment.apiUrl}/api/group/${id}`, params)
             .pipe(map(x => {

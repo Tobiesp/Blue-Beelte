@@ -4,10 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
 import { environment } from '@environments/environment';
-import { RunningTotals } from '@app/_models';
+import { LastEventView } from '@app/_models';
 
 @Injectable({ providedIn: 'root' })
-export class RunningTotalsService {
+export class ReportService {
 
     constructor(
         private router: Router,
@@ -16,11 +16,7 @@ export class RunningTotalsService {
         
     }
 
-    getAllTotals() {
-        return this.http.get<RunningTotals[]>(`${environment.apiUrl}/api/points/total/running/`);
-    }
-
-    getTotalById(id: string) {
-        return this.http.get<RunningTotals>(`${environment.apiUrl}/api/points/total/running/${id}`);
+    getLastEvent() {
+        return this.http.get<LastEventView>(`${environment.apiUrl}/api/report/getLastEventSnapshot`);
     }
 }

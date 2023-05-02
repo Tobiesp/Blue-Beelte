@@ -8,3 +8,5 @@ export * from './pointsSpent';
 export * from './pointType';
 export * from './runningTotals';
 export * from './student';
+export * from './lastEventView';
+export * from './groupCountView';

@@ -31,7 +31,11 @@ public class GroupController extends BaseController<Group, GroupProvider, GroupS
         this.service = new GroupService(repository);
     }
     
-    
+    @GetMapping("/findByName")
+    @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public Group finByName(@RequestParam String name) throws IOException {
+        return this.service.findByName(name);
+    }
     
     @GetMapping("/export")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })

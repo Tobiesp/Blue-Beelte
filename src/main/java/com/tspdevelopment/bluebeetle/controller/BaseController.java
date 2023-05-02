@@ -41,7 +41,7 @@ import org.springframework.web.server.ResponseStatusException;
  * @param <S>
  */
 public abstract class BaseController<T extends BaseItem, R extends BaseProvider<T>, S extends BaseService<T, R>> {
-    protected BaseService<T, R> service;
+    protected S service;
     @Autowired
     protected ImportJobService importService;
     protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getGenericName());
