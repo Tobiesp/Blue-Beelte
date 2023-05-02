@@ -92,7 +92,6 @@ public class AuthController {
         }
     }
     
-    
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader HttpHeaders headers){
         try {

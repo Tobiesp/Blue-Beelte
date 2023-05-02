@@ -6,10 +6,7 @@ import com.tspdevelopment.bluebeetle.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.bluebeetle.data.repository.PointsSpentRepository;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.bluebeetle.data.repository.StudentRepository;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
-import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 import java.util.List;
 import java.util.Optional;
 
