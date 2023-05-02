@@ -6,8 +6,8 @@ import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.data.repository.PointsSpentRepository;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointsSpentProvider;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointsSpentProviderImpl;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
+import com.tspdevelopment.bluebeetle.services.controllerservice.PointsSpentService;
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
@@ -25,10 +25,10 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api/hal/points/spent")
-public class PointsSpentHALController extends BaseHALController<PointsSpent, PointsSpentProvider>{
+public class PointsSpentHALController extends BaseHALController<PointsSpent, PointsSpentProvider, PointsSpentService>{
     
     public PointsSpentHALController(PointsSpentRepository repository, RunningTotalsRepository rtRepository) {
-        this.provider = new PointsSpentProviderImpl(repository, rtRepository);
+        this.service = new PointsSpentService(repository, rtRepository);
     }
     
     @GetMapping("/export")

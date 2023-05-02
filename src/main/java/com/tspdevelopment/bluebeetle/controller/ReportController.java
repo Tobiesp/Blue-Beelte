@@ -1,7 +1,6 @@
 package com.tspdevelopment.bluebeetle.controller;
 
 
-import java.util.Optional;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -32,26 +31,17 @@ import com.tspdevelopment.bluebeetle.data.model.Group;
 import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.model.PointType;
 import com.tspdevelopment.bluebeetle.data.model.PointsEarned;
-import com.tspdevelopment.bluebeetle.provider.interfaces.GroupProvider;
-import com.tspdevelopment.bluebeetle.provider.interfaces.PointCategoryProvider;
-import com.tspdevelopment.bluebeetle.provider.interfaces.PointTypeProvider;
-import com.tspdevelopment.bluebeetle.provider.interfaces.PointsEarnedProvider;
-import com.tspdevelopment.bluebeetle.provider.interfaces.PointsSpentProvider;
-import com.tspdevelopment.bluebeetle.provider.interfaces.RoleProvider;
-import com.tspdevelopment.bluebeetle.provider.interfaces.RunningTotalsProvider;
-import com.tspdevelopment.bluebeetle.provider.interfaces.StudentProvider;
-import com.tspdevelopment.bluebeetle.provider.interfaces.UserProvider;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.GroupProviderImpl;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointCategoryProviderImpl;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointTypeProviderImpl;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointsEarnedProviderImpl;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointsSpentProviderImpl;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.RoleProviderImpl;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.RunningTotalsProviderImpl;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.StudentProviderImpl;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.UserProviderImpl;
 import com.tspdevelopment.bluebeetle.response.GroupCountView;
 import com.tspdevelopment.bluebeetle.response.LastEventView;
+import com.tspdevelopment.bluebeetle.services.controllerservice.GroupService;
+import com.tspdevelopment.bluebeetle.services.controllerservice.PointCategoryService;
+import com.tspdevelopment.bluebeetle.services.controllerservice.PointTypeService;
+import com.tspdevelopment.bluebeetle.services.controllerservice.PointsEarnedService;
+import com.tspdevelopment.bluebeetle.services.controllerservice.PointsSpentService;
+import com.tspdevelopment.bluebeetle.services.controllerservice.RoleService;
+import com.tspdevelopment.bluebeetle.services.controllerservice.RunningTotalsService;
+import com.tspdevelopment.bluebeetle.services.controllerservice.StudentService;
+import com.tspdevelopment.bluebeetle.services.controllerservice.UserService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,15 +57,15 @@ public class ReportController {
 
     protected final org.slf4j.Logger logger = LoggerFactory.getLogger("ReportController");
 
-    private GroupProvider groupProvider;
-    private PointCategoryProvider pointCategoryProvider;
-    private PointsEarnedProvider pointsEarnedProvider;
-    private PointsSpentProvider pointsSpentProvider;
-    private PointTypeProvider pointTableProvider;
-    private RoleProvider roleProvider;
-    private UserProvider userProvider;
-    private RunningTotalsProvider runningTotalsProvider;
-    private StudentProvider studentProvider;
+    private GroupService groupService;
+    private PointCategoryService pointCategoryService;
+    private PointsEarnedService pointsEarnedService;
+    private PointsSpentService pointsSpentService;
+    private PointTypeService pointTypeService;
+    private RoleService roleService;
+    private UserService userService;
+    private RunningTotalsService runningTotalsService;
+    private StudentService studentService;
 
     public ReportController(GroupRepository groupRepository,
             PointCategoryRepository pointCategoryRepository,
@@ -86,16 +76,16 @@ public class ReportController {
             UserRepository userRepository,
             RunningTotalsRepository runningTotalsRepository,
             StudentRepository studentRepository) {
-        this.groupProvider = new GroupProviderImpl(groupRepository);
-        this.pointCategoryProvider = new PointCategoryProviderImpl(pointCategoryRepository);
-        this.pointsEarnedProvider = new PointsEarnedProviderImpl(pointsEarnedRepository, pointTableRepository,
+        this.groupService = new GroupService(groupRepository);
+        this.pointCategoryService = new PointCategoryService(pointCategoryRepository);
+        this.pointsEarnedService = new PointsEarnedService(pointsEarnedRepository, pointTableRepository,
                 runningTotalsRepository);
-        this.pointsSpentProvider = new PointsSpentProviderImpl(pointsSpentProvider, runningTotalsRepository);
-        this.pointTableProvider = new PointTypeProviderImpl(pointTableRepository);
-        this.roleProvider = new RoleProviderImpl(roleRepository);
-        this.userProvider = new UserProviderImpl(userRepository);
-        this.runningTotalsProvider = new RunningTotalsProviderImpl(runningTotalsRepository);
-        this.studentProvider = new StudentProviderImpl(studentRepository);
+        this.pointsSpentService = new PointsSpentService(pointsSpentProvider, runningTotalsRepository);
+        this.pointTypeService = new PointTypeService(pointTableRepository, pointCategoryRepository);
+        this.roleService = new RoleService(roleRepository, userRepository);
+        this.userService = new UserService(userRepository);
+        this.runningTotalsService = new RunningTotalsService(runningTotalsRepository);
+        this.studentService = new StudentService(studentRepository);
     }
 
     @GetMapping("/getTestHTML")
@@ -113,11 +103,11 @@ public class ReportController {
     @GetMapping("/getLastEventSnapshot")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<LastEventView> getLastEventSnapshot() {
-        LocalDate EventDate = pointsEarnedProvider.getLastEventDate();
+        LocalDate EventDate = pointsEarnedService.getLastEventDate();
         LastEventView lew = new LastEventView();
         if(EventDate != null) {
             lew.setEventDate(EventDate);
-            List<PointsEarned> points = pointsEarnedProvider.findByEventDate(EventDate);
+            List<PointsEarned> points = pointsEarnedService.findByEventDate(EventDate);
             HashMap<String, List<String>> countMap = new HashMap<>();
             int total = 0;
             for(PointsEarned p : points) {
@@ -156,19 +146,19 @@ public class ReportController {
     @GetMapping("/checkout")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> getCheckout(@RequestParam String group, @RequestHeader HttpHeaders headers) {
-        Optional<Group> grp = groupProvider.findByName(group);
-        if (grp.isPresent()) {
-            Optional<List<Student>> students = studentProvider.findByGroup(grp.get());
+        Group grp = groupService.findByName(group);
+        if (grp != null) {
+            List<Student> students = studentService.findByGroup(grp);
             HttpHeaders ResponseHeaders = new HttpHeaders();
             if(headers.getAccept().contains(MediaType.APPLICATION_JSON_VALUE)){
-                String document = GenerateReportDocs.getInstance().generateCheckoutJSON(students.get(), group);
+                String document = GenerateReportDocs.getInstance().generateCheckoutJSON(students, group);
                 byte[] contents = document.getBytes();
                 ResponseHeaders.setContentType(MediaType.APPLICATION_JSON);
                 ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
                 ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
                 return response;
             } else {
-                String document = GenerateReportDocs.getInstance().generateCheckoutHTML(students.get(), group);
+                String document = GenerateReportDocs.getInstance().generateCheckoutHTML(students, group);
                 byte[] contents = document.getBytes();
                 ResponseHeaders.setContentType(MediaType.TEXT_HTML);
                 ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
@@ -184,20 +174,20 @@ public class ReportController {
     @GetMapping("/checkin")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> getCheckin(@RequestParam String group, @RequestHeader HttpHeaders headers) {
-        Optional<Group> grp = groupProvider.findByName(group);
-        if (grp.isPresent()) {
-            List<PointType> points = pointTableProvider.findByGroup(grp.get());
-            Optional<List<Student>> students = studentProvider.findByGroup(grp.get());
+        Group grp = groupService.findByName(group);
+        if (grp != null) {
+            List<PointType> points = pointTypeService.findByGroup(grp);
+            List<Student> students = studentService.findByGroup(grp);
             HttpHeaders ResponseHeaders = new HttpHeaders();
             if(headers.getAccept().contains(MediaType.APPLICATION_JSON_VALUE)){
-                String document = GenerateReportDocs.getInstance().generateCheckinJSON(students.get(), points, group);
+                String document = GenerateReportDocs.getInstance().generateCheckinJSON(students, points, group);
                 byte[] contents = document.getBytes();
                 ResponseHeaders.setContentType(MediaType.APPLICATION_JSON);
                 ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
                 ResponseEntity<byte[]> response = new ResponseEntity<>(contents, ResponseHeaders, HttpStatus.OK);
                 return response;
             } else {
-                String document = GenerateReportDocs.getInstance().generateCheckinHTML(students.get(), points, group);
+                String document = GenerateReportDocs.getInstance().generateCheckinHTML(students, points, group);
                 byte[] contents = document.getBytes();
                 ResponseHeaders.setContentType(MediaType.TEXT_HTML);
                 ResponseHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");

@@ -1,18 +1,13 @@
 package com.tspdevelopment.bluebeetle.filters;
 
-import static org.springframework.util.StringUtils.hasText;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,10 +16,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.tspdevelopment.bluebeetle.data.model.User;
+import com.tspdevelopment.bluebeetle.data.repository.RoleRepository;
 import com.tspdevelopment.bluebeetle.data.repository.UserRepository;
 import com.tspdevelopment.bluebeetle.helpers.JwtTokenUtil;
-import com.tspdevelopment.bluebeetle.helpers.SecurityHelper;
-import javax.servlet.http.Cookie;
+import com.tspdevelopment.bluebeetle.services.controllerservice.AuthService;
+import org.springframework.security.authentication.AuthenticationManager;
 
 /**
  *
@@ -33,14 +29,14 @@ import javax.servlet.http.Cookie;
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final JwtTokenUtil jwtTokenUtil;
-    private final UserRepository userRepo;
-    private final Logger LOGGER = LoggerFactory.getLogger(JwtTokenFilter.class);
+    private final AuthService authService;
 
     public JwtTokenFilter(JwtTokenUtil jwtTokenUtil,
-            UserRepository userRepo) {
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.userRepo = userRepo;
+                   UserRepository userRepo,
+                   RoleRepository roleRepo) {
+        this.authService = new AuthService(jwtTokenUtil,
+                   userRepo,
+                   roleRepo);
     }
 
     @Override
@@ -49,40 +45,15 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Get jwt token and validate
-        final String token = getToken(request);
-        if (!jwtTokenUtil.validate(token)) {
-            LOGGER.info("Invalid JWT token!");
+        // Get jwt token and validate it is a valid token
+        User user = this.authService.validJWToken(request);
+        if (user == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-// Get user identity and set it on the spring security context
-            UserDetails userDetails = userRepo
-                    .findById(jwtTokenUtil.getUserId(token))
-                    .orElse(null);
-            if(userDetails == null) {
-                LOGGER.info("Null user for: " + jwtTokenUtil.getUserId(token));
-                filterChain.doFilter(request, response);
-                return;
-            }
-            User user = (User)userDetails;
-            if(user.getTokenId() == null) {
-                LOGGER.info("user has no token Id.");
-                filterChain.doFilter(request, response);
-                return;
-            }
-            if(!SecurityHelper.getInstance().validUser(user)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-            UUID tokenId = jwtTokenUtil.getTokenId(token);
-            if(!user.getTokenId().toString().equals(tokenId.toString())){
-                LOGGER.info("user token Id does not match jwt id: " + user.getTokenId().toString() + " != " + tokenId.toString());
-                filterChain.doFilter(request, response);
-                return;
-            }
+            UserDetails userDetails = (UserDetails)user;
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     userDetails, null,
                     userDetails.getAuthorities()
@@ -99,23 +70,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         } catch (IllegalArgumentException illegalArgumentException) {
             filterChain.doFilter(request, response);
         }
-    }
-    
-    private String getToken(HttpServletRequest request) {
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (hasText(header) && header.startsWith("Bearer ")) {
-            return header.split(" ")[1].trim();
-        }
-        Cookie[] cookies = request.getCookies();
-        if((cookies == null) || (cookies.length == 0)) {
-            return null;
-        }
-        for(Cookie c : cookies) {
-            if(c.getName().equals(SecurityHelper.getInstance().getCookieName()) && c.isHttpOnly() && c.getSecure()) {
-                return c.getValue();
-            }
-        }
-        return null;
     }
 
 }

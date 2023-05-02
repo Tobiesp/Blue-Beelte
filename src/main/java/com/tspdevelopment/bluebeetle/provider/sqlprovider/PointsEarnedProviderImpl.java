@@ -1,6 +1,5 @@
 package com.tspdevelopment.bluebeetle.provider.sqlprovider;
 
-import com.tspdevelopment.bluebeetle.data.model.PointType;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -9,26 +8,17 @@ import java.util.UUID;
 import org.springframework.data.domain.Example;
 
 import com.tspdevelopment.bluebeetle.data.model.PointsEarned;
-import com.tspdevelopment.bluebeetle.data.model.RunningTotals;
 import com.tspdevelopment.bluebeetle.data.model.Student;
-import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.data.repository.PointsEarnedRepository;
-import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointsEarnedProvider;
 import java.time.LocalDate;
 
 public class PointsEarnedProviderImpl implements PointsEarnedProvider{
 
     private final PointsEarnedRepository repository;
-    private final PointTypeRepository ptRepository;
-    private final RunningTotalsRepository rtRepository;
     
-    public PointsEarnedProviderImpl(PointsEarnedRepository repository, 
-                                    PointTypeRepository ptRepository, 
-                                    RunningTotalsRepository rtRepository) {
+    public PointsEarnedProviderImpl(PointsEarnedRepository repository) {
         this.repository = repository;
-        this.ptRepository = ptRepository;
-        this.rtRepository = rtRepository;
     }
     
     @Override
@@ -40,26 +30,6 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
     public Optional<PointsEarned> findById(UUID id) {
         return this.repository.findById(id);
     }
-    
-    private int findPointTable(List<PointType> ptList, String label) {
-        if(label == null) {
-            return 0;
-        }
-        for(PointType pt: ptList ) {
-            if(pt.getPointCategory().getCategory().equalsIgnoreCase(label)) {
-                return pt.getTotalPoints();
-            }
-        }
-        return 0;
-    }
-    
-    private void updatePointValue(PointsEarned item) {
-        if(item.getStudent() == null) {
-            return;
-        }
-        List<PointType> ptList = this.ptRepository.findByGroup(item.getStudent().getGroup());
-        item.setTotal(findPointTable(ptList, item.getPointCategory().getCategory()));
-    }
 
     @Override
     public PointsEarned create(PointsEarned newItem) {
@@ -67,37 +37,7 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
             newItem.setCreatedAt(LocalDateTime.now());
             newItem.setModifiedAt(LocalDateTime.now());
         }
-        updatePointValue(newItem);
-        PointsEarned pe = this.repository.save(newItem);
-        updateRunningTotal(pe);
-        return pe;
-    }
-    
-    private void updateRunningTotal(PointsEarned newItem) {
-        Optional<RunningTotals> runningTotal = rtRepository.findByStudent(newItem.getStudent());
-        if(runningTotal.isPresent()) {
-            RunningTotals rt = runningTotal.get();
-            rt.setTotal(rt.getTotal()+newItem.getTotal());
-            rtRepository.save(rt);
-        } else {
-            RunningTotals rt = new RunningTotals();
-            rt.setCreatedAt(LocalDateTime.now());
-            rt.setStudent(newItem.getStudent());
-            rt.setTotal(newItem.getTotal());
-            rtRepository.save(rt);
-        }
-    }
-    
-
-    @Override
-    public PointsEarned createNoTotalUpdate(PointsEarned newItem) {
-        if((newItem != null) && (newItem.getCreatedAt() == null)) {
-            newItem.setCreatedAt(LocalDateTime.now());
-            newItem.setModifiedAt(LocalDateTime.now());
-        }
-        PointsEarned pe = this.repository.save(newItem);
-        updateRunningTotal(pe);
-        return pe;
+        return this.repository.save(newItem);
     }
 
     @Override
@@ -109,7 +49,7 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
     @Override
     public PointsEarned update(PointsEarned replaceItem, UUID id) {
         if (replaceItem == null) {
-            throw new IllegalArgumentException("Updated PointsEarned item can not be null.");
+            throw new IllegalArgumentException("Item not found.");
         }
         return repository.findById(id) //
                 .map(item -> {
@@ -117,14 +57,11 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
                     item.setStudent(replaceItem.getStudent());
                     item.setPointCategory(replaceItem.getPointCategory());
                     item.setModifiedAt(LocalDateTime.now());
-                    updatePointValue(item);
                     PointsEarned i = repository.save(item);
-                    updateRunningTotal(i);
                     return i;
                 }) //
                 .orElseGet(() -> {
                     PointsEarned i = repository.save(replaceItem);
-                    updateRunningTotal(i);
                     return i;
                 });
     }

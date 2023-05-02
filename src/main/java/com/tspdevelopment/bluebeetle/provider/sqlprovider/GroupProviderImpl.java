@@ -66,10 +66,12 @@ public class GroupProviderImpl implements GroupProvider{
         return this.repository.findAll(example);
     }
 
+    @Override
     public Optional<Group> findByName(String name) {
         return this.repository.findByName(name);
     }
 
+    @Override
     public List<Group> findByNameLike(String name) {
         return this.repository.findByNameLike(name);
     }

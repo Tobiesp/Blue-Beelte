@@ -1,7 +1,6 @@
 package com.tspdevelopment.bluebeetle.controller;
 
 
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.security.RolesAllowed;
@@ -21,9 +20,7 @@ import com.tspdevelopment.bluebeetle.data.repository.UserRepository;
 import com.tspdevelopment.bluebeetle.exception.ItemNotFound;
 import com.tspdevelopment.bluebeetle.helpers.JwtTokenUtil;
 import com.tspdevelopment.bluebeetle.provider.interfaces.RoleProvider;
-import com.tspdevelopment.bluebeetle.provider.interfaces.UserProvider;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.RoleProviderImpl;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.UserProviderImpl;
+import com.tspdevelopment.bluebeetle.services.controllerservice.RoleService;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +30,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
 @RequestMapping("/api/hal/role")
-public class RoleHALController extends AdminHALBaseController<Role, RoleProvider>{
-    
-    private final UserProvider userProvider;
+public class RoleHALController extends AdminHALBaseController<Role, RoleProvider, RoleService>{
     
     public RoleHALController(RoleRepository repository, UserRepository userRepository, JwtTokenUtil jwtUtillity) {
-        this.provider = new RoleProviderImpl(repository);
-        this.userProvider = new UserProviderImpl(userRepository);
+        this.service = new RoleService(repository, userRepository);
         this.jwtUtillity = jwtUtillity;
     }
 
@@ -50,7 +44,10 @@ public class RoleHALController extends AdminHALBaseController<Role, RoleProvider
         UUID userId = getUserIdFromToken(headers);
         User u = getUser(userId);
         if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getRoles().get(0).getId().equals(id))) {
-            Role role = provider.findById(id).orElseThrow(() -> new ItemNotFound(id));
+            Role role = service.getItem(id);
+            if(role == null) {
+                throw new ItemNotFound(id);
+            }
             return getModelForSingle(role);
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access role.");
@@ -67,9 +64,9 @@ public class RoleHALController extends AdminHALBaseController<Role, RoleProvider
 
     @Override
     protected User getUser(UUID id) {
-        Optional<User> u = this.userProvider.findById(id);
-        if(u.isPresent()) {
-            return u.get();
+        User u = this.service.getUserById(id);
+        if(u != null) {
+            return u;
         } else {
             throw new ItemNotFound(id);
         }

@@ -8,6 +8,7 @@ import com.tspdevelopment.bluebeetle.data.model.User;
 import com.tspdevelopment.bluebeetle.helpers.JwtTokenUtil;
 import com.tspdevelopment.bluebeetle.provider.interfaces.BaseProvider;
 import com.tspdevelopment.bluebeetle.services.ImportJobService;
+import com.tspdevelopment.bluebeetle.services.controllerservice.BaseService;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.text.DateFormat;
@@ -15,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
@@ -46,9 +46,10 @@ import org.springframework.web.server.ResponseStatusException;
  * @author tobiesp
  * @param <T>
  * @param <R>
+ * @param <S>
  */
-public abstract class AdminHALBaseController<T extends BaseItem, R extends BaseProvider<T>> {
-    protected R provider;
+public abstract class AdminHALBaseController<T extends BaseItem, R extends BaseProvider<T>, S extends BaseService<T, R>> {
+    protected S service;
     @Autowired
     protected ImportJobService importService;
     protected JwtTokenUtil jwtUtillity;
@@ -60,7 +61,7 @@ public abstract class AdminHALBaseController<T extends BaseItem, R extends BaseP
     @GetMapping("/")
     @RolesAllowed({ Role.ADMIN_ROLE })
     public CollectionModel<EntityModel<T>> all(){
-        List<EntityModel<T>> cList = provider.findAll().stream()
+        List<EntityModel<T>> cList = service.getAllItems().stream()
         .map(c -> getModelForList(c))
         .collect(Collectors.toList());
 
@@ -72,16 +73,16 @@ public abstract class AdminHALBaseController<T extends BaseItem, R extends BaseP
     @PostMapping("/")
     @RolesAllowed({ Role.ADMIN_ROLE })
     public EntityModel<T> newItem(@RequestBody T newItem){
-        return getModelForSingle(provider.create(newItem));
+        return getModelForSingle(service.getNewItem(newItem));
     }
     
     @GetMapping("/{id}")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
     public EntityModel<T> one(@RequestHeader HttpHeaders headers, @PathVariable UUID id){
         
-        Optional<T> c = provider.findById(id);
-        if(c.isPresent()){
-            return getModelForSingle(c.get());
+        T c = service.getItem(id);
+        if(c != null){
+            return getModelForSingle(c);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
@@ -90,21 +91,21 @@ public abstract class AdminHALBaseController<T extends BaseItem, R extends BaseP
     @PutMapping("/{id}")
     @RolesAllowed({ Role.ADMIN_ROLE })
     public EntityModel<T> replaceItem(@RequestBody T replaceItem, @PathVariable UUID id){
-        T c = provider.update(replaceItem, id);
+        T c = service.replaceItem(replaceItem, id);
             return getModelForSingle(c);
     }
     
     @DeleteMapping("/{id}")
     @RolesAllowed({ Role.ADMIN_ROLE })
     public ResponseEntity<?> deleteItem(@PathVariable UUID id){
-        this.provider.delete(id);
+        this.service.deleteItem(id);
         return ResponseEntity.accepted().build();
     }
     
     @PostMapping("/search")
     @RolesAllowed({ Role.ADMIN_ROLE })
     public CollectionModel<EntityModel<T>> search(@RequestBody T item){
-        List<EntityModel<T>> cList = provider.search(item).stream()
+        List<EntityModel<T>> cList = service.search(item).stream()
 				.map(c -> getModelForList(c))
 				.collect(Collectors.toList());
 
@@ -176,7 +177,7 @@ public abstract class AdminHALBaseController<T extends BaseItem, R extends BaseP
         String headerValue = "attachment; filename=" + getGenericName() + "_" + currentDateTime + ".csv";
         response.setHeader(headerKey, headerValue);
          
-        List<T> list = this.provider.findAll();
+        List<T> list = this.service.getAllItems();
  
         CSVWriter csvWriter = new CSVWriter(response.getWriter(), CSVPreference.STANDARD_PREFERENCE);
 

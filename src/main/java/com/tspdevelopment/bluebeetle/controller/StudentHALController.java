@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.repository.StudentRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.StudentProvider;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.StudentProviderImpl;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
+import com.tspdevelopment.bluebeetle.services.controllerservice.StudentService;
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
@@ -24,10 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api/hal/student")
-public class StudentHALController extends BaseHALController<Student, StudentProvider>{
+public class StudentHALController extends BaseHALController<Student, StudentProvider, StudentService>{
     
     public StudentHALController(StudentRepository repository) {
-        this.provider = new StudentProviderImpl(repository);
+        this.service = new StudentService(repository);
     }
     
     @GetMapping("/export")

@@ -9,4 +9,6 @@ public interface UserProvider extends BaseProvider<User>{
     public User updatePassword(UUID id, String password);
 
     public void updateJwtTokenId(UUID userId, UUID tokenId);
+    
+    public void increaseLoginAttempt(String username);
 }

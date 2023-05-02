@@ -32,7 +32,7 @@ public class UserProviderImpl implements UserProvider {
     @Override
     public User update(User replaceItem, UUID id) {
         if (replaceItem == null) {
-            throw new IllegalArgumentException("Updated User can not be null.");
+            throw new IllegalArgumentException("Item not found.");
         }
         Optional<User> oUser = this.repository.findById(id);
         if(!oUser.isPresent()) {
@@ -71,11 +71,11 @@ public class UserProviderImpl implements UserProvider {
     @Override
     public User updatePassword(UUID id, String password) {
         if (id == null) {
-            throw new IllegalArgumentException("User id can not be null.");
+            throw new IllegalArgumentException("Item not found.");
         }
         Optional<User> oUser = this.findById(id);
         if(!oUser.isPresent()) {
-            throw new IllegalArgumentException("User must exist.");
+            throw new IllegalArgumentException("Item not found.");
         } else {
             User user = oUser.get();
             user.setPassword(password);
@@ -87,11 +87,11 @@ public class UserProviderImpl implements UserProvider {
     @Override
     public void updateJwtTokenId(UUID userId, UUID tokenId) {
         if (userId == null) {
-            throw new IllegalArgumentException("User id can not be null.");
+            throw new IllegalArgumentException("Item not found.");
         }
         Optional<User> oUser = this.findById(userId);
         if(!oUser.isPresent()) {
-            throw new IllegalArgumentException("User must exist.");
+            throw new IllegalArgumentException("Item not found.");
         } else {
             User user = oUser.get();
             user.setTokenId(tokenId);
@@ -100,9 +100,10 @@ public class UserProviderImpl implements UserProvider {
         }
     }
 
+    @Override
     public void increaseLoginAttempt(String username) {
         if (username == null) {
-            throw new IllegalArgumentException("Username can not be null.");
+            throw new IllegalArgumentException("Item not found.");
         }
         Optional<User> user = this.repository.findByUsername(username);
         if(user.isPresent()) {

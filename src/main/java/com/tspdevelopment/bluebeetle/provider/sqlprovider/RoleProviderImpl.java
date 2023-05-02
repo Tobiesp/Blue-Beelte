@@ -33,7 +33,7 @@ public class RoleProviderImpl implements RoleProvider {
     }
 
     public Optional<Role> findByAuthority(String authority) {
-        return this.findByAuthority(authority);
+        return this.repository.findByAuthority(authority);
     }
 
     @Override

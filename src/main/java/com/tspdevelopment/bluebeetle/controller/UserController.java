@@ -21,8 +21,8 @@ import com.tspdevelopment.bluebeetle.data.repository.UserRepository;
 import com.tspdevelopment.bluebeetle.exception.ItemNotFound;
 import com.tspdevelopment.bluebeetle.helpers.JwtTokenUtil;
 import com.tspdevelopment.bluebeetle.provider.interfaces.UserProvider;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.UserProviderImpl;
 import com.tspdevelopment.bluebeetle.response.UserUpdateView;
+import com.tspdevelopment.bluebeetle.services.controllerservice.UserService;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +35,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/users")
-public class UserController extends AdminBaseController<User, UserProvider>{
+public class UserController extends AdminBaseController<User, UserProvider, UserService>{
     
     public UserController(UserRepository repository, JwtTokenUtil jwtUtillity) {
-        this.provider = new UserProviderImpl(repository);
+        this.service = new UserService(repository);
         this.jwtUtillity = jwtUtillity;
     }
     
@@ -49,10 +49,10 @@ public class UserController extends AdminBaseController<User, UserProvider>{
         UUID userId = getUserIdFromToken(headers);
         User u = getUser(userId);
         if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getId().equals(id))) {
-            User user = provider.findById(id).orElseThrow(
-                                                        () -> 
-                                                        new ResponseStatusException(HttpStatus.FORBIDDEN, 
-                                                        "Not allowed to access resource."));
+            User user = service.getItem(id);
+            if(user == null) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
+            }
             return user;
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
@@ -68,7 +68,7 @@ public class UserController extends AdminBaseController<User, UserProvider>{
         UUID userId = getUserIdFromToken(headers);
         User u = getUser(userId);
         if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getId().equals(id))) {
-            User user = this.provider.updatePassword(id, userUpdateView.getPassword());
+            User user = this.service.updatePassword(id, userUpdateView.getPassword());
             return user;
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
@@ -77,9 +77,9 @@ public class UserController extends AdminBaseController<User, UserProvider>{
 
     @Override
     protected User getUser(UUID id) {
-        Optional<User> u = this.provider.findById(id);
-        if(u.isPresent()) {
-            return u.get();
+        User u = this.service.getItem(id);
+        if(u != null) {
+            return u;
         } else {
             throw new ItemNotFound(id);
         }

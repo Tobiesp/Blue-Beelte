@@ -7,8 +7,8 @@ import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointsEarnedProvider;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointsEarnedProviderImpl;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
+import com.tspdevelopment.bluebeetle.services.controllerservice.PointsEarnedService;
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
@@ -26,10 +26,10 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api/points/earned")
-public class PointsEarnedController extends BaseController<PointsEarned, PointsEarnedProvider>{
+public class PointsEarnedController extends BaseController<PointsEarned, PointsEarnedProvider, PointsEarnedService>{
     
     public PointsEarnedController(PointsEarnedRepository repository, PointTypeRepository ptRepository, RunningTotalsRepository rtRepository) {
-        this.provider = new PointsEarnedProviderImpl(repository, ptRepository, rtRepository);
+        this.service = new PointsEarnedService(repository, ptRepository, rtRepository);
     }
     
     @GetMapping("/export")

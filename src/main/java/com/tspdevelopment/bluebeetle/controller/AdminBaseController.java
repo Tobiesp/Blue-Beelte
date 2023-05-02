@@ -8,13 +8,13 @@ import com.tspdevelopment.bluebeetle.data.model.User;
 import com.tspdevelopment.bluebeetle.helpers.JwtTokenUtil;
 import com.tspdevelopment.bluebeetle.provider.interfaces.BaseProvider;
 import com.tspdevelopment.bluebeetle.services.ImportJobService;
+import com.tspdevelopment.bluebeetle.services.controllerservice.BaseService;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
@@ -38,9 +38,10 @@ import org.springframework.web.server.ResponseStatusException;
  * @author tobiesp
  * @param <T>
  * @param <R>
+ * @param <S>
  */
-public abstract class AdminBaseController<T extends BaseItem, R extends BaseProvider<T>> {
-    protected R provider;
+public abstract class AdminBaseController<T extends BaseItem, R extends BaseProvider<T>, S extends BaseService<T, R>> {
+    protected S service;
     @Autowired
     protected ImportJobService importService;
     protected JwtTokenUtil jwtUtillity;
@@ -49,23 +50,23 @@ public abstract class AdminBaseController<T extends BaseItem, R extends BaseProv
     @GetMapping("/")
     @RolesAllowed({ Role.ADMIN_ROLE })
     public List<T> all(){
-        List<T> cList = provider.findAll();
+        List<T> cList = service.getAllItems();
         return cList;
     }
     
     @PostMapping("/")
     @RolesAllowed({ Role.ADMIN_ROLE })
     public T newItem(@RequestBody T newItem){
-        return provider.create(newItem);
+        return service.getNewItem(newItem);
     }
     
     @GetMapping("/{id}")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
     public T one(@RequestHeader HttpHeaders headers, @PathVariable UUID id){
         
-        Optional<T> c = provider.findById(id);
-        if(c.isPresent()){
-            return c.get();
+        T c = service.getItem(id);
+        if(c != null){
+            return c;
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
@@ -74,21 +75,21 @@ public abstract class AdminBaseController<T extends BaseItem, R extends BaseProv
     @PutMapping("/{id}")
     @RolesAllowed({ Role.ADMIN_ROLE })
     public T replaceItem(@RequestBody T replaceItem, @PathVariable UUID id){
-        T c = provider.update(replaceItem, id);
+        T c = service.replaceItem(replaceItem, id);
             return c;
     }
     
     @DeleteMapping("/{id}")
     @RolesAllowed({ Role.ADMIN_ROLE })
     public ResponseEntity<?> deleteItem(@PathVariable UUID id){
-        this.provider.delete(id);
+        this.service.deleteItem(id);
         return ResponseEntity.accepted().build();
     }
     
     @PostMapping("/search")
     @RolesAllowed({ Role.ADMIN_ROLE })
     public List<T> search(@RequestBody T item){
-        List<T> cList = provider.search(item);
+        List<T> cList = service.search(item);
         return cList;
     }
     
@@ -107,7 +108,7 @@ public abstract class AdminBaseController<T extends BaseItem, R extends BaseProv
         String headerValue = "attachment; filename=" + getGenericName() + "_" + currentDateTime + ".csv";
         response.setHeader(headerKey, headerValue);
          
-        List<T> list = this.provider.findAll();
+        List<T> list = this.service.getAllItems();
  
         CSVWriter csvWriter = new CSVWriter(response.getWriter(), CSVPreference.STANDARD_PREFERENCE);
 

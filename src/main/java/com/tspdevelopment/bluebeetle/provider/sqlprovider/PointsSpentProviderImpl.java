@@ -8,22 +8,17 @@ import java.util.UUID;
 import org.springframework.data.domain.Example;
 
 import com.tspdevelopment.bluebeetle.data.model.PointsSpent;
-import com.tspdevelopment.bluebeetle.data.model.RunningTotals;
 import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.repository.PointsSpentRepository;
-import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointsSpentProvider;
 import java.time.LocalDate;
 
 public class PointsSpentProviderImpl implements PointsSpentProvider {
 
     private final PointsSpentRepository repository;
-    private final RunningTotalsRepository rtRepository;
     
-    public PointsSpentProviderImpl(PointsSpentRepository repository, 
-                                    RunningTotalsRepository rtRepository) {
+    public PointsSpentProviderImpl(PointsSpentRepository repository) {
         this.repository = repository;
-        this.rtRepository = rtRepository;
     }
 
     @Override
@@ -33,23 +28,7 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
             newItem.setModifiedAt(LocalDateTime.now());
         }
         PointsSpent sp = this.repository.save(newItem);
-        updateRunningTotal(sp);
         return sp;
-    }
-    
-    private void updateRunningTotal(PointsSpent newItem) {
-        Optional<RunningTotals> runningTotal = rtRepository.findByStudent(newItem.getStudent());
-        if(runningTotal.isPresent()) {
-            RunningTotals rt = runningTotal.get();
-            rt.setTotal(rt.getTotal() - newItem.getPoints());
-            rtRepository.save(rt);
-        } else {
-            RunningTotals rt = new RunningTotals();
-            rt.setCreatedAt(LocalDateTime.now());
-            rt.setStudent(newItem.getStudent());
-            rt.setTotal(0 - newItem.getPoints());
-            rtRepository.save(rt);
-        }
     }
 
     @Override
@@ -71,7 +50,7 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
     @Override
     public PointsSpent update(PointsSpent replaceItem, UUID id) {
         if (replaceItem == null) {
-            throw new IllegalArgumentException("Updated Student can not be null.");
+            throw new IllegalArgumentException("Item not found!");
         }
         return repository.findById(id) //
                 .map(item -> {
@@ -80,12 +59,10 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
                     item.setStudent(replaceItem.getStudent());
                     item.setModifiedAt(LocalDateTime.now());
                     PointsSpent sp = this.repository.save(item);
-                    updateRunningTotal(sp);
                     return sp;
                 }) //
                 .orElseGet(() -> {
                     PointsSpent sp = this.repository.save(replaceItem);
-                    updateRunningTotal(sp);
                     return sp;
                 });
     }

@@ -7,7 +7,6 @@ import com.tspdevelopment.bluebeetle.data.model.Student;
 import java.time.LocalDate;
 
 public interface PointsEarnedProvider extends BaseProvider<PointsEarned>{
-    public PointsEarned createNoTotalUpdate(PointsEarned newItem);
     
     public List<PointsEarned> findByStudent(Student student);
     

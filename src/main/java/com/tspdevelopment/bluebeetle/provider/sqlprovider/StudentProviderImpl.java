@@ -48,7 +48,7 @@ public class StudentProviderImpl implements StudentProvider{
     @Override
     public Student update(Student replaceItem, UUID id) {
         if (replaceItem == null) {
-            throw new IllegalArgumentException("Updated Student can not be null.");
+            throw new IllegalArgumentException("Item not found.");
         }
         return repository.findById(id) //
                 .map(item -> {

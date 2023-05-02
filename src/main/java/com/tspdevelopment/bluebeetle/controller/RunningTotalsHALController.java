@@ -4,7 +4,7 @@ import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.data.model.RunningTotals;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.RunningTotalsProvider;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.RunningTotalsProviderImpl;
+import com.tspdevelopment.bluebeetle.services.controllerservice.RunningTotalsService;
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/hal/points/total/running")
-public class RunningTotalsHALController extends BaseHALController<RunningTotals, RunningTotalsProvider>{
+public class RunningTotalsHALController extends BaseHALController<RunningTotals, RunningTotalsProvider, RunningTotalsService>{
     
     public RunningTotalsHALController(RunningTotalsRepository repository) {
-        this.provider = new RunningTotalsProviderImpl(repository);
+        this.service = new RunningTotalsService(repository);
     }
     
     @GetMapping("/export")

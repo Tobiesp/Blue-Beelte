@@ -19,13 +19,8 @@ public class SecurityHelper {
 
     private final String VALID_CHAR = "qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM";
     private final int MAX_FAILED_LOGIN_COUNT = 3;
-    private final String COOKIE_NAME = "token";
     
     private SecurityHelper() {
-    }
-    
-    public String getCookieName() {
-        return COOKIE_NAME;
     }
 
     public String generateSecret() {

@@ -1,10 +1,8 @@
 package com.tspdevelopment.bluebeetle.controller;
 
-import com.tspdevelopment.bluebeetle.data.model.PointCategory;
 import com.tspdevelopment.bluebeetle.data.model.PointType;
 import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.data.repository.PointCategoryRepository;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointTypeProviderImpl;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
@@ -17,11 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
-import com.tspdevelopment.bluebeetle.provider.interfaces.PointCategoryProvider;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointTypeProvider;
-import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointCategoryProviderImpl;
+import com.tspdevelopment.bluebeetle.services.controllerservice.PointTypeService;
 import java.io.IOException;
-import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,26 +29,22 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 @RequestMapping("/api/hal/points/config")
-public class PointTypeHALController extends BaseHALController<PointType, PointTypeProvider>{
-    
-    private final PointCategoryProvider pointCategoryProvider;
+public class PointTypeHALController extends BaseHALController<PointType, PointTypeProvider, PointTypeService>{
     
     public PointTypeHALController(PointTypeRepository repository, PointCategoryRepository pointCategoryRepository) {
-        this.provider = new PointTypeProviderImpl(repository);
-        this.pointCategoryProvider = new PointCategoryProviderImpl(pointCategoryRepository);
+        this.service = new PointTypeService(repository, pointCategoryRepository);
     }
     
     @GetMapping("/category")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    CollectionModel<EntityModel<PointType>> findByCategory(@RequestParam String category) {
-        PointTypeProvider prov = (PointTypeProvider)this.provider;
-        Optional<PointCategory> pc = pointCategoryProvider.findByCategory(category);
-        if(pc.isPresent()) {
-            List<EntityModel<PointType>> ptList = prov.findByCategory(pc.get()).stream()
+    public CollectionModel<EntityModel<PointType>> findByCategory(@RequestParam String category) {
+        List<PointType> ptList = ((PointTypeService)this.service).findByCategory(category);
+        if(!ptList.isEmpty()) {
+            List<EntityModel<PointType>> pthList = ptList.stream()
                 .map(c -> this.getModelForList(c))
                 .collect(Collectors.toList());
 
-            return CollectionModel.of(ptList, 
+            return CollectionModel.of(pthList, 
                         linkTo(methodOn(PointTypeHALController.class).search(null)).withSelfRel(),
                         linkTo(methodOn(PointTypeHALController.class).findByCategory(null)).withSelfRel(),
                         linkTo(methodOn(PointTypeHALController.class).all()).withSelfRel());
