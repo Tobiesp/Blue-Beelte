@@ -11,7 +11,7 @@
     <groupId>com.tspdevelopment</groupId>
     <artifactId>Blue-Beetle</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>Blue-Beetle</name>
     <description>Website to keep track of childern score</description>
     <properties>

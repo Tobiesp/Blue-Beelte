@@ -100,7 +100,7 @@ public class ReportController {
 
     @GetMapping("/getTestHTML")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity<?> getTestHTML() {
+    public ResponseEntity<?> getTestHTML() {
         String page = GenerateReportDocs.getInstance().generateTestHTML();
         byte[] contents = page.getBytes();
         HttpHeaders ResponseHeaders = new HttpHeaders();
@@ -112,7 +112,7 @@ public class ReportController {
 
     @GetMapping("/getLastEventSnapshot")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity<LastEventView> getLastEventSnapshot() {
+    public ResponseEntity<LastEventView> getLastEventSnapshot() {
         LocalDate EventDate = pointsEarnedProvider.getLastEventDate();
         LastEventView lew = new LastEventView();
         if(EventDate != null) {
@@ -155,7 +155,7 @@ public class ReportController {
 
     @GetMapping("/checkout")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity<?> getCheckout(@RequestParam String group, @RequestHeader HttpHeaders headers) {
+    public ResponseEntity<?> getCheckout(@RequestParam String group, @RequestHeader HttpHeaders headers) {
         Optional<Group> grp = groupProvider.findByName(group);
         if (grp.isPresent()) {
             Optional<List<Student>> students = studentProvider.findByGroup(grp.get());
@@ -183,7 +183,7 @@ public class ReportController {
 
     @GetMapping("/checkin")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    ResponseEntity<?> getCheckin(@RequestParam String group, @RequestHeader HttpHeaders headers) {
+    public ResponseEntity<?> getCheckin(@RequestParam String group, @RequestHeader HttpHeaders headers) {
         Optional<Group> grp = groupProvider.findByName(group);
         if (grp.isPresent()) {
             List<PointType> points = pointTableProvider.findByGroup(grp.get());

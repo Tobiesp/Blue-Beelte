@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,12 +32,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 
 @RestController
-@RequestMapping("/api/role")
-public class RoleController extends AdminBaseController<Role, RoleProvider>{
+@RequestMapping("/api/hal/role")
+public class RoleHALController extends AdminHALBaseController<Role, RoleProvider>{
     
     private final UserProvider userProvider;
     
-    public RoleController(RoleRepository repository, UserRepository userRepository, JwtTokenUtil jwtUtillity) {
+    public RoleHALController(RoleRepository repository, UserRepository userRepository, JwtTokenUtil jwtUtillity) {
         this.provider = new RoleProviderImpl(repository);
         this.userProvider = new UserProviderImpl(userRepository);
         this.jwtUtillity = jwtUtillity;
@@ -45,12 +46,12 @@ public class RoleController extends AdminBaseController<Role, RoleProvider>{
     @Override
     @GetMapping("/{id}")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
-    public Role one(@RequestHeader HttpHeaders headers, @PathVariable UUID id) {
+    public EntityModel<Role> one(@RequestHeader HttpHeaders headers, @PathVariable UUID id) {
         UUID userId = getUserIdFromToken(headers);
         User u = getUser(userId);
         if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getRoles().get(0).getId().equals(id))) {
             Role role = provider.findById(id).orElseThrow(() -> new ItemNotFound(id));
-            return role;
+            return getModelForSingle(role);
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access role.");
         }

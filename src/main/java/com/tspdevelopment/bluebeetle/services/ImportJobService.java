@@ -44,7 +44,7 @@ public class ImportJobService extends BaseJobService {
 		CompletableFuture<ImportJobResponse> task =  new CompletableFuture<>();
 		
 		Optional<ImportJob> optJob = repository.findById(jobId);
-                if(optJob.isEmpty()) {
+                if(!optJob.isPresent()) {
                     task.complete(new ImportJobResponse(jobId, RequestStatus.ERROR));
                     logger.info("Job {} not found!", jobId.toString());
                     return task;

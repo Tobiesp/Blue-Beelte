@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
+//@EnableAutoConfiguration(exclude = {ErrorMvcAutoConfiguration.class})
 public class BlueBeetleApplication {
 
 	public static void main(String[] args) {

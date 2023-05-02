@@ -109,13 +109,13 @@ public class UpdateTotals {
         }
     }
 
-    private LocalDate startOfYear() {
-        return LocalDate.now().with(firstDayOfYear());
-    }
+    // private LocalDate startOfYear() {
+    //     return LocalDate.now().with(firstDayOfYear());
+    // }
 
-    private LocalDate endOfYear() {
-        return LocalDate.now().with(lastDayOfYear());
-    }
+    // private LocalDate endOfYear() {
+    //     return LocalDate.now().with(lastDayOfYear());
+    // }
 
     private static class UpdateTotalsHolder {
 

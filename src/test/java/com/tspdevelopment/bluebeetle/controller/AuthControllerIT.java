@@ -1,6 +1,5 @@
 package com.tspdevelopment.bluebeetle.controller;
 
-import com.tspdevelopment.bluebeetle.controller.AuthController;
 import com.tspdevelopment.bluebeetle.views.AuthRequest;
 import com.tspdevelopment.bluebeetle.response.UserLoginView;
 import org.junit.jupiter.api.BeforeAll;

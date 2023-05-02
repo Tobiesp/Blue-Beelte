@@ -12,14 +12,22 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -39,33 +47,41 @@ import org.springframework.web.server.ResponseStatusException;
  * @param <T>
  * @param <R>
  */
-public abstract class AdminBaseController<T extends BaseItem, R extends BaseProvider<T>> {
+public abstract class AdminHALBaseController<T extends BaseItem, R extends BaseProvider<T>> {
     protected R provider;
     @Autowired
     protected ImportJobService importService;
     protected JwtTokenUtil jwtUtillity;
     protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getGenericName());
 
+    private List<Link> SingleBuilderLinkList = null;
+    private List<Link> ListBuilderLinkList = null;
+
     @GetMapping("/")
     @RolesAllowed({ Role.ADMIN_ROLE })
-    public List<T> all(){
-        List<T> cList = provider.findAll();
-        return cList;
+    public CollectionModel<EntityModel<T>> all(){
+        List<EntityModel<T>> cList = provider.findAll().stream()
+        .map(c -> getModelForList(c))
+        .collect(Collectors.toList());
+
+        return CollectionModel.of(cList, 
+                    linkTo(methodOn(this.getClass()).search(null)).withSelfRel(),
+                    linkTo(methodOn(this.getClass()).all()).withSelfRel());
     }
     
     @PostMapping("/")
     @RolesAllowed({ Role.ADMIN_ROLE })
-    public T newItem(@RequestBody T newItem){
-        return provider.create(newItem);
+    public EntityModel<T> newItem(@RequestBody T newItem){
+        return getModelForSingle(provider.create(newItem));
     }
     
     @GetMapping("/{id}")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
-    public T one(@RequestHeader HttpHeaders headers, @PathVariable UUID id){
+    public EntityModel<T> one(@RequestHeader HttpHeaders headers, @PathVariable UUID id){
         
         Optional<T> c = provider.findById(id);
         if(c.isPresent()){
-            return c.get();
+            return getModelForSingle(c.get());
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
@@ -73,9 +89,9 @@ public abstract class AdminBaseController<T extends BaseItem, R extends BaseProv
     
     @PutMapping("/{id}")
     @RolesAllowed({ Role.ADMIN_ROLE })
-    public T replaceItem(@RequestBody T replaceItem, @PathVariable UUID id){
+    public EntityModel<T> replaceItem(@RequestBody T replaceItem, @PathVariable UUID id){
         T c = provider.update(replaceItem, id);
-            return c;
+            return getModelForSingle(c);
     }
     
     @DeleteMapping("/{id}")
@@ -87,9 +103,62 @@ public abstract class AdminBaseController<T extends BaseItem, R extends BaseProv
     
     @PostMapping("/search")
     @RolesAllowed({ Role.ADMIN_ROLE })
-    public List<T> search(@RequestBody T item){
-        List<T> cList = provider.search(item);
-        return cList;
+    public CollectionModel<EntityModel<T>> search(@RequestBody T item){
+        List<EntityModel<T>> cList = provider.search(item).stream()
+				.map(c -> getModelForList(c))
+				.collect(Collectors.toList());
+
+		return CollectionModel.of(cList, 
+                    linkTo(methodOn(this.getClass()).search(null)).withSelfRel(),
+                    linkTo(methodOn(this.getClass()).all()).withSelfRel());
+    }
+    
+    protected EntityModel<T> getModelForSingle(T c) {
+        Link list[];
+        if(SingleBuilderLinkList != null) {
+            list = new Link[3+this.SingleBuilderLinkList.size()];
+            list[0] = linkTo(methodOn(this.getClass()).one(null, c.getId())).withSelfRel();
+            list[1] = linkTo(methodOn(this.getClass()).search(null)).withSelfRel();
+            list[2] = linkTo(methodOn(this.getClass()).all()).withSelfRel();
+            for(int i = 0; i<this.SingleBuilderLinkList.size(); i++) {
+                list[i+3] = this.SingleBuilderLinkList.get(i);
+            }
+        } else {
+           list = new Link[3];
+           list[0] = linkTo(methodOn(this.getClass()).one(null, c.getId())).withSelfRel();
+           list[1] = linkTo(methodOn(this.getClass()).search(null)).withSelfRel();
+           list[2] = linkTo(methodOn(this.getClass()).all()).withSelfRel();
+        }
+        return EntityModel.of(c, list);
+    }
+    
+    protected EntityModel<T> getModelForList(T c) {
+        Link list[];
+        if(ListBuilderLinkList != null) {
+            list = new Link[1+this.ListBuilderLinkList.size()];
+            list[0] = linkTo(methodOn(this.getClass()).one(null, c.getId())).withSelfRel();
+            for(int i = 0; i<this.ListBuilderLinkList.size(); i++) {
+                list[i+3] = this.ListBuilderLinkList.get(i);
+            }
+        } else {
+           list = new Link[1];
+           list[0] = linkTo(methodOn(this.getClass()).one(null, c.getId())).withSelfRel();
+        }
+        return EntityModel.of(c, list);
+    }
+
+    protected void AddLinkForList(Link link) {
+        if(this.ListBuilderLinkList == null) {
+            this.ListBuilderLinkList = new ArrayList<>();
+        }
+        this.ListBuilderLinkList.add(link);
+    }
+
+    protected void AddLinkForSingle(Link link) {
+        if(this.SingleBuilderLinkList == null) {
+            this.SingleBuilderLinkList = new ArrayList<>();
+        }
+        this.SingleBuilderLinkList.add(link);
     }
     
     private String getGenericName()

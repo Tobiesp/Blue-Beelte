@@ -31,7 +31,6 @@ import com.tspdevelopment.bluebeetle.properties.JwtProperties;
 import com.tspdevelopment.bluebeetle.data.repository.*;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.*;
 import java.util.Base64;
-import java.util.logging.Level;
 
 /**
  *

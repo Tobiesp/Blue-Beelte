@@ -39,7 +39,7 @@ export class AddEditComponent implements OnInit {
             // edit mode
             this.title = 'Edit User';
             this.loading = true;
-            this.accountService.getById(this.id)
+            this.accountService.getUserById(this.id)
                 .pipe(first())
                 .subscribe(x => {
                     this.form.patchValue(x);
@@ -80,7 +80,7 @@ export class AddEditComponent implements OnInit {
     private saveUser() {
         // create or update user based on id param
         return this.id
-            ? this.accountService.update(this.id!, this.form.value)
+            ? this.accountService.updateUser(this.id!, this.form.value)
             : this.accountService.register(this.form.value);
     }
 }

@@ -33,6 +33,9 @@ import com.tspdevelopment.bluebeetle.provider.sqlprovider.RoleProviderImpl;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.UserProviderImpl;
 import com.tspdevelopment.bluebeetle.views.AuthRequest;
 import com.tspdevelopment.bluebeetle.response.UserLoginView;
+import java.util.Iterator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  *
@@ -92,12 +95,8 @@ public class AuthController {
     
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader HttpHeaders headers){
-        List<String> authHeader = headers.get(HttpHeaders.AUTHORIZATION);
-        if(authHeader == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not allowed to access method.");
-        }
         try {
-            UUID userId = this.jwtTokenUtil.getUserId(authHeader.get(0).split(" ")[1]);
+            UUID userId = getUserIdFromToken(headers);
             this.userProvider.updateJwtTokenId(userId, null);
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
@@ -107,11 +106,53 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    User newItem(@RequestBody User newItem){
+    public User newItem(@RequestBody User newItem){
         newItem.clearAllRoles();
         Optional<Role> role = this.roleProvider.findByAuthority(Role.NO_ROLE);
         newItem.setAuthorities(role.get());
         return userProvider.create(newItem);
+    }
+    
+    @GetMapping("/validateToken")
+    public ResponseEntity<?> validateToken(@RequestHeader HttpHeaders headers) {
+        String token = getTokenString(headers);
+        if(token == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if(this.jwtTokenUtil.validate(token)) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+    }
+    
+    private String getTokenString(HttpHeaders headers) {
+        List<String> authHeader = headers.get(HttpHeaders.AUTHORIZATION);
+        if(authHeader == null) {
+            return null;
+        }
+        if(authHeader.isEmpty()) {
+            return null;
+        }
+        String[] s = authHeader.get(0).split(" ");
+        if(s.length == 1) {
+            return null;
+        }
+        return s[1];
+    }
+    
+    private UUID getUserIdFromToken(HttpHeaders headers) {
+        List<String> authHeader = headers.get(HttpHeaders.AUTHORIZATION);
+        if(authHeader == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
+        }
+        if(authHeader.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
+        }
+        String[] s = authHeader.get(0).split(" ");
+        if(s.length == 1) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
+        }
+        return this.jwtTokenUtil.getUserId(s[1]);
     }
     
     private UserLoginView toUserView(User user, String token) {
@@ -126,6 +167,10 @@ public class AuthController {
             view.setLastName(u.get().getLastName());
             view.setUsername(u.get().getUsername());
             view.setId(u.get().getId().toString());
+            Iterator<GrantedAuthority> it = u.get().getAuthorities().iterator();
+            if(it.hasNext()){
+                view.setRole((Role) it.next());
+            }
             view.setToken(token);
             return view;
         } else {

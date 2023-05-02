@@ -5,8 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { environment } from '@environments/environment';
-import { User } from '@app/_models';
-import { Users } from '@app/_models/users';
+import { User, Role } from '@app/_models';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -47,15 +46,19 @@ export class AccountService {
         return this.http.post(`${environment.apiUrl}/api/users/signup`, user);
     }
 
-    getAll() {
-        return this.http.get<Users>(`${environment.apiUrl}/api/users/`);
+    getAllUsers() {
+        return this.http.get<User[]>(`${environment.apiUrl}/api/users/`);
     }
 
-    getById(id: string) {
+    getUserById(id: string) {
         return this.http.get<User>(`${environment.apiUrl}/api/users/${id}`);
     }
 
-    update(id: string, params: any) {
+    getRoleById(id: string) {
+        return this.http.get<Role>(`${environment.apiUrl}/api/role/${id}`);
+    }
+
+    updateUser(id: string, params: any) {
         return this.http.put(`${environment.apiUrl}/api/users/${id}`, params)
             .pipe(map(x => {
                 // update stored user if the logged in user updated their own record
@@ -71,7 +74,7 @@ export class AccountService {
             }));
     }
 
-    delete(id: string) {
+    deleteUser(id: string) {
         return this.http.delete(`${environment.apiUrl}/api/users/${id}`)
             .pipe(map(x => {
                 // auto logout if the logged in user deleted their own record

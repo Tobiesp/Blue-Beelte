@@ -37,7 +37,7 @@ public class CSVReader {
                 throw new NullPointerException("Header can not be empty.");
             }
         }
-        return this.readItemRow(clazz, headers.toArray(String[]::new));
+        return this.readItemRow(clazz, headers.toArray(new String[]{}));
     }
     
     public <T> T readItemRow(Class<T> clazz, String... map) throws IOException {
@@ -117,7 +117,7 @@ public class CSVReader {
     }
     
     private List<String> proccessString(String str) {
-        List<String> list = new ArrayList();
+        List<String> list = new ArrayList<>();
         StringBuilder value = new StringBuilder();
         boolean quote = false;
         boolean first = true;
