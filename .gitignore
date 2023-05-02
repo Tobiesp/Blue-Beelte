@@ -82,3 +82,5 @@ src/main/resources/static/index.html
 src/main/resources/static/*.*.js
 src/main/resources/static/styles.*.css
 src/main/resources/static/3rdpartylicenses.txt
+/node/
+/.angular/
