@@ -54,10 +54,6 @@ export class AccountService {
         return this.http.get<User>(`${environment.apiUrl}/api/users/${id}`);
     }
 
-    getRoleById(id: string) {
-        return this.http.get<Role>(`${environment.apiUrl}/api/role/${id}`);
-    }
-
     updateUser(id: string, params: any) {
         return this.http.put(`${environment.apiUrl}/api/users/${id}`, params)
             .pipe(map(x => {
@@ -83,5 +79,13 @@ export class AccountService {
                 }
                 return x;
             }));
+    }
+
+    getAllRoles() {
+        return this.http.get<Role[]>(`${environment.apiUrl}/api/role/`);
+    }
+
+    getRoleById(id: string) {
+        return this.http.get<Role>(`${environment.apiUrl}/api/role/${id}`);
     }
 }
