@@ -20,7 +20,7 @@ public interface PointsSpentRepository extends JpaRepository<PointsSpent, UUID> 
     public List<PointsSpent> searchEventDate(LocalDate start, LocalDate end);
     @Query("SELECT u FROM PointsSpent u WHERE u.student= ?1 and u.eventDate >= ?2 and u.eventDate <= ?3")
     public List<PointsSpent> searchStudentEventDate(Student student, LocalDate start, LocalDate end);
-    @Query("SELECT sum(u.points) FROM PointsSpent u WHERE u.student = ?1")
+    @Query("SELECT sum(u.total) FROM PointsSpent u WHERE u.student = ?1")
     public Long getPointSum(Student student);
     
 }

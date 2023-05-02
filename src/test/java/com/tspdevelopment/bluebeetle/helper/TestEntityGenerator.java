@@ -42,19 +42,19 @@ public class TestEntityGenerator {
     private UserRepository userRepository;
     private final List<Role> roleList;
     private RoleRepository roleRepository;
-    private List<Student> studentList;
+    private final List<Student> studentList;
     private StudentRepository studentRepository;
-    private List<Group> groupList;
+    private final List<Group> groupList;
     private GroupRepository groupRepository;
-    private List<PointType> ptList;
+    private final List<PointType> ptList;
     private PointTypeRepository pointTableRepository;
-    private List<PointCategory> pcList;
+    private final List<PointCategory> pcList;
     private PointCategoryRepository pointCategoryRepository;
-    private List<PointsEarned> peList;
+    private final List<PointsEarned> peList;
     private PointsEarnedRepository pointsEarnedRepository;
-    private List<PointsSpent> psList;
+    private final List<PointsSpent> psList;
     private PointsSpentRepository pointsSpentRepository;
-    private List<RunningTotals> rtList;
+    private final List<RunningTotals> rtList;
     private RunningTotalsRepository runningTotalsRepository;
     
     private TestEntityGenerator() {
@@ -286,7 +286,7 @@ public class TestEntityGenerator {
     public PointsSpent generatePointsSpent() {
         PointsSpent ps = new PointsSpent();
         ps.setEventDate(LocalDate.now());
-        ps.setPoints(this.getRandomInt(20));
+        ps.setTotal(this.getRandomInt(20));
         ps.setStudent(generateStudent());
         ps = this.pointsSpentRepository.save(ps);
         this.psList.add(ps);

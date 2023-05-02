@@ -1,7 +1,6 @@
 package com.tspdevelopment.bluebeetle.controller;
 
 
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.security.RolesAllowed;

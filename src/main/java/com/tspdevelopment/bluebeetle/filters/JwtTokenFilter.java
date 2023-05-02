@@ -20,7 +20,6 @@ import com.tspdevelopment.bluebeetle.data.repository.RoleRepository;
 import com.tspdevelopment.bluebeetle.data.repository.UserRepository;
 import com.tspdevelopment.bluebeetle.helpers.JwtTokenUtil;
 import com.tspdevelopment.bluebeetle.services.controllerservice.AuthService;
-import org.springframework.security.authentication.AuthenticationManager;
 
 /**
  *

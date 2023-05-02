@@ -205,7 +205,7 @@ public class CSVImportService {
                 continue;
             }
             ptEnd.setStudent(student);
-            ptEnd.setPoints(p.getPoints_spent());
+            ptEnd.setTotal(p.getPoints_spent());
             this.pointsSpentService.getNewItem(ptEnd);
         }
     }

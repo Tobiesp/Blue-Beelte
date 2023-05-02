@@ -31,13 +31,13 @@ public class PointsSpentService extends BaseService<PointsSpent, PointsSpentProv
         Optional<RunningTotals> runningTotal = rtRepository.findByStudent(newItem.getStudent());
         if(runningTotal.isPresent()) {
             RunningTotals rt = runningTotal.get();
-            rt.setTotal(rt.getTotal() - newItem.getPoints());
+            rt.setTotal(rt.getTotal() - newItem.getTotal());
             rtRepository.save(rt);
         } else {
             RunningTotals rt = new RunningTotals();
             rt.setCreatedAt(LocalDateTime.now());
             rt.setStudent(newItem.getStudent());
-            rt.setTotal(0 - newItem.getPoints());
+            rt.setTotal(0 - newItem.getTotal());
             rtRepository.save(rt);
         }
     }

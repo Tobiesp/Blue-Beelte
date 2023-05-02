@@ -55,7 +55,7 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
         return repository.findById(id) //
                 .map(item -> {
                     item.setEventDate(replaceItem.getEventDate());
-                    item.setPoints(replaceItem.getPoints());
+                    item.setTotal(replaceItem.getTotal());
                     item.setStudent(replaceItem.getStudent());
                     item.setModifiedAt(LocalDateTime.now());
                     PointsSpent sp = this.repository.save(item);

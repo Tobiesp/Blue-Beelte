@@ -52,7 +52,7 @@ public class PointsSpent implements BaseItem {
     private Student student;
     
     @Column
-    private int points;
+    private int total;
 
     @Override
     public boolean equals(Object obj) {
@@ -88,7 +88,7 @@ public class PointsSpent implements BaseItem {
                 return false;
         } else if (!student.equals(other.student))
             return false;
-        if (points != other.points)
+        if (total != other.total)
             return false;
         return true;
     }
@@ -102,7 +102,7 @@ public class PointsSpent implements BaseItem {
         result = prime * result + ((modifiedAt == null) ? 0 : modifiedAt.hashCode());
         result = prime * result + ((eventDate == null) ? 0 : eventDate.hashCode());
         result = prime * result + ((student == null) ? 0 : student.hashCode());
-        result = prime * result + points;
+        result = prime * result + total;
         return result;
     }
 
