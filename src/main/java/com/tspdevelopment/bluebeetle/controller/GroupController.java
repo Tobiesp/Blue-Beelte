@@ -32,7 +32,7 @@ public class GroupController extends BaseController<Group, GroupProvider, GroupS
     }
     
     @GetMapping("/findByName")
-    @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public Group finByName(@RequestParam String name) throws IOException {
         return this.service.findByName(name);
     }
