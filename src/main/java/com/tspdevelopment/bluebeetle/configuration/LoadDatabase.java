@@ -32,7 +32,7 @@ public class LoadDatabase {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
     @Bean
-    CommandLineRunner initDatabase(RoleRepository rr,
+    public CommandLineRunner initDatabase(RoleRepository rr,
             UserRepository ur,
             GroupRepository gr,
             StudentRepository sr,
@@ -113,17 +113,17 @@ public class LoadDatabase {
     }
 
     private void createGroups(GroupRepository gr) {
-        saveGroup(gr, "K-2 Boys", true);
-        saveGroup(gr, "K-2 Girls", true);
-        saveGroup(gr, "3-6 Boys", true);
-        saveGroup(gr, "3-6 Girls", true);
-        saveGroup(gr, "Graduated", false);
+        saveGroup(gr, "K-2 Boys", true, 0, 2);
+        saveGroup(gr, "K-2 Girls", true, 0, 2);
+        saveGroup(gr, "3-6 Boys", true, 3, 6);
+        saveGroup(gr, "3-6 Girls", true, 3, 6);
+        saveGroup(gr, "Graduated", false, 7, 12);
         gr.flush();
     }
 
-    private void saveGroup(GroupRepository gr, String name, boolean isActive) {
+    private void saveGroup(GroupRepository gr, String name, boolean isActive, int minGrd, int maxGrd) {
         if (!hasGroup(gr, name)) {
-            gr.save(createGroup(name, isActive));
+            gr.save(createGroup(name, isActive, minGrd, maxGrd));
         }
     }
 
@@ -131,10 +131,12 @@ public class LoadDatabase {
         return gr.findByName(name).isPresent();
     }
 
-    private Group createGroup(String name, boolean isActive) {
+    private Group createGroup(String name, boolean isActive, int minGrd, int maxGrd) {
         Group grp = new Group();
         grp.setName(name);
         grp.setGroupActive(isActive);
+        grp.setMinGrade(minGrd);
+        grp.setMaxGrade(maxGrd);
         grp.setCreatedAt(LocalDateTime.now());
         return grp;
     }

@@ -206,22 +206,37 @@ public class TestEntityGenerator {
         Group group = new Group();
         if(this.groupList.isEmpty()) {
             group.setName("K-2 Boys");
+            group.setGroupActive(true);
+            group.setMinGrade(0);
+            group.setMaxGrade(2);
             group = this.groupRepository.save(group);
             this.groupList.add(group);
         } else if(this.groupList.size() == 1) {
             group.setName("K-2 Girls");
+            group.setGroupActive(true);
+            group.setMinGrade(0);
+            group.setMaxGrade(2);
             group = this.groupRepository.save(group);
             this.groupList.add(group);
         } else if(this.groupList.size() == 2) {
             group.setName("3-6 Boys");
+            group.setGroupActive(true);
+            group.setMinGrade(3);
+            group.setMaxGrade(6);
             group = this.groupRepository.save(group);
             this.groupList.add(group);
         } else if(this.groupList.size() == 3) {
             group.setName("3-6 Girls");
+            group.setGroupActive(true);
+            group.setMinGrade(3);
+            group.setMaxGrade(6);
             group = this.groupRepository.save(group);
             this.groupList.add(group);
         } else if(this.groupList.size() == 4) {
             group.setName("Graduated");
+            group.setGroupActive(false);
+            group.setMinGrade(7);
+            group.setMaxGrade(12);
             group = this.groupRepository.save(group);
             this.groupList.add(group);
         } else {

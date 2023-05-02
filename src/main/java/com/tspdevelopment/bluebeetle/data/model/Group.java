@@ -52,6 +52,12 @@ public class Group implements BaseItem {
     @Column
     private boolean groupActive;
     
+    @Column
+    private int minGrade;
+    
+    @Column
+    private int maxGrade;
+    
     @Override
     public String toString() {
         return "{Id: " + String.valueOf(id) + 
