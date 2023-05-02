@@ -33,7 +33,7 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 @RequestMapping("/api/hal/points/config")
-public class PointTypeHALController extends HALBaseController<PointType, PointTypeProvider>{
+public class PointTypeHALController extends BaseHALController<PointType, PointTypeProvider>{
     
     private final PointCategoryProvider pointCategoryProvider;
     

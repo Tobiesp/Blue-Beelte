@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api/hal/student")
-public class StudentHALController extends HALBaseController<Student, StudentProvider>{
+public class StudentHALController extends BaseHALController<Student, StudentProvider>{
     
     public StudentHALController(StudentRepository repository) {
         this.provider = new StudentProviderImpl(repository);

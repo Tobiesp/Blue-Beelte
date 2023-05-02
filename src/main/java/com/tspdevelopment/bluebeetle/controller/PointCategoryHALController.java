@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/hal/category")
-public class PointCategoryHALController extends HALBaseController<PointCategory, PointCategoryProvider>{
+public class PointCategoryHALController extends BaseHALController<PointCategory, PointCategoryProvider>{
 
     public PointCategoryHALController(PointCategoryRepository repository) {
         this.provider = new PointCategoryProviderImpl(repository);

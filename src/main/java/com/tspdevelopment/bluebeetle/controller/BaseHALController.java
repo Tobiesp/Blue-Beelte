@@ -46,7 +46,7 @@ import org.springframework.web.server.ResponseStatusException;
  * @param <T>
  * @param <R>
  */
-public abstract class HALBaseController<T extends BaseItem, R extends BaseProvider<T>> {
+public abstract class BaseHALController<T extends BaseItem, R extends BaseProvider<T>> {
     protected R provider;
     @Autowired
     protected ImportJobService importService;

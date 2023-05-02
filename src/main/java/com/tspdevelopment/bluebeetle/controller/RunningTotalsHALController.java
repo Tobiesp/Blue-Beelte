@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/hal/points/total/running")
-public class RunningTotalsHALController extends HALBaseController<RunningTotals, RunningTotalsProvider>{
+public class RunningTotalsHALController extends BaseHALController<RunningTotals, RunningTotalsProvider>{
     
     public RunningTotalsHALController(RunningTotalsRepository repository) {
         this.provider = new RunningTotalsProviderImpl(repository);

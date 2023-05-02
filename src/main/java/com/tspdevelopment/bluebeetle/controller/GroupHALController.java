@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api/hal/group")
-public class GroupHALController extends HALBaseController<Group, GroupProvider>{
+public class GroupHALController extends BaseHALController<Group, GroupProvider>{
 
     public GroupHALController(GroupRepository repository) {
         this.provider = new GroupProviderImpl(repository);

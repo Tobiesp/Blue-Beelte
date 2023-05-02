@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/api/hal/points/earned")
-public class PointsEarnedHALController extends HALBaseController<PointsEarned, PointsEarnedProvider>{
+public class PointsEarnedHALController extends BaseHALController<PointsEarned, PointsEarnedProvider>{
     
     public PointsEarnedHALController(PointsEarnedRepository repository, PointTypeRepository ptRepository, RunningTotalsRepository rtRepository) {
         this.provider = new PointsEarnedProviderImpl(repository, ptRepository, rtRepository);
