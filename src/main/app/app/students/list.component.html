@@ -16,7 +16,7 @@
             <td>{{student.group?.name}}</td>
             <td style="white-space: nowrap">
                 <a routerLink="edit/{{student.id}}" class="btn btn-sm btn-primary me-1">Edit</a>
-                <button (click)="deleteStudent(user.id)" class="btn btn-sm btn-danger btn-delete-student" [disabled]="student.isDeleting">
+                <button (click)="deleteStudent(student.id)" class="btn btn-sm btn-danger btn-delete-student" [disabled]="student.isDeleting">
                     <span *ngIf="student.isDeleting" class="spinner-border spinner-border-sm"></span>
                     <span *ngIf="!student.isDeleting">Delete</span>
                 </button>

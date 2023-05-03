@@ -9,8 +9,8 @@
             </div>
         </div>
     </div>
-        <div class="row"></div>
-        <div class="mb-3 col">s
+    <div class="row">
+        <div class="mb-3 col">
             <label class="form-label">Group</label>
             <select formControlName="group" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.group.errors }" *ngFor="let grp of groups" >
                 <option value="{{grp.name}}">{{grp.name}}</option>
@@ -23,7 +23,7 @@
     <div class="row">
         <div class="mb-3 col">
             <label class="form-label">Grade</label>
-            <input type="number" formControlName="grade" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.grade.errors }" value="-1"/>
+            <input type="number" formControlName="grade" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.grade.errors }" value="-1" min="-1" max="12"/>
             <div *ngIf="submitted && f.grade.errors" class="invalid-feedback">
                 <div *ngIf="f.grade.errors.required">Grade is required</div>
             </div>

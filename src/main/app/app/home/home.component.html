@@ -1,5 +1,8 @@
 ﻿<div class="p-4">
-    <div class="container">
+    <div class="container" *ngIf="hasNoAccess()">
+        <p>Your Account has no access. Please contact an admin to assign a role for your account.</p>
+    </div>
+    <div class="container" *ngIf="!hasNoAccess()">
         <h2>Last Event</h2>
         <p *ngIf="!events?.eventDate">Event date: n/a</p>
         <p *ngIf="events?.eventDate">Event date: {{events?.eventDate}}</p>
@@ -24,7 +27,7 @@
         </table>
         <p>Total attened: {{events?.total}}</p>
     </div>
-    <div class="container">
+    <div class="container" *ngIf="!hasNoAccess()">
         <h2>Student Total Score</h2>
         <table class="table table-striped">
             <thead>

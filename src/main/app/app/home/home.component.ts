@@ -19,4 +19,8 @@ export class HomeComponent implements OnInit {
         this.runningTotals.getAllTotals()
             .subscribe(totals => this.totals = totals);
     }
+
+    hasNoAccess(): boolean {
+        return this.accountService.hasNoAccess();
+    }
 }

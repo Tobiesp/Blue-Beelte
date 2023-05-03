@@ -88,4 +88,20 @@ export class AccountService {
     getRoleById(id: string) {
         return this.http.get<Role>(`${environment.apiUrl}/api/role/${id}`);
     }
+
+    hasNoAccess(): boolean {
+        return this.userValue!.authorities?.authority == "ROLE_NO_ROLE";
+    }
+
+    hasReadAccess(): boolean {
+        return this.userValue?.authorities?.authority == "ROLE_READ_ROLE";
+    }
+
+    hasWriteAccess(): boolean {
+        return this.userValue?.authorities?.authority == "ROLE_WRITE_ROLE";
+    }
+
+    hasAdminAccess(): boolean {
+        return this.userValue?.authorities?.authority == "ROLE_ADMIN_ROLE";
+    }
 }
