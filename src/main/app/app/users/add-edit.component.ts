@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
+import { Role } from '@app/_models'
 import { AccountService, AlertService } from '@app/_services';
 
 @Component({ templateUrl: 'add-edit.component.html' })
@@ -13,6 +14,7 @@ export class AddEditComponent implements OnInit {
     loading = false;
     submitting = false;
     submitted = false;
+    roles?: Role[];
 
     constructor(
         private formBuilder: FormBuilder,
@@ -24,12 +26,14 @@ export class AddEditComponent implements OnInit {
 
     ngOnInit() {
         this.id = this.route.snapshot.params['id'];
+        this.accountService.getAllRoles().pipe(first()).subscribe(x => this.roles = x);
 
         // form with validation rules
         this.form = this.formBuilder.group({
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
             username: ['', Validators.required],
+            role: ['', Validators.required],
             // password only required in add mode
             password: ['', [Validators.minLength(6), ...(!this.id ? [Validators.required] : [])]]
         });

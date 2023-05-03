@@ -55,6 +55,15 @@ export class AccountService {
     }
 
     updateUser(id: string, params: any) {
+        if(id == this.userValue?.id) {
+            if(params['role']) {
+                delete params['role'];
+            }
+        }
+        if(params['role']) {
+            this.getRoleById(params['role']).pipe().subscribe(x => params['role'] = x);
+        }
+
         return this.http.put(`${environment.apiUrl}/api/users/${id}`, params)
             .pipe(map(x => {
                 // update stored user if the logged in user updated their own record

@@ -12,8 +12,11 @@
     <div class="row">
         <div class="mb-3 col">
             <label class="form-label">Group</label>
-            <select formControlName="group" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.group.errors }" *ngFor="let grp of groups" >
-                <option value="{{grp.name}}">{{grp.name}}</option>
+            <select formControlName="group" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.group.errors }" >
+                <option disabled>Select Group</option>
+                <option *ngFor="let grp of groups" value="{{grp.id}}">
+                    {{grp.name}}
+                </option>
             </select>
             <div *ngIf="submitted && f.group.errors" class="invalid-feedback">
                 <div *ngIf="f.group.errors.required">Group is required</div>
@@ -23,7 +26,23 @@
     <div class="row">
         <div class="mb-3 col">
             <label class="form-label">Grade</label>
-            <input type="number" formControlName="grade" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.grade.errors }" value="-1" min="-1" max="12"/>
+            <select formControlName="grade" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.grade.errors }" >
+                <option disabled>Select Grade</option>
+                <option value="-1">Unknown</option>
+                <option value="0">Kinder Gardener</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+            </select>
             <div *ngIf="submitted && f.grade.errors" class="invalid-feedback">
                 <div *ngIf="f.grade.errors.required">Grade is required</div>
             </div>
