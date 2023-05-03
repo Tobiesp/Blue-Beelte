@@ -1,12 +1,21 @@
 ﻿<!-- nav -->
-<nav class="navbar navbar-expand navbar-dark bg-dark px-3" *ngIf="user">
-    <div class="navbar-nav">
-        <a class="nav-item nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
-        <a class="nav-item nav-link" routerLink="/students" routerLinkActive="active">Students</a>
-        <a class="nav-item nav-link" routerLink="/users" routerLinkActive="active">Users</a>
-        <button class="btn btn-link nav-item nav-link" (click)="logout()">Logout</button>
-    </div>
-</nav>
+<mat-toolbar-row *ngIf="user">
+    <button mat-button (click)="NavigateToHome()">Home</button>
+    <button mat-button (click)="NavigateToStudents()">Students</button>
+    <button mat-button [matMenuTriggerFor]="points">Points</button>
+    <mat-menu #points="matMenu">
+        <button mat-menu-item (click)="NavigateToAddEarnedPoints()">Add Earned Points</button>
+        <button mat-menu-item (click)="NavigateToAddSpentPoints()">Add Spent Points</button>
+        <button mat-menu-item (click)="NavigateToPointsHistory()">Student Point History</button>
+    </mat-menu>
+    <button mat-button [matMenuTriggerFor]="checkin">Check In</button>
+    <mat-menu #checkin="matMenu">
+        <button mat-menu-item (click)="NavigateToEarnedPointsCheckIn()">Earn Points Check In Form</button>
+        <button mat-menu-item (click)="NavigateToSpentPointsCheckIn()">Spent Points Check In Form</button>
+    </mat-menu>
+    <button mat-button (click)="NavigateToUsers()">Users</button>
+    <button mat-button (click)="logout()">Logout</button>
+</mat-toolbar-row>
 
 <!-- main app container -->
 <div class="app-container" [ngClass]="{ 'bg-light': user }">

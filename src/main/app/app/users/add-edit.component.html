@@ -42,7 +42,7 @@
             <Select formControlName="role" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.role.errors }" >
                 <option disabled>Select Role</option>
                 <option *ngFor="let rle of roles" value="{{rle.id}}">
-                    {{rle.name}}
+                    {{rle.authority}}
                 </option>
             </Select>
             <div *ngIf="submitted && f.role.errors" class="invalid-feedback">
