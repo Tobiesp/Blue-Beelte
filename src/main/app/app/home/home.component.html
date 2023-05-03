@@ -1,0 +1,53 @@
+﻿<div class="p-4">
+    <div class="container">
+        <h2>Last Event</h2>
+        <p *ngIf="!events?.eventDate">Event date: n/a</p>
+        <p *ngIf="events?.eventDate">Event date: {{events?.eventDate}}</p>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 50%">Group</th>
+                    <th style="width: 50%">Attended</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let group of events?.groups">
+                    <td>{{group.group}}</td>
+                    <td>{{group.count}}</td>
+                </tr>
+                <tr *ngIf="!events?.groups">
+                    <td colspan="4" class="text-center">
+                        <span class="spinner-border spinner-border-lg align-center"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Total attened: {{events?.total}}</p>
+    </div>
+    <div class="container">
+        <h2>Student Total Score</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Grade</th>
+                    <th style="width: 25%">Group</th>
+                    <th style="width: 25%">Student</th>
+                    <th style="width: 25%">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let total of totals">
+                    <td>{{total?.student?.grade}}</td>
+                    <td>{{total?.student?.group?.name}}</td>
+                    <td>{{total?.student?.name}}</td>
+                    <td>{{total?.total}}</td>
+                </tr>
+                <tr *ngIf="!totals">
+                    <td colspan="4" class="text-center">
+                        <span class="spinner-border spinner-border-lg align-center"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
