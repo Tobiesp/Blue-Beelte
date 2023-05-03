@@ -63,7 +63,6 @@ public abstract class AdminBaseController<T extends BaseItem, R extends BaseProv
     @GetMapping("/{id}")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
     public T one(@RequestHeader HttpHeaders headers, @PathVariable UUID id){
-        
         T c = service.getItem(id);
         if(c != null){
             return c;

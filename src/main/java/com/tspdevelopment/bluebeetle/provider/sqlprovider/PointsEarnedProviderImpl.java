@@ -91,6 +91,11 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
     public List<PointsEarned> searchStudentEventDate(Student student, LocalDate start, LocalDate end) {
         return this.repository.searchStudentEventDate(student, start, end);
     }
+    
+    @Override
+    public List<PointsEarned> findByStudentAndEventDate(Student student, LocalDate eventDate) {
+        return this.repository.findByStudentAndEventDate(student, eventDate);
+    }
 
     @Override
     public LocalDate getLastEventDate() {

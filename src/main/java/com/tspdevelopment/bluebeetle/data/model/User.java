@@ -5,17 +5,14 @@ import com.tspdevelopment.bluebeetle.helpers.SecurityHelper;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -87,21 +84,18 @@ public class User implements UserDetails, BaseItem{
     private String lastName;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<Role> roles = new ArrayList<>();
+    @ManyToOne()
+    private Role userRole;
     
     public void setAuthorities(GrantedAuthority role) {
-        roles.add((Role)role);
-    }
-
-    public void clearAllRoles() {
-        roles.clear();
+        this.userRole = (Role)role;
     }
     
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        return new HashSet<>(this.roles);
+        HashSet<GrantedAuthority> hs = new HashSet<>();
+        hs.add(userRole);
+        return hs;
     }
 
     @Override
@@ -133,11 +127,7 @@ public class User implements UserDetails, BaseItem{
         sb.append("username: ").append(this.username).append(",\n");
         sb.append("fullname: ").append(this.firstName).append("").append(this.lastName).append(",\n");
         sb.append("password: ").append(this.password.trim()).append(",\n");
-        if(!this.roles.isEmpty()) {
-            for(Role r : roles) {
-                sb.append("role: ").append(r.getAuthority()).append(",\n");
-            }
-        }
+        sb.append("role: ").append(this.userRole.getAuthority()).append(",\n");
         return sb.toString();
     }
 
@@ -197,20 +187,8 @@ public class User implements UserDetails, BaseItem{
         } else if (!lastName.equals(other.lastName)){
             return false;
         }
-        if (roles == null) {
-            if (other.roles != null){
-                return false;
-            } else {
-                return true;
-            }
-        } else if (roles.size() != other.roles.size()){
-            return false;
-        } else {
-            for(int i=0;i<roles.size(); i++) {
-                if(!roles.get(i).equals(other.roles.get(i))) {
-                    return false;
-                }
-            }
+        if (userRole == null) {
+            return other.userRole == null;
         }
         return true;
     }
@@ -226,7 +204,7 @@ public class User implements UserDetails, BaseItem{
         result = prime * result + ((password == null) ? 0 : password.hashCode());
         result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-        result = prime * result + ((roles == null) ? 0 : roles.hashCode());
+        result = prime * result + ((userRole == null) ? 0 : userRole.hashCode());
         return result;
     }
     

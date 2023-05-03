@@ -1,14 +1,11 @@
 package com.tspdevelopment.bluebeetle.data.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,10 +42,6 @@ public class Role implements GrantedAuthority, BaseItem {
     
     @Column(unique=true, nullable=false)
     private String authority;
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
     
     public Role(String authority) {
         this.authority = authority;
@@ -70,20 +63,12 @@ public class Role implements GrantedAuthority, BaseItem {
         Role r = (Role) o;
 
         if(r.authority == null) {
-            if(this.authority == null) {
-                return true;
-            } else {
-                return false;
-            }
+            return this.authority == null;
         }
         if(!r.authority.equals(this.authority)) {
             return false;
         }
-        if (!r.id.toString().equals(this.id.toString())) {
-            return false;
-        }
-        
-        return true;
+        return r.id.toString().equals(this.id.toString());
     }
 
     @Override

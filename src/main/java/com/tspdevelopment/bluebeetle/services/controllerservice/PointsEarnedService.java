@@ -11,12 +11,15 @@ import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
+import com.tspdevelopment.bluebeetle.data.repository.StudentRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointTypeProvider;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointsEarnedProvider;
 import com.tspdevelopment.bluebeetle.provider.interfaces.RunningTotalsProvider;
+import com.tspdevelopment.bluebeetle.provider.interfaces.StudentProvider;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointTypeProviderImpl;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointsEarnedProviderImpl;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.RunningTotalsProviderImpl;
+import com.tspdevelopment.bluebeetle.provider.sqlprovider.StudentProviderImpl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,11 +33,13 @@ import java.util.UUID;
 public class PointsEarnedService extends BaseService<PointsEarned, PointsEarnedProvider> {
     private final PointTypeProvider ptProvider;
     private final RunningTotalsProvider rtProvider;
+    private final StudentProvider stdProvider;
 
-    public PointsEarnedService(PointsEarnedRepository repository, PointTypeRepository ptRepository, RunningTotalsRepository rtRepository) {
+    public PointsEarnedService(PointsEarnedRepository repository, PointTypeRepository ptRepository, RunningTotalsRepository rtRepository, StudentRepository stdRepository) {
         this.provider = new PointsEarnedProviderImpl(repository);
         this.ptProvider = new PointTypeProviderImpl(ptRepository);
         this.rtProvider = new RunningTotalsProviderImpl(rtRepository);
+        this.stdProvider = new StudentProviderImpl(stdRepository);
     }
     
     private int getPointsForCategory(List<PointType> ptList, String label) {
@@ -70,6 +75,11 @@ public class PointsEarnedService extends BaseService<PointsEarned, PointsEarnedP
             rt.setTotal(newItem.getTotal());
             rtProvider.create(rt);
         }
+    }
+    
+    public Student getStudent(UUID id) {
+        Optional<Student> os = this.stdProvider.findById(id);
+        return os.orElse(null);
     }
     
     @Override
@@ -115,6 +125,10 @@ public class PointsEarnedService extends BaseService<PointsEarned, PointsEarnedP
 
     public List<PointsEarned> searchStudentEventDate(Student student, LocalDate start, LocalDate end) {
         return this.provider.searchStudentEventDate(student, start, end);
+    }
+
+    public List<PointsEarned> findByStudentAndEventDate(Student student, LocalDate eventDate) {
+        return this.provider.findByStudentAndEventDate(student, eventDate);
     }
 
     public LocalDate getLastEventDate() {

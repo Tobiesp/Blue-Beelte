@@ -13,6 +13,7 @@ import com.tspdevelopment.bluebeetle.services.controllerservice.GroupService;
 import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +32,11 @@ public class GroupHALController extends BaseHALController<Group, GroupProvider, 
         this.service = new GroupService(repository);
     }
     
-    
+    @GetMapping("/findByName")
+    @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public EntityModel<Group> finByName(@RequestParam String name) throws IOException {
+        return getModelForSingle(this.service.findByName(name));
+    }
     
     @GetMapping("/export")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })

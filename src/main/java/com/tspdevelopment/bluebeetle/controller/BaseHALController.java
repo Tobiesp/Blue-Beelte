@@ -106,7 +106,9 @@ public abstract class BaseHALController<T extends BaseItem, R extends BaseProvid
 				.map(c -> getModelForList(c))
 				.collect(Collectors.toList());
 
-		return CollectionModel.of(cList, linkTo(methodOn(this.getClass()).all()).withSelfRel());
+		return CollectionModel.of(cList, 
+                        linkTo(methodOn(this.getClass()).all()).withSelfRel(), 
+                        linkTo(methodOn(this.getClass()).search(null)).withSelfRel());
     }
     
     protected EntityModel<T> getModelForSingle(T c) {

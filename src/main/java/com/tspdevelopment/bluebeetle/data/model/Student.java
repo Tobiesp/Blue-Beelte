@@ -1,5 +1,7 @@
 package com.tspdevelopment.bluebeetle.data.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -37,9 +39,11 @@ public class Student implements BaseItem {
     @Type(type="uuid-char")
     private UUID id;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     @CreatedDate
     @Column
     private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     @LastModifiedDate
     @Column
     private LocalDateTime modifiedAt;
@@ -53,8 +57,9 @@ public class Student implements BaseItem {
     @Column
     private int grade;
     
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "M/d/yyyy")
     @Column
-    private LocalDateTime graduated;
+    private LocalDate graduated;
 
     @Override
     public boolean equals(Object obj) {

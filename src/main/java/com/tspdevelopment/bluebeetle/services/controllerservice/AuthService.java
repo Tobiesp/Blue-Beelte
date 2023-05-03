@@ -73,7 +73,6 @@ public class AuthService {
     }
 
     public User newUser(User newItem){
-        newItem.clearAllRoles();
         Optional<Role> role = this.roleProvider.findByAuthority(Role.NO_ROLE);
         newItem.setAuthorities(role.get());
         return userProvider.create(newItem);

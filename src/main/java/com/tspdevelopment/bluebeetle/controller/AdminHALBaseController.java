@@ -79,7 +79,6 @@ public abstract class AdminHALBaseController<T extends BaseItem, R extends BaseP
     @GetMapping("/{id}")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
     public EntityModel<T> one(@RequestHeader HttpHeaders headers, @PathVariable UUID id){
-        
         T c = service.getItem(id);
         if(c != null){
             return getModelForSingle(c);

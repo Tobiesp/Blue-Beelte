@@ -42,7 +42,7 @@ public class RoleController extends AdminBaseController<Role, RoleProvider, Role
     public Role one(@RequestHeader HttpHeaders headers, @PathVariable UUID id) {
         UUID userId = getUserIdFromToken(headers);
         User u = getUser(userId);
-        if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getRoles().get(0).getId().equals(id))) {
+        if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getUserRole().getId().equals(id))) {
             Role role = service.getItem(id);
             if(role == null) {
                 throw new ItemNotFound(id);

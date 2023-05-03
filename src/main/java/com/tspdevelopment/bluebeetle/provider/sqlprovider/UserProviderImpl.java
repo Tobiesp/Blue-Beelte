@@ -41,7 +41,7 @@ public class UserProviderImpl implements UserProvider {
             User user = oUser.get();
             user.setFirstName(replaceItem.getFirstName());
             user.setLastName(replaceItem.getLastName());
-            user.setRoles(replaceItem.getRoles());
+            user.setUserRole(replaceItem.getUserRole());
             user.setEmail(replaceItem.getEmail());
             user.setModifiedAt(LocalDateTime.now());
             return repository.save(user);

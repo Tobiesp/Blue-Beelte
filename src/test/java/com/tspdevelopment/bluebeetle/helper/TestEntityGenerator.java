@@ -265,7 +265,7 @@ public class TestEntityGenerator {
         } else if(student.getGroup().getName().equalsIgnoreCase("Graduated")) {
             int grade = (int) (Math.random()*6) + 6;
             student.setGrade(grade);
-            student.setGraduated(LocalDateTime.now());
+            student.setGraduated(LocalDate.now());
         }
         student = this.studentRepository.save(student);
         this.studentList.add(student);

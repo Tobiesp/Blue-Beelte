@@ -10,6 +10,7 @@ import com.tspdevelopment.bluebeetle.provider.interfaces.StudentProvider;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import com.tspdevelopment.bluebeetle.services.controllerservice.StudentService;
 import java.io.IOException;
+import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,12 @@ public class StudentController extends BaseController<Student, StudentProvider, 
     
     public StudentController(StudentRepository repository) {
         this.service = new StudentService(repository);
+    }
+    
+    @GetMapping("/findByName")
+    @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public List<Student> finByName(@RequestParam String name) throws IOException {
+        return this.service.findByNameLike(name);
     }
     
     @GetMapping("/export")

@@ -10,8 +10,14 @@ import com.tspdevelopment.bluebeetle.provider.interfaces.StudentProvider;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import com.tspdevelopment.bluebeetle.services.controllerservice.StudentService;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +34,18 @@ public class StudentHALController extends BaseHALController<Student, StudentProv
     
     public StudentHALController(StudentRepository repository) {
         this.service = new StudentService(repository);
+    }
+    
+    @GetMapping("/findByName")
+    @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public CollectionModel<EntityModel<Student>> finByName(@RequestParam String name) throws IOException {
+        List<EntityModel<Student>> cList = this.service.findByNameLike(name).stream()
+        .map(c -> getModelForList(c))
+        .collect(Collectors.toList());
+
+        return CollectionModel.of(cList, 
+                    linkTo(methodOn(this.getClass()).search(null)).withSelfRel(),
+                    linkTo(methodOn(this.getClass()).all()).withSelfRel());
     }
     
     @GetMapping("/export")

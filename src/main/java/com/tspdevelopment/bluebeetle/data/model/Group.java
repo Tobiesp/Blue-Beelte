@@ -1,5 +1,6 @@
 package com.tspdevelopment.bluebeetle.data.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -39,9 +40,11 @@ public class Group implements BaseItem {
     @Column(updatable = false, nullable = false)
     private UUID id;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     @CreatedDate
     @Column
     private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     @LastModifiedDate
     @Column
     private LocalDateTime modifiedAt;

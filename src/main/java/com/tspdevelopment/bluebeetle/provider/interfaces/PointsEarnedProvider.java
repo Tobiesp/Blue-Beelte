@@ -16,6 +16,8 @@ public interface PointsEarnedProvider extends BaseProvider<PointsEarned>{
     
     public List<PointsEarned> searchStudentEventDate(Student student, LocalDate start, LocalDate end);
     
+    public List<PointsEarned> findByStudentAndEventDate(Student student, LocalDate eventDate);
+    
     public LocalDate getLastEventDate();
     
 }
