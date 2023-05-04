@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  *
@@ -23,11 +25,13 @@ public class RunningTotalsController extends BaseController<RunningTotals, Runni
     
     public RunningTotalsController(RunningTotalsRepository repository) {
         this.service = new RunningTotalsService(repository);
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
     }
     
     @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
         String[] csvHeader = {"Student", "Group", "Grade", "Totals"};
         String[] nameMapping = {"student:name", "student:group:name", "student:grade", "total"};
         return this.baseExportToCSV(response, csvHeader, nameMapping);

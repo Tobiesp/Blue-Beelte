@@ -12,15 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointTypeProvider;
 import com.tspdevelopment.bluebeetle.services.controllerservice.PointTypeService;
-import java.io.IOException;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  *
@@ -32,6 +37,10 @@ public class PointTypeController extends BaseController<PointType, PointTypeProv
     
     public PointTypeController(PointTypeRepository repository, PointCategoryRepository pointCategoryRepository) {
         this.service = new PointTypeService(repository, pointCategoryRepository);
+        this.AddLinkForList(linkTo(methodOn(PointTypeController.class).halFindByCategory(null, placeHolder, placeHolder)).withRel("findByCategory"));
+        this.AddLinkForSingle(linkTo(methodOn(PointTypeController.class).halFindByCategory(null, placeHolder, placeHolder)).withRel("findByCategory"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
     }
     
     @GetMapping(value = "/category", produces = { "application/json" })
@@ -57,9 +66,25 @@ public class PointTypeController extends BaseController<PointType, PointTypeProv
         
     }
     
+    @GetMapping(value = "/category", produces = { "application/hal+json" })
+    @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public CollectionModel<EntityModel<PointType>> halFindByCategory(@RequestParam String category, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
+        List<PointType> list = this.findByCategory(category, page, size);
+        if(!list.isEmpty()) {
+            List<EntityModel<PointType>> pthList = list.stream()
+                .map(c -> this.getModelForListItem(c))
+                .collect(Collectors.toList());
+
+            return getModelForList(pthList);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+        }
+        
+    }
+    
     @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
         String[] csvHeader = {"Group", "Category", "points"};
         String[] nameMapping = {"group:name", "pointCategory:category", "totalPoints"};
         return this.baseExportToCSV(response, csvHeader, nameMapping);

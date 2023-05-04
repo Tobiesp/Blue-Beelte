@@ -19,9 +19,12 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +36,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 /**
  *
  * @author tobiesp
@@ -43,6 +49,10 @@ public class PointsEarnedController extends BaseController<PointsEarned, PointsE
     
     public PointsEarnedController(PointsEarnedRepository repository, PointTypeRepository ptRepository, RunningTotalsRepository rtRepository, StudentRepository stdRepository) {
         this.service = new PointsEarnedService(repository, ptRepository, rtRepository, stdRepository);
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).halGetPointsEarnedByStudentAndEvent(placeHolder, placeHolder)).withRel("getCollection"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).halSetPointsEarnedCollection(null)).withRel("AddCollection"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
     }
     
     @GetMapping(value = "/findByStudentAndEvent", produces = { "application/json" })
@@ -98,9 +108,63 @@ public class PointsEarnedController extends BaseController<PointsEarned, PointsE
         }
     }
     
+    @GetMapping(value = "/collection", produces = { "application/hal+json" })
+    @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public EntityModel<PointsEarnedCollection> halGetPointsEarnedByStudentAndEvent(@RequestParam Optional<String> studentId, @RequestParam Optional<String> eventDate) {
+        if(!studentId.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing student id.");
+        }
+        if(!eventDate.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing event date.");
+        }
+        UUID stdId = UUID.fromString(studentId.get());
+        DateFormat dateFormatter = new SimpleDateFormat("M/d/yyyy");
+        LocalDate date;
+        try {
+            date = dateFormatter.parse(eventDate.get()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        } catch (ParseException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event date in bad format. Should be in M/d/yyyy: " + eventDate);
+        }
+        Student std = this.service.getStudent(stdId);
+        if(std == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No student with that id.");
+        }
+        List<PointsEarned> points = this.service.findByStudentAndEventDate(std, date);
+        PointsEarnedCollection pec = new PointsEarnedCollection();
+        pec.setEventDate(date);
+        pec.setStudent(std);
+        pec.setPoints(points);
+        return EntityModel.of(pec, this.getLinkListForSingle(null));
+    }
+    
+    @PostMapping(value = "/collection", produces = { "application/hal+json" })
+    @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public ResponseEntity<?> halSetPointsEarnedCollection(@RequestBody PointsEarnedCollection collection) {
+        if(collection == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing request body.");
+        }
+        if(collection.getStudent() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing student.");
+        }
+        if(collection.getEventDate() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing event date.");
+        }
+        if(collection.getPoints().isEmpty()) {
+            return ResponseEntity.accepted().build();
+        }
+        Student student = this.service.getStudent(collection.getStudent().getId());
+        LocalDate eventDate = collection.getEventDate();
+        for(PointsEarned pe : collection.getPoints()) {
+            pe.setStudent(student);
+            pe.setEventDate(eventDate);
+            this.service.replaceItem(pe, pe.getId());
+        }
+        return ResponseEntity.ok().build();
+    }
+    
     @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
         String[] csvHeader = {"Student", "Group", "Grade", "Event Date", "Category", "Points"};
         String[] nameMapping = {"student:name", "student:group:name", "student:grade", "eventDate", "pointCategory:category", "total"};
         return this.baseExportToCSV(response, csvHeader, nameMapping);
