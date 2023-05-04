@@ -47,11 +47,11 @@ public class StudentHALController extends BaseHALController<Student, StudentProv
     @GetMapping(value = "/findByName", produces = { "application/hal+json" })
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public CollectionModel<EntityModel<Student>> findByName(@RequestParam Optional<String> name, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
-        if(name.isEmpty()) {
+        if(!name.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must supply a student name.");
         }
         List<Student> list;
-        if(page.isPresent() && size.isEmpty()) {
+        if(page.isPresent() && !size.isPresent()) {
             Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
             Page<Student> p = this.service.findByNameLike(name.get(), pageable);
             list = p.toList();

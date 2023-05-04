@@ -38,7 +38,7 @@ public class PointTypeController extends BaseController<PointType, PointTypeProv
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public List<PointType> findByCategory(@RequestParam String category, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
         List<PointType> list;
-        if(page.isPresent() && size.isEmpty()) {
+        if(page.isPresent() && !size.isPresent()) {
             Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
             Page<PointType> p = this.service.findByCategory(category, pageable);
             list = p.toList();

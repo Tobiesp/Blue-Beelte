@@ -39,7 +39,7 @@ public class StudentController extends BaseController<Student, StudentProvider, 
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public List<Student> finByName(@RequestParam String name, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
         List<Student> list;
-        if(page.isPresent() && size.isEmpty()) {
+        if(page.isPresent() && !size.isPresent()) {
             Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
             Page<Student> p = this.service.findByNameLike(name, pageable);
             list = p.toList();

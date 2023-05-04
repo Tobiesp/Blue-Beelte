@@ -86,7 +86,7 @@ public class UserController extends AdminBaseController<User, UserProvider, User
     @GetMapping(value = "/findByUsername", produces = { "application/json" })
     @RolesAllowed({Role.ADMIN_ROLE})
     public User findByUsername(@RequestParam Optional<String> name) {
-        if(name.isEmpty()) {
+        if(!name.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must be supplied.s");
         }
         User u = this.service.findByUsername(name.get());
@@ -100,7 +100,7 @@ public class UserController extends AdminBaseController<User, UserProvider, User
     @GetMapping(value = "/findByEmail", produces = { "application/json" })
     @RolesAllowed({Role.ADMIN_ROLE})
     public User findByEmail(@RequestParam Optional<String> email) {
-        if(email.isEmpty()) {
+        if(!email.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must be supplied.s");
         }
         User u = this.service.fingByEmail(email.get());

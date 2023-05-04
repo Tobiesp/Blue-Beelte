@@ -56,10 +56,10 @@ public class PointsEarnedHALController extends BaseHALController<PointsEarned, P
     @GetMapping(value = "/collection", produces = { "application/hal+json" })
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public EntityModel<PointsEarnedCollection> getPointsEarnedByStudentAndEvent(@RequestParam Optional<String> studentId, @RequestParam Optional<String> eventDate) {
-        if(studentId.isEmpty()) {
+        if(!studentId.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing student id.");
         }
-        if(eventDate.isEmpty()) {
+        if(!eventDate.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing event date.");
         }
         UUID stdId = UUID.fromString(studentId.get());

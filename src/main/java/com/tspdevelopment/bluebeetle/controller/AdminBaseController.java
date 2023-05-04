@@ -72,7 +72,7 @@ public abstract class AdminBaseController<T extends BaseItem, R extends BaseProv
     @RolesAllowed({ Role.ADMIN_ROLE })
     public List<T> all(@RequestParam Optional<String> page, @RequestParam Optional<String> size){
         List<T> list;
-        if(page.isPresent() && size.isEmpty()) {
+        if(page.isPresent() && !size.isPresent()) {
             Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
             Page<T> p = this.service.getAllItems(pageable);
             list = p.toList();
@@ -121,7 +121,7 @@ public abstract class AdminBaseController<T extends BaseItem, R extends BaseProv
     @RolesAllowed({ Role.ADMIN_ROLE })
     public List<T> search(@RequestBody T item, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
         List<T> list;
-        if(page.isPresent() && size.isEmpty()) {
+        if(page.isPresent() && !size.isPresent()) {
             Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
             Page<T> p = this.service.search(item, pageable);
             list = p.toList();

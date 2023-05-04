@@ -42,7 +42,7 @@ public class GroupHALController extends BaseHALController<Group, GroupProvider, 
     @GetMapping("/findByName")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public EntityModel<Group> findByName(@RequestParam Optional<String> name) {
-        if(name.isEmpty()) {
+        if(!name.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must be supplied.s");
         }
         return getModelForSingle(this.service.findByName(name.get()));

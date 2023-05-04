@@ -84,11 +84,11 @@ public class PointsSpentHALController extends BaseHALController<PointsSpent, Poi
             @RequestParam Optional<LocalDate> eventDate, 
             @RequestParam Optional<String> page, 
             @RequestParam Optional<String> size){
-        if(eventDate.isEmpty()) {
+        if(!eventDate.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must supply an event date");
         }
         List<PointsSpent> list;
-        if(page.isPresent() && size.isEmpty()) {
+        if(page.isPresent() && !size.isPresent()) {
             Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
             Page<PointsSpent> p = this.service.findByEventDate(eventDate.orElse(null) ,pageable);
             list = p.toList();
@@ -117,14 +117,14 @@ public class PointsSpentHALController extends BaseHALController<PointsSpent, Poi
             @RequestParam Optional<LocalDate> end, 
             @RequestParam Optional<String> page, 
             @RequestParam Optional<String> size){
-        if(start.isEmpty()) {
+        if(!start.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must supply an start date");
         }
-        if(end.isEmpty()) {
+        if(!end.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must supply an end date");
         }
         List<PointsSpent> list;
-        if(page.isPresent() && size.isEmpty()) {
+        if(page.isPresent() && !size.isPresent()) {
             Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
             Page<PointsSpent> p = this.service.searchEventDate(start.orElse(null), end.orElse(null) ,pageable);
             list = p.toList();
@@ -152,15 +152,15 @@ public class PointsSpentHALController extends BaseHALController<PointsSpent, Poi
             @RequestParam Optional<UUID> studentId, 
             @RequestParam Optional<String> page, 
             @RequestParam Optional<String> size) {
-        if(studentId.isEmpty()) {
+        if(!studentId.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must supply an student id.");
         }
         Optional<Student> ostd = this.service.getStudent(studentId.get());
-        if(ostd.isEmpty()) {
+        if(!ostd.isPresent()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Stduent not found by id: " + studentId.get());
         }
         List<PointsSpent> list;
-        if(page.isPresent() && size.isEmpty()) {
+        if(page.isPresent() && !size.isPresent()) {
             Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
             Page<PointsSpent> p = this.service.findByStudent(ostd.get(),pageable);
             list = p.toList();
@@ -190,21 +190,21 @@ public class PointsSpentHALController extends BaseHALController<PointsSpent, Poi
             @RequestParam Optional<LocalDate> end, 
             @RequestParam Optional<String> page, 
             @RequestParam Optional<String> size) {
-        if(studentId.isEmpty()) {
+        if(!studentId.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must supply an student id.");
         }
         Optional<Student> ostd = this.service.getStudent(studentId.get());
-        if(ostd.isEmpty()) {
+        if(!ostd.isPresent()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Stduent not found by id: " + studentId.get());
         }
-        if(start.isEmpty()) {
+        if(!start.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must supply an start date");
         }
-        if(end.isEmpty()) {
+        if(!end.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must supply an end date");
         }
         List<PointsSpent> list;
-        if(page.isPresent() && size.isEmpty()) {
+        if(page.isPresent() && !size.isPresent()) {
             Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
             Page<PointsSpent> p = this.service.searchStudentEventDate(ostd.get(), start.orElse(null), end.orElse(null) ,pageable);
             list = p.toList();
