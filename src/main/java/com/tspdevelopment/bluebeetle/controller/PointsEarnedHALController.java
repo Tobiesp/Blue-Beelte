@@ -53,7 +53,7 @@ public class PointsEarnedHALController extends BaseHALController<PointsEarned, P
         this.AddLinkForSingle(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
     }
     
-    @GetMapping("/collection")
+    @GetMapping(value = "/collection", produces = { "application/hal+json" })
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public EntityModel<PointsEarnedCollection> getPointsEarnedByStudentAndEvent(@RequestParam Optional<String> studentId, @RequestParam Optional<String> eventDate) {
         if(studentId.isEmpty()) {
@@ -82,7 +82,7 @@ public class PointsEarnedHALController extends BaseHALController<PointsEarned, P
         return EntityModel.of(pec, this.getLinkListForSingle(null));
     }
     
-    @PostMapping("/collection")
+    @PostMapping(value = "/collection", produces = { "application/hal+json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> setPointsEarnedCollection(@RequestBody PointsEarnedCollection collection) {
         if(collection == null) {

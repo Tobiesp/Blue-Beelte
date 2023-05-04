@@ -31,13 +31,13 @@ public class GroupController extends BaseController<Group, GroupProvider, GroupS
         this.service = new GroupService(repository);
     }
     
-    @GetMapping("/findByName")
+    @GetMapping(value = "/findByName", produces = { "application/json" })
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public Group finByName(@RequestParam String name) throws IOException {
         return this.service.findByName(name);
     }
     
-    @GetMapping("/export")
+    @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Name"};

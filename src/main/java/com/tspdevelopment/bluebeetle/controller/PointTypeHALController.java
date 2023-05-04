@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointTypeProvider;
 import com.tspdevelopment.bluebeetle.services.controllerservice.PointTypeService;
-import java.io.IOException;
 import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
@@ -43,7 +42,7 @@ public class PointTypeHALController extends BaseHALController<PointType, PointTy
         this.AddLinkForSingle(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
     }
     
-    @GetMapping("/category")
+    @GetMapping(value = "/category", produces = { "application/hal+json" })
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public CollectionModel<EntityModel<PointType>> findByCategory(@RequestParam String category, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
         List<PointType> list;

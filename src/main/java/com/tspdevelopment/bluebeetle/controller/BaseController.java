@@ -52,7 +52,7 @@ public abstract class BaseController<T extends BaseItem, R extends BaseProvider<
     protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getGenericName());
     protected final int defaultPageSize = 100;
 
-    @GetMapping("/")
+    @GetMapping(value = "/", produces = { "application/json" })
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public List<T> all(@RequestParam Optional<String> page, @RequestParam Optional<String> size){
         List<T> list;
@@ -70,13 +70,13 @@ public abstract class BaseController<T extends BaseItem, R extends BaseProvider<
         return list;
     }
     
-    @PostMapping("/")
+    @PostMapping(value = "/", produces = { "application/json" })
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public T newItem(@RequestBody T newItem){
         return service.getNewItem(newItem);
     }
     
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = { "application/json" })
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
     public T one(@PathVariable UUID id){
         T c = service.getItem(id);
@@ -87,20 +87,20 @@ public abstract class BaseController<T extends BaseItem, R extends BaseProvider<
         }
     }
     
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", produces = { "application/json" })
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public T replaceItem(@RequestBody T replaceItem, @PathVariable UUID id){
         return service.replaceItem(replaceItem, id);
     }
     
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}", produces = { "application/json" })
     @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> deleteItem(@PathVariable UUID id){
         this.service.deleteItem(id);
         return ResponseEntity.accepted().build();
     }
     
-    @PostMapping("/search")
+    @PostMapping(value = "/search", produces = { "application/json" })
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public List<T> search(@RequestBody T item, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
         List<T> list;
@@ -113,7 +113,7 @@ public abstract class BaseController<T extends BaseItem, R extends BaseProvider<
             Page<T> p = this.service.search(item, pageable);
             list = p.toList();
         } else {
-            list = service.getAllItems();
+            list = this.service.search(item);
         }
         return list;
     }

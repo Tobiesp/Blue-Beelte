@@ -44,7 +44,7 @@ public class StudentHALController extends BaseHALController<Student, StudentProv
         this.AddLinkForList(linkTo(methodOn(this.getClass()).findByName(placeHolder, placeHolder, placeHolder)).withRel("findByName"));
     }
     
-    @GetMapping("/findByName")
+    @GetMapping(value = "/findByName", produces = { "application/hal+json" })
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public CollectionModel<EntityModel<Student>> findByName(@RequestParam Optional<String> name, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
         if(name.isEmpty()) {

@@ -22,6 +22,9 @@ import com.tspdevelopment.bluebeetle.provider.interfaces.RoleProvider;
 import com.tspdevelopment.bluebeetle.services.controllerservice.RoleService;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.hateoas.EntityModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -34,10 +37,12 @@ public class RoleController extends AdminBaseController<Role, RoleProvider, Role
     public RoleController(RoleRepository repository, UserRepository userRepository, JwtTokenUtil jwtUtillity) {
         this.service = new RoleService(repository, userRepository);
         this.jwtUtillity = jwtUtillity;
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
     }
 
     @Override
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = { "application/json" })
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
     public Role one(@RequestHeader HttpHeaders headers, @PathVariable UUID id) {
         UUID userId = getUserIdFromToken(headers);
@@ -53,12 +58,29 @@ public class RoleController extends AdminBaseController<Role, RoleProvider, Role
         }
     }
     
-    @GetMapping("/export")
+    @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.ADMIN_ROLE })
-    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
         String[] csvHeader = {"Name"};
         String[] nameMapping = {"authority"};
         return this.baseExportToCSV(response, csvHeader, nameMapping);
+    }
+
+    @Override
+    @GetMapping(value = "/{id}", produces = { "application/hal+json" })
+    @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
+    public EntityModel<Role> halOne(@RequestHeader HttpHeaders headers, @PathVariable UUID id) {
+        UUID userId = getUserIdFromToken(headers);
+        User u = getUser(userId);
+        if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getUserRole().getId().equals(id))) {
+            Role role = service.getItem(id);
+            if(role == null) {
+                throw new ItemNotFound(id);
+            }
+            return getModelForSingle(role);
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access role.");
+        }
     }
 
     @Override

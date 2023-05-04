@@ -25,7 +25,7 @@ public class RunningTotalsController extends BaseController<RunningTotals, Runni
         this.service = new RunningTotalsService(repository);
     }
     
-    @GetMapping("/export")
+    @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Student", "Group", "Grade", "Totals"};

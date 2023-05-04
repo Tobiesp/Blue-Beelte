@@ -35,7 +35,7 @@ public class StudentController extends BaseController<Student, StudentProvider, 
         this.service = new StudentService(repository);
     }
     
-    @GetMapping("/findByName")
+    @GetMapping(value = "/findByName", produces = { "application/json" })
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public List<Student> finByName(@RequestParam String name, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
         List<Student> list;
@@ -53,7 +53,7 @@ public class StudentController extends BaseController<Student, StudentProvider, 
         return list;
     }
     
-    @GetMapping("/export")
+    @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Student", "Group", "Grade"};

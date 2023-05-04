@@ -45,7 +45,7 @@ public class PointsEarnedController extends BaseController<PointsEarned, PointsE
         this.service = new PointsEarnedService(repository, ptRepository, rtRepository, stdRepository);
     }
     
-    @GetMapping("/findByStudentAndEvent")
+    @GetMapping(value = "/findByStudentAndEvent", produces = { "application/json" })
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public PointsEarnedCollection getPointsEarnedByStudentAndEvent(@RequestParam String studentId, @RequestParam String eventDate) {
         if(studentId == null) {
@@ -74,7 +74,7 @@ public class PointsEarnedController extends BaseController<PointsEarned, PointsE
         return pec;
     }
     
-    @PostMapping("/addCollection")
+    @PostMapping(value = "/addCollection", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public void setPointsEarnedCollection(@RequestBody PointsEarnedCollection collection) {
         if(collection == null) {
@@ -98,7 +98,7 @@ public class PointsEarnedController extends BaseController<PointsEarned, PointsE
         }
     }
     
-    @GetMapping("/export")
+    @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Student", "Group", "Grade", "Event Date", "Category", "Points"};

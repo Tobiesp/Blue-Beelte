@@ -78,7 +78,7 @@ public class PointsSpentHALController extends BaseHALController<PointsSpent, Poi
         return ResponseEntity.ok().body(response);
     }
     
-    @GetMapping("/findByEventDate")
+    @GetMapping(value = "/findByEventDate", produces = { "application/hal+json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public CollectionModel<EntityModel<PointsSpent>> findByEventDate(
             @RequestParam Optional<LocalDate> eventDate, 
@@ -110,7 +110,7 @@ public class PointsSpentHALController extends BaseHALController<PointsSpent, Poi
         }
     }
     
-    @GetMapping("/searchEventDate")
+    @GetMapping(value = "/searchEventDate", produces = { "application/hal+json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public CollectionModel<EntityModel<PointsSpent>> searchEventDate(
             @RequestParam Optional<LocalDate> start, 
@@ -146,7 +146,7 @@ public class PointsSpentHALController extends BaseHALController<PointsSpent, Poi
         }
     }
     
-    @GetMapping("/findByStudent")
+    @GetMapping(value = "/findByStudent", produces = { "application/hal+json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public CollectionModel<EntityModel<PointsSpent>> findByStudent(
             @RequestParam Optional<UUID> studentId, 
@@ -182,7 +182,7 @@ public class PointsSpentHALController extends BaseHALController<PointsSpent, Poi
         }
     }
     
-    @GetMapping("/searchStudentEventDate")
+    @GetMapping(value = "/searchStudentEventDate", produces = { "application/hal+json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public CollectionModel<EntityModel<PointsSpent>> searchStudentEventDate(
             @RequestParam Optional<UUID> studentId, 

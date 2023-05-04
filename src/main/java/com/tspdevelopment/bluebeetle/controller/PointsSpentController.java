@@ -42,7 +42,7 @@ public class PointsSpentController extends BaseController<PointsSpent, PointsSpe
         this.service = new PointsSpentService(repository, rtRepository, stdRepository);
     }
     
-    @GetMapping("/export")
+    @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Student", "Group", "Grade", "Event Date", "Points"};
@@ -63,7 +63,7 @@ public class PointsSpentController extends BaseController<PointsSpent, PointsSpe
         return ResponseEntity.ok().body(response);
     }
     
-    @GetMapping("/findByEventDate")
+    @GetMapping(value = "/findByEventDate", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public List<PointsSpent> findByEventDate(
             @RequestParam Optional<LocalDate> eventDate, 
@@ -87,7 +87,7 @@ public class PointsSpentController extends BaseController<PointsSpent, PointsSpe
         return list;
     }
     
-    @GetMapping("/searchEventDate")
+    @GetMapping(value = "/searchEventDate", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public List<PointsSpent> searchEventDate(
             @RequestParam Optional<LocalDate> start, 
@@ -115,7 +115,7 @@ public class PointsSpentController extends BaseController<PointsSpent, PointsSpe
         return list;
     }
     
-    @GetMapping("/findByStudent")
+    @GetMapping(value = "/findByStudent", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public List<PointsSpent> findByStudent(
             @RequestParam Optional<UUID> studentId, 
@@ -143,7 +143,7 @@ public class PointsSpentController extends BaseController<PointsSpent, PointsSpe
         return list;
     }
     
-    @GetMapping("/searchStudentEventDate")
+    @GetMapping(value = "/searchStudentEventDate", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public List<PointsSpent> searchStudentEventDate(
             @RequestParam Optional<UUID> studentId, 

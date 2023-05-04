@@ -25,7 +25,7 @@ public class PointCategoryController extends BaseController<PointCategory, Point
         this.service = new PointCategoryService(repository);
     }
     
-    @GetMapping("/export")
+    @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Category"};

@@ -34,7 +34,7 @@ public class PointTypeController extends BaseController<PointType, PointTypeProv
         this.service = new PointTypeService(repository, pointCategoryRepository);
     }
     
-    @GetMapping("/category")
+    @GetMapping(value = "/category", produces = { "application/json" })
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public List<PointType> findByCategory(@RequestParam String category, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
         List<PointType> list;
@@ -57,7 +57,7 @@ public class PointTypeController extends BaseController<PointType, PointTypeProv
         
     }
     
-    @GetMapping("/export")
+    @GetMapping(value = "/export", produces = { "application/json" })
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
         String[] csvHeader = {"Group", "Category", "points"};

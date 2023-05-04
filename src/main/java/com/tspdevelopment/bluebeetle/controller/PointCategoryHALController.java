@@ -5,7 +5,6 @@ import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.data.repository.PointCategoryRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointCategoryProvider;
 import com.tspdevelopment.bluebeetle.services.controllerservice.PointCategoryService;
-import java.io.IOException;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
