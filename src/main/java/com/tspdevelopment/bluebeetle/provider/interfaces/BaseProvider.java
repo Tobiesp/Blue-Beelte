@@ -8,6 +8,8 @@ package com.tspdevelopment.bluebeetle.provider.interfaces;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -16,6 +18,8 @@ import java.util.UUID;
  */
 public interface BaseProvider<T> {
     public List<T> findAll();
+    
+    public Page<T> findAll(Pageable pageable);
     
     public Optional<T> findById(UUID id);
     
@@ -26,4 +30,6 @@ public interface BaseProvider<T> {
     public void delete(UUID id);
     
     public List<T> search(T item);
+    
+    public Page<T> search(T item, Pageable pageable);
 }

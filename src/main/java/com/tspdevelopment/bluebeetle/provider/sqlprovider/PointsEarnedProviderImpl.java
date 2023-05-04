@@ -12,6 +12,8 @@ import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointsEarnedProvider;
 import java.time.LocalDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class PointsEarnedProviderImpl implements PointsEarnedProvider{
 
@@ -101,6 +103,42 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
     public LocalDate getLastEventDate() {
         List<LocalDate> dates = this.repository.getLastEventDate();
         return dates.isEmpty()?null:dates.get(0);
+    }
+
+    @Override
+    public Page<PointsEarned> findByStudent(Student student, Pageable pageable) {
+        return this.repository.findByStudent(student, pageable);
+    }
+
+    @Override
+    public Page<PointsEarned> findByEventDate(LocalDate eventDate, Pageable pageable) {
+        return this.repository.findByEventDate(eventDate, pageable);
+    }
+
+    @Override
+    public Page<PointsEarned> searchEventDate(LocalDate start, LocalDate end, Pageable pageable) {
+        return this.repository.searchEventDate(start, end, pageable);
+    }
+
+    @Override
+    public Page<PointsEarned> searchStudentEventDate(Student student, LocalDate start, LocalDate end, Pageable pageable) {
+        return this.repository.searchStudentEventDate(student, start, end, pageable);
+    }
+
+    @Override
+    public Page<PointsEarned> findByStudentAndEventDate(Student student, LocalDate eventDate, Pageable pageable) {
+        return this.repository.findByStudentAndEventDate(student, eventDate, pageable);
+    }
+
+    @Override
+    public Page<PointsEarned> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<PointsEarned> search(PointsEarned item, Pageable pageable) {
+        Example<PointsEarned> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
     }
 
     

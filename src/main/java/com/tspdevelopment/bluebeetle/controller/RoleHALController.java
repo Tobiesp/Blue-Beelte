@@ -23,6 +23,8 @@ import com.tspdevelopment.bluebeetle.provider.interfaces.RoleProvider;
 import com.tspdevelopment.bluebeetle.services.controllerservice.RoleService;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -35,6 +37,8 @@ public class RoleHALController extends AdminHALBaseController<Role, RoleProvider
     public RoleHALController(RoleRepository repository, UserRepository userRepository, JwtTokenUtil jwtUtillity) {
         this.service = new RoleService(repository, userRepository);
         this.jwtUtillity = jwtUtillity;
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
     }
 
     @Override
@@ -56,7 +60,7 @@ public class RoleHALController extends AdminHALBaseController<Role, RoleProvider
     
     @GetMapping("/export")
     @RolesAllowed({Role.ADMIN_ROLE })
-    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
         String[] csvHeader = {"Name"};
         String[] nameMapping = {"authority"};
         return this.baseExportToCSV(response, csvHeader, nameMapping);

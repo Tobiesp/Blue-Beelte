@@ -9,6 +9,8 @@ import org.springframework.data.domain.Example;
 import com.tspdevelopment.bluebeetle.data.model.Role;
 import com.tspdevelopment.bluebeetle.data.repository.RoleRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.RoleProvider;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -55,6 +57,17 @@ public class RoleProviderImpl implements RoleProvider {
     @Override
     public Role create(Role item) {
         return this.repository.save(item);
+    }
+
+    @Override
+    public Page<Role> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Role> search(Role item, Pageable pageable) {
+        Example<Role> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
     }
     
 }

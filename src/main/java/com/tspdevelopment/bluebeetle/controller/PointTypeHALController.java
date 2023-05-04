@@ -18,7 +18,11 @@ import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointTypeProvider;
 import com.tspdevelopment.bluebeetle.services.controllerservice.PointTypeService;
 import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,21 +37,33 @@ public class PointTypeHALController extends BaseHALController<PointType, PointTy
     
     public PointTypeHALController(PointTypeRepository repository, PointCategoryRepository pointCategoryRepository) {
         this.service = new PointTypeService(repository, pointCategoryRepository);
+        this.AddLinkForList(linkTo(methodOn(PointTypeHALController.class).findByCategory(null, placeHolder, placeHolder)).withRel("findByCategory"));
+        this.AddLinkForSingle(linkTo(methodOn(PointTypeHALController.class).findByCategory(null, placeHolder, placeHolder)).withRel("findByCategory"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
     }
     
     @GetMapping("/category")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public CollectionModel<EntityModel<PointType>> findByCategory(@RequestParam String category) {
-        List<PointType> ptList = ((PointTypeService)this.service).findByCategory(category);
-        if(!ptList.isEmpty()) {
-            List<EntityModel<PointType>> pthList = ptList.stream()
-                .map(c -> this.getModelForList(c))
+    public CollectionModel<EntityModel<PointType>> findByCategory(@RequestParam String category, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
+        List<PointType> list;
+        if(page.isPresent() && size.isEmpty()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
+            Page<PointType> p = this.service.findByCategory(category, pageable);
+            list = p.toList();
+        } else if(page.isPresent() && size.isPresent()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), Integer.getInteger(size.get(), 10));
+            Page<PointType> p = this.service.findByCategory(category, pageable);
+            list = p.toList();
+        } else {
+            list = service.findByCategory(category);
+        }
+        if(!list.isEmpty()) {
+            List<EntityModel<PointType>> pthList = list.stream()
+                .map(c -> this.getModelForListItem(c))
                 .collect(Collectors.toList());
 
-            return CollectionModel.of(pthList, 
-                        linkTo(methodOn(PointTypeHALController.class).search(null)).withSelfRel(),
-                        linkTo(methodOn(PointTypeHALController.class).findByCategory(null)).withSelfRel(),
-                        linkTo(methodOn(PointTypeHALController.class).all()).withSelfRel());
+            return getModelForList(pthList);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
@@ -56,7 +72,7 @@ public class PointTypeHALController extends BaseHALController<PointType, PointTy
     
     @GetMapping("/export")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
         String[] csvHeader = {"Group", "Category", "points"};
         String[] nameMapping = {"group:name", "pointCategory:category", "totalPoints"};
         return this.baseExportToCSV(response, csvHeader, nameMapping);

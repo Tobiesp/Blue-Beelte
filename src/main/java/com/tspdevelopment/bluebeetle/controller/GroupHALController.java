@@ -11,14 +11,19 @@ import com.tspdevelopment.bluebeetle.provider.interfaces.GroupProvider;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import com.tspdevelopment.bluebeetle.services.controllerservice.GroupService;
 import java.io.IOException;
+import java.util.Optional;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.hateoas.EntityModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  *
@@ -30,12 +35,17 @@ public class GroupHALController extends BaseHALController<Group, GroupProvider, 
 
     public GroupHALController(GroupRepository repository) {
         this.service = new GroupService(repository);
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).findByName(placeHolder)).withRel("findByName"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).findByName(placeHolder)).withRel("findByName"));
     }
     
     @GetMapping("/findByName")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public EntityModel<Group> finByName(@RequestParam String name) throws IOException {
-        return getModelForSingle(this.service.findByName(name));
+    public EntityModel<Group> findByName(@RequestParam Optional<String> name) {
+        if(name.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must be supplied.s");
+        }
+        return getModelForSingle(this.service.findByName(name.get()));
     }
     
     @GetMapping("/export")

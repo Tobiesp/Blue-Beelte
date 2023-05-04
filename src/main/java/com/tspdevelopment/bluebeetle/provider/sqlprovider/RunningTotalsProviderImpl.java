@@ -11,6 +11,8 @@ import com.tspdevelopment.bluebeetle.data.model.RunningTotals;
 import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.RunningTotalsProvider;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class RunningTotalsProviderImpl implements RunningTotalsProvider{
 
@@ -71,6 +73,17 @@ public class RunningTotalsProviderImpl implements RunningTotalsProvider{
     @Override
     public Optional<RunningTotals> findByStudent(Student student) {
         return this.repository.findByStudent(student);
+    }
+
+    @Override
+    public Page<RunningTotals> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<RunningTotals> search(RunningTotals item, Pageable pageable) {
+        Example<RunningTotals> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
     }
     
 }

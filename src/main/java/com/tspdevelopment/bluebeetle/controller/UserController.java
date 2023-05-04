@@ -23,9 +23,11 @@ import com.tspdevelopment.bluebeetle.provider.interfaces.UserProvider;
 import com.tspdevelopment.bluebeetle.response.UserUpdateView;
 import com.tspdevelopment.bluebeetle.services.controllerservice.UserService;
 import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -62,8 +64,7 @@ public class UserController extends AdminBaseController<User, UserProvider, User
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE})
     public User updatePassword(@RequestHeader HttpHeaders headers, 
                                      @PathVariable UUID id, 
-                                     @RequestBody UserUpdateView userUpdateView)
-    {
+                                     @RequestBody UserUpdateView userUpdateView) {
         UUID userId = getUserIdFromToken(headers);
         User u = getUser(userId);
         if((u.getAuthorities().contains(new Role(Role.ADMIN_ROLE))) || (u.getId().equals(id))) {
@@ -71,6 +72,34 @@ public class UserController extends AdminBaseController<User, UserProvider, User
             return user;
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
+        }
+    }
+    
+    @GetMapping("/findByUsername")
+    @RolesAllowed({Role.ADMIN_ROLE})
+    public User findByUsername(@RequestParam Optional<String> name) {
+        if(name.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must be supplied.s");
+        }
+        User u = this.service.findByUsername(name.get());
+        if(u == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+        } else {
+            return u;
+        }
+    }
+    
+    @GetMapping("/fingByEmail")
+    @RolesAllowed({Role.ADMIN_ROLE})
+    public User fingByEmail(@RequestParam Optional<String> email) {
+        if(email.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must be supplied.s");
+        }
+        User u = this.service.fingByEmail(email.get());
+        if(u == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+        } else {
+            return u;
         }
     }
 

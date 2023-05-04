@@ -13,7 +13,11 @@ import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointTypeProvider;
 import com.tspdevelopment.bluebeetle.services.controllerservice.PointTypeService;
 import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,10 +36,21 @@ public class PointTypeController extends BaseController<PointType, PointTypeProv
     
     @GetMapping("/category")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public List<PointType> findByCategory(@RequestParam String category) {
-        List<PointType> ptList = ((PointTypeService)this.service).findByCategory(category);
-        if(!ptList.isEmpty()) {
-            return ptList;
+    public List<PointType> findByCategory(@RequestParam String category, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
+        List<PointType> list;
+        if(page.isPresent() && size.isEmpty()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
+            Page<PointType> p = this.service.findByCategory(category, pageable);
+            list = p.toList();
+        } else if(page.isPresent() && size.isPresent()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), Integer.getInteger(size.get(), 10));
+            Page<PointType> p = this.service.findByCategory(category, pageable);
+            list = p.toList();
+        } else {
+            list = service.findByCategory(category);
+        }
+        if(!list.isEmpty()) {
+            return list;
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }

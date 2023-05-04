@@ -10,6 +10,8 @@ import com.tspdevelopment.bluebeetle.provider.interfaces.GroupProvider;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.GroupProviderImpl;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,6 +32,10 @@ public class GroupService extends BaseService<Group, GroupProvider> {
 
     public List<Group> findByNameLike(String name) {
         return this.provider.findByNameLike(name);
+    }
+
+    public Page<Group> findByNameLike(String name, Pageable pageable) {
+        return this.provider.findByNameLike(name, pageable);
     }
     
 }

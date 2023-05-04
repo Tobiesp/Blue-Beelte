@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,8 +27,11 @@ public abstract class BaseService<T extends BaseItem, R extends BaseProvider<T>>
     protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getGenericName());
     
     public List<T> getAllItems(){
-        List<T> cList = provider.findAll();
-        return cList;
+        return provider.findAll();
+    }
+    
+    public Page<T> getAllItems(Pageable pageable){
+        return provider.findAll(pageable);
     }
     
     public T getNewItem(T newItem){
@@ -51,8 +56,11 @@ public abstract class BaseService<T extends BaseItem, R extends BaseProvider<T>>
     }
     
     public List<T> search(T item){
-        List<T> cList = provider.search(item);
-        return cList;
+        return provider.search(item);
+    }
+    
+    public Page<T> search(T item, Pageable pageable){
+        return provider.search(item, pageable);
     }
     
     private String getGenericName(){

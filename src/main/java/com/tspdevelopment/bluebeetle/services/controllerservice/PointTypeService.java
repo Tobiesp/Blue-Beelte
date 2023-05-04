@@ -16,6 +16,8 @@ import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointTypeProviderImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -23,7 +25,7 @@ import java.util.Optional;
  */
 public class PointTypeService extends BaseService<PointType, PointTypeProvider> {
     
-    private PointCategoryProvider pointCategoryProvider;
+    private final PointCategoryProvider pointCategoryProvider;
 
     public PointTypeService(PointTypeRepository repository, PointCategoryRepository pointCategoryRepository) {
         this.provider = new PointTypeProviderImpl(repository);
@@ -47,6 +49,25 @@ public class PointTypeService extends BaseService<PointType, PointTypeProvider> 
     
     public List<PointType> findByCategoryAndGroup(PointCategory pointCategory, Group group) {
         return this.provider.findByCategoryAndGroup(pointCategory, group);
+    }
+    
+    public Page<PointType> findByCategory(String category, Pageable pageable) {
+        PointTypeProvider prov = (PointTypeProvider)this.provider;
+        Optional<PointCategory> pc = pointCategoryProvider.findByCategory(category);
+        if(pc.isPresent()) {
+            Page<PointType> ptList = prov.findByCategory(pc.get(), pageable);
+            return ptList;
+        } else {
+            return null;
+        }
+    }
+    
+    public Page<PointType> findByGroup(Group group, Pageable pageable) {
+        return this.provider.findByGroup(group, pageable);
+    }
+    
+    public Page<PointType> findByCategoryAndGroup(PointCategory pointCategory, Group group, Pageable pageable) {
+        return this.provider.findByCategoryAndGroup(pointCategory, group, pageable);
     }
     
 }

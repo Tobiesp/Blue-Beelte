@@ -12,6 +12,8 @@ import org.springframework.data.domain.Example;
 import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.repository.StudentRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.StudentProvider;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class StudentProviderImpl implements StudentProvider{
 
@@ -91,13 +93,49 @@ public class StudentProviderImpl implements StudentProvider{
     }
 
     @Override
-    public Optional<List<Student>> findByGroup(Group group) {
+    public List<Student> findByGroup(Group group) {
         return this.repository.findByGroup(group);
     }
 
     @Override
-    public Optional<List<Student>> findByGrade(int grade) {
+    public List<Student> findByGrade(int grade) {
         return this.repository.findByGrade(grade);
+    }
+
+    @Override
+    public Page<Student> findByNameLike(String name, Pageable pageable) {
+        return this.repository.findByNameLike(name, pageable);
+    }
+
+    @Override
+    public Page<Student> findByGraduated(Date graduated, Pageable pageable) {
+        return this.repository.findByGraduated(graduated, pageable);
+    }
+
+    @Override
+    public Page<Student> searchGraduated(Date start, Date end, Pageable pageable) {
+        return this.repository.searchGraduated(start, end, pageable);
+    }
+
+    @Override
+    public Page<Student> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Student> search(Student item, Pageable pageable) {
+        Example<Student> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
+    }
+
+    @Override
+    public Page<Student> findByGroup(Group group, Pageable pageable) {
+        return this.repository.findByGroup(group, pageable);
+    }
+
+    @Override
+    public Page<Student> findByGrade(int grade, Pageable pageable) {
+        return this.repository.findByGrade(grade, pageable);
     }
     
 }

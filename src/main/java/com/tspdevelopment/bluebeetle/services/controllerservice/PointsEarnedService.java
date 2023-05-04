@@ -25,6 +25,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -133,6 +135,26 @@ public class PointsEarnedService extends BaseService<PointsEarned, PointsEarnedP
 
     public LocalDate getLastEventDate() {
         return this.provider.getLastEventDate();
+    }
+
+    public Page<PointsEarned> findByEventDate(LocalDate eventDate, Pageable pageable) {
+        return this.provider.findByEventDate(eventDate, pageable);
+    }
+
+    public Page<PointsEarned> searchEventDate(LocalDate start, LocalDate end, Pageable pageable) {
+        return this.provider.searchEventDate(start, end, pageable);
+    }
+
+    public Page<PointsEarned> findByStudent(Student student, Pageable pageable) {
+        return this.provider.findByStudent(student, pageable);
+    }
+
+    public Page<PointsEarned> searchStudentEventDate(Student student, LocalDate start, LocalDate end, Pageable pageable) {
+        return this.provider.searchStudentEventDate(student, start, end, pageable);
+    }
+
+    public Page<PointsEarned> findByStudentAndEventDate(Student student, LocalDate eventDate, Pageable pageable) {
+        return this.provider.findByStudentAndEventDate(student, eventDate, pageable);
     }
     
 }

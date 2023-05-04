@@ -11,8 +11,12 @@ import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import com.tspdevelopment.bluebeetle.services.controllerservice.StudentService;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +37,20 @@ public class StudentController extends BaseController<Student, StudentProvider, 
     
     @GetMapping("/findByName")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public List<Student> finByName(@RequestParam String name) throws IOException {
-        return this.service.findByNameLike(name);
+    public List<Student> finByName(@RequestParam String name, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
+        List<Student> list;
+        if(page.isPresent() && size.isEmpty()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
+            Page<Student> p = this.service.findByNameLike(name, pageable);
+            list = p.toList();
+        } else if(page.isPresent() && size.isPresent()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), Integer.getInteger(size.get(), 10));
+            Page<Student> p = this.service.findByNameLike(name, pageable);
+            list = p.toList();
+        } else {
+            list = service.findByNameLike(name);
+        }
+        return list;
     }
     
     @GetMapping("/export")

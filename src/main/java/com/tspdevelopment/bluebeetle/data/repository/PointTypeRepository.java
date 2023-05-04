@@ -12,6 +12,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.tspdevelopment.bluebeetle.data.model.Group;
 import com.tspdevelopment.bluebeetle.data.model.PointCategory;
 import com.tspdevelopment.bluebeetle.data.model.PointType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -23,6 +25,12 @@ public interface PointTypeRepository extends JpaRepository<PointType, UUID> {
     public List<PointType> findByPointCategory(PointCategory category);
 
     public List<PointType> findByGroup(Group group);
+    
+    public Page<PointType> findByPointCategoryAndGroup(PointCategory category, Group group, Pageable pageable);
+    
+    public Page<PointType> findByPointCategory(PointCategory category, Pageable pageable);
+
+    public Page<PointType> findByGroup(Group group, Pageable pageable);
 
     
     

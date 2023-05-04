@@ -32,4 +32,12 @@ public class UserService extends BaseService<User, UserProvider> {
         this.provider.increaseLoginAttempt(username);
     }
     
+    public User findByUsername(String username) {
+        return this.provider.findByUsername(username);
+    }
+    
+    public User fingByEmail(String email) {
+        return this.provider.findByEmail(email);
+    }
+    
 }

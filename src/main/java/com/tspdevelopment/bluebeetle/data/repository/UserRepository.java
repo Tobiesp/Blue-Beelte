@@ -18,4 +18,6 @@ import com.tspdevelopment.bluebeetle.data.model.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
     public Optional<User> findByUsername(String username);
+    
+    public Optional<User> findByEmail(String email);
 }

@@ -80,7 +80,7 @@ public class ReportController {
         this.pointCategoryService = new PointCategoryService(pointCategoryRepository);
         this.pointsEarnedService = new PointsEarnedService(pointsEarnedRepository, pointTableRepository,
                 runningTotalsRepository, studentRepository);
-        this.pointsSpentService = new PointsSpentService(pointsSpentProvider, runningTotalsRepository);
+        this.pointsSpentService = new PointsSpentService(pointsSpentProvider, runningTotalsRepository, studentRepository);
         this.pointTypeService = new PointTypeService(pointTableRepository, pointCategoryRepository);
         this.roleService = new RoleService(roleRepository, userRepository);
         this.userService = new UserService(userRepository);

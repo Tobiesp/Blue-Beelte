@@ -11,6 +11,8 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tspdevelopment.bluebeetle.data.model.Group;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -20,5 +22,9 @@ public interface GroupRepository extends JpaRepository<Group, UUID> {
     public Optional<Group> findByName(String name);
 
     public List<Group> findByNameLike(String name);
+    
+    public Optional<Group> findByName(String name, Pageable pageable);
+
+    public Page<Group> findByNameLike(String name, Pageable pageable);
     
 }

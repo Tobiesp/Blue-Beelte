@@ -26,9 +26,12 @@ import com.tspdevelopment.bluebeetle.provider.interfaces.UserProvider;
 import com.tspdevelopment.bluebeetle.response.UserUpdateView;
 import com.tspdevelopment.bluebeetle.services.controllerservice.UserService;
 import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -42,6 +45,10 @@ public class UserHALController extends AdminHALBaseController<User, UserProvider
     public UserHALController(UserRepository repository, JwtTokenUtil jwtUtillity) {
         this.service = new UserService(repository);
         this.jwtUtillity = jwtUtillity;
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).findByUsername(placeHolder)).withRel("findByName"));
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).fingByEmail(placeHolder)).withRel("fingByEmail"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).findByUsername(placeHolder)).withRel("findByName"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).fingByEmail(placeHolder)).withRel("fingByEmail"));
     }
     
     @Override
@@ -76,6 +83,34 @@ public class UserHALController extends AdminHALBaseController<User, UserProvider
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to access resource.");
         }
     }
+    
+    @GetMapping("/findByUsername")
+    @RolesAllowed({Role.ADMIN_ROLE})
+    public EntityModel<User> findByUsername(@RequestParam Optional<String> name) {
+        if(name.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must be supplied.s");
+        }
+        User u = this.service.findByUsername(name.get());
+        if(u == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+        } else {
+            return getModelForSingle(u);
+        }
+    }
+    
+    @GetMapping("/fingByEmail")
+    @RolesAllowed({Role.ADMIN_ROLE})
+    public EntityModel<User> fingByEmail(@RequestParam Optional<String> email) {
+        if(email.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must be supplied.s");
+        }
+        User u = this.service.fingByEmail(email.get());
+        if(u == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+        } else {
+            return getModelForSingle(u);
+        }
+    }
 
     @Override
     protected User getUser(UUID id) {
@@ -97,18 +132,34 @@ public class UserHALController extends AdminHALBaseController<User, UserProvider
     
     @Override
     protected EntityModel<User> getModelForSingle(User c) {
-        return EntityModel.of(c, //
-linkTo(methodOn(UserHALController.class).one(null, c.getId())).withSelfRel(),
-                linkTo(methodOn(UserHALController.class).updatePassword(null, c.getId(), null)).withSelfRel(),
-                linkTo(methodOn(UserHALController.class).search(null)).withSelfRel(),
-                linkTo(methodOn(UserHALController.class).all()).withSelfRel());
+        Link[] list = this.getLinkListForSingle(c.getId());
+        Link[] l2 = new Link[list.length+1];
+        for(int i=0; i<list.length; i++) {
+            if(i == 0) {
+                l2[0] = list[i];
+                continue;
+            } else if(i == 1) {
+                l2[1] = linkTo(methodOn(UserHALController.class).updatePassword(null, c.getId(), null)).withRel("updatePassword");
+            }
+            l2[i+1] = list[1];
+        }
+        return EntityModel.of(c, l2);
     }
     
     @Override
-    protected EntityModel<User> getModelForList(User c) {
-        return EntityModel.of(c, //
-linkTo(methodOn(UserHALController.class).one(null, c.getId())).withSelfRel(),
-                linkTo(methodOn(UserHALController.class).updatePassword(null, c.getId(), null)).withSelfRel());
+    protected EntityModel<User> getModelForListItem(User c) {
+        Link[] list = this.getLinkListForListItem(c.getId());
+        Link[] l2 = new Link[list.length+1];
+        for(int i=0; i<list.length; i++) {
+            if(i == 0) {
+                l2[0] = list[i];
+                continue;
+            } else if(i == 1) {
+                l2[1] = linkTo(methodOn(UserHALController.class).updatePassword(null, c.getId(), null)).withRel("updatePassword");
+            }
+            l2[i+1] = list[1];
+        }
+        return EntityModel.of(c, l2);
     }
     
 }

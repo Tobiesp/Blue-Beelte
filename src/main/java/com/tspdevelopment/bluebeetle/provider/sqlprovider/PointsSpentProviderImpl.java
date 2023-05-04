@@ -12,6 +12,8 @@ import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.repository.PointsSpentRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointsSpentProvider;
 import java.time.LocalDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class PointsSpentProviderImpl implements PointsSpentProvider {
 
@@ -91,6 +93,37 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
     @Override
     public List<PointsSpent> searchStudentEventDate(Student student, LocalDate start, LocalDate end) {
         return this.repository.searchStudentEventDate(student, start, end);
+    }
+
+    @Override
+    public Page<PointsSpent> findByStudent(Student student, Pageable pageable) {
+        return this.repository.findByStudent(student, pageable);
+    }
+
+    @Override
+    public Page<PointsSpent> findByEventDate(LocalDate eventDate, Pageable pageable) {
+        return this.repository.findByEventDate(eventDate, pageable);
+    }
+
+    @Override
+    public Page<PointsSpent> searchEventDate(LocalDate start, LocalDate end, Pageable pageable) {
+        return this.repository.searchEventDate(start, end, pageable);
+    }
+
+    @Override
+    public Page<PointsSpent> searchStudentEventDate(Student student, LocalDate start, LocalDate end, Pageable pageable) {
+        return this.repository.searchStudentEventDate(student, start, end, pageable);
+    }
+
+    @Override
+    public Page<PointsSpent> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<PointsSpent> search(PointsSpent item, Pageable pageable) {
+        Example<PointsSpent> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
     }
     
 }

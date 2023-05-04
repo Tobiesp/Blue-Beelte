@@ -9,10 +9,11 @@ import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.repository.StudentRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.StudentProvider;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.StudentProviderImpl;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -45,19 +46,31 @@ public class StudentService extends BaseService<Student, StudentProvider> {
     }
 
     public List<Student> findByGroup(Group group) {
-        Optional<List<Student>> ols = this.provider.findByGroup(group);
-        if(ols.isPresent()) {
-            return ols.get();
-        }
-        return new ArrayList<>();
+        return this.provider.findByGroup(group);
     }
 
     public List<Student> findByGrade(int grade) {
-        Optional<List<Student>> ols = this.provider.findByGrade(grade);
-        if(ols.isPresent()) {
-            return ols.get();
-        }
-        return new ArrayList<>();
+        return this.provider.findByGrade(grade);
+    }
+    
+    public Page<Student> findByGraduated(Date graduated, Pageable pageable){
+        return this.provider.findByGraduated(graduated, pageable);
+    }
+
+    public Page<Student> searchGraduated(Date start, Date end, Pageable pageable){
+        return this.provider.searchGraduated(start, end, pageable);
+    }
+
+    public Page<Student> findByNameLike(String name, Pageable pageable) {
+        return this.provider.findByNameLike(name, pageable);
+    }
+
+    public Page<Student> findByGroup(Group group, Pageable pageable) {
+        return this.provider.findByGroup(group, pageable);
+    }
+
+    public Page<Student> findByGrade(int grade, Pageable pageable) {
+        return this.provider.findByGrade(grade, pageable);
     }
     
 }

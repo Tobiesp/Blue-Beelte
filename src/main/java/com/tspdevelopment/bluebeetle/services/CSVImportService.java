@@ -59,7 +59,7 @@ public class CSVImportService {
         this.pointCategoryService = new PointCategoryService(pointCategoryRepository);
         this.pointsEarnedService = new PointsEarnedService(pointsEarnedRepository, pointTypeRepository,
                 runningTotalsRepository, studentRepository);
-        this.pointsSpentService = new PointsSpentService(pointsSpentRepository, runningTotalsRepository);
+        this.pointsSpentService = new PointsSpentService(pointsSpentRepository, runningTotalsRepository, studentRepository);
         this.studentService = new StudentService(studentRepository);
     }
     

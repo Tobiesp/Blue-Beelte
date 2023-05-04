@@ -14,6 +14,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.tspdevelopment.bluebeetle.data.model.Group;
 import com.tspdevelopment.bluebeetle.data.model.Student;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -21,11 +23,27 @@ import com.tspdevelopment.bluebeetle.data.model.Student;
  */
 public interface StudentRepository extends JpaRepository<Student, UUID> {
     public Optional<Student> findByName(String name);
+    
     public List<Student> findByNameLike(String name);
-    public Optional<List<Student>> findByGroup(Group group);
-    public Optional<List<Student>> findByGrade(int grade);
+    
+    public List<Student> findByGroup(Group group);
+    
+    public List<Student> findByGrade(int grade);
+    
     public List<Student> findByGraduated(Date graduated);
+    
     @Query("SELECT u FROM Student u WHERE u.graduated >= ?1 and u.graduated <= ?2")
     public List<Student> searchGraduated(Date start, Date end);
+    
+    public Page<Student> findByNameLike(String name, Pageable pageable);
+    
+    public Page<Student> findByGraduated(Date graduated, Pageable pageable);
+    
+    @Query("SELECT u FROM Student u WHERE u.graduated >= ?1 and u.graduated <= ?2")
+    public Page<Student> searchGraduated(Date start, Date end, Pageable pageable);
+    
+    public Page<Student> findByGroup(Group group, Pageable pageable);
+    
+    public Page<Student> findByGrade(int grade, Pageable pageable);
     
 }

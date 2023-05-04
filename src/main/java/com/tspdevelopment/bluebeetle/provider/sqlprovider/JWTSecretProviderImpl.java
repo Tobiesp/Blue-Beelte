@@ -8,6 +8,8 @@ import java.util.*;
 import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class JWTSecretProviderImpl implements JWTSecretProvider{
 
@@ -73,6 +75,17 @@ public class JWTSecretProviderImpl implements JWTSecretProvider{
     @Override
     public Optional<JWTSecret> findBySecretId(String secretId) {
         return this.repository.findBySecretId(secretId);
+    }
+
+    @Override
+    public Page<JWTSecret> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<JWTSecret> search(JWTSecret item, Pageable pageable) {
+        Example<JWTSecret> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
     }
     
 }

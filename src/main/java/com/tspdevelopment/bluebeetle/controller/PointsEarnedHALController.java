@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
@@ -46,22 +47,26 @@ public class PointsEarnedHALController extends BaseHALController<PointsEarned, P
     
     public PointsEarnedHALController(PointsEarnedRepository repository, PointTypeRepository ptRepository, RunningTotalsRepository rtRepository, StudentRepository stdRepository) {
         this.service = new PointsEarnedService(repository, ptRepository, rtRepository, stdRepository);
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).getPointsEarnedByStudentAndEvent(placeHolder, placeHolder)).withRel("getCollection"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).setPointsEarnedCollection(null)).withRel("AddCollection"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
     }
     
-    @GetMapping("/findByStudentAndEvent")
+    @GetMapping("/collection")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public EntityModel<PointsEarnedCollection> getPointsEarnedByStudentAndEvent(@RequestParam String studentId, @RequestParam String eventDate) {
-        if(studentId == null) {
+    public EntityModel<PointsEarnedCollection> getPointsEarnedByStudentAndEvent(@RequestParam Optional<String> studentId, @RequestParam Optional<String> eventDate) {
+        if(studentId.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing student id.");
         }
-        if(eventDate == null) {
+        if(eventDate.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing event date.");
         }
-        UUID stdId = UUID.fromString(studentId);
+        UUID stdId = UUID.fromString(studentId.get());
         DateFormat dateFormatter = new SimpleDateFormat("M/d/yyyy");
         LocalDate date;
         try {
-            date = dateFormatter.parse(eventDate).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            date = dateFormatter.parse(eventDate.get()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         } catch (ParseException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event date in bad format. Should be in M/d/yyyy: " + eventDate);
         }
@@ -74,14 +79,12 @@ public class PointsEarnedHALController extends BaseHALController<PointsEarned, P
         pec.setEventDate(date);
         pec.setStudent(std);
         pec.setPoints(points);
-        return EntityModel.of(pec, 
-                linkTo(methodOn(this.getClass()).all()).withSelfRel(), 
-                linkTo(methodOn(this.getClass()).search(null)).withSelfRel());
+        return EntityModel.of(pec, this.getLinkListForSingle(null));
     }
     
-    @PostMapping("/addCollection")
+    @PostMapping("/collection")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public void setPointsEarnedCollection(@RequestBody PointsEarnedCollection collection) {
+    public ResponseEntity<?> setPointsEarnedCollection(@RequestBody PointsEarnedCollection collection) {
         if(collection == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing request body.");
         }
@@ -92,7 +95,7 @@ public class PointsEarnedHALController extends BaseHALController<PointsEarned, P
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing event date.");
         }
         if(collection.getPoints().isEmpty()) {
-            return;
+            return ResponseEntity.accepted().build();
         }
         Student student = this.service.getStudent(collection.getStudent().getId());
         LocalDate eventDate = collection.getEventDate();
@@ -101,11 +104,12 @@ public class PointsEarnedHALController extends BaseHALController<PointsEarned, P
             pe.setEventDate(eventDate);
             this.service.replaceItem(pe, pe.getId());
         }
+        return ResponseEntity.ok().build();
     }
     
     @GetMapping("/export")
     @RolesAllowed({Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public ResponseEntity<?> exportToCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> exportToCSV(HttpServletResponse response) {
         String[] csvHeader = {"Student", "Group", "Grade", "Event Date", "Category", "Points"};
         String[] nameMapping = {"student:name", "student:group:name", "student:grade", "eventDate", "pointCategory:category", "total"};
         return this.baseExportToCSV(response, csvHeader, nameMapping);

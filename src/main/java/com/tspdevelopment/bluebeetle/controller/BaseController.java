@@ -16,11 +16,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +34,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -45,11 +50,24 @@ public abstract class BaseController<T extends BaseItem, R extends BaseProvider<
     @Autowired
     protected ImportJobService importService;
     protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getGenericName());
+    protected final int defaultPageSize = 100;
 
     @GetMapping("/")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public List<T> all(){
-        return service.getAllItems();
+    public List<T> all(@RequestParam Optional<String> page, @RequestParam Optional<String> size){
+        List<T> list;
+        if(page.isPresent() && size.isEmpty()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
+            Page<T> p = this.service.getAllItems(pageable);
+            list = p.toList();
+        } else if(page.isPresent() && size.isPresent()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), Integer.getInteger(size.get(), 10));
+            Page<T> p = this.service.getAllItems(pageable);
+            list = p.toList();
+        } else {
+            list = service.getAllItems();
+        }
+        return list;
     }
     
     @PostMapping("/")
@@ -84,8 +102,20 @@ public abstract class BaseController<T extends BaseItem, R extends BaseProvider<
     
     @PostMapping("/search")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public List<T> search(@RequestBody T item){
-        return service.search(item);
+    public List<T> search(@RequestBody T item, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
+        List<T> list;
+        if(page.isPresent() && size.isEmpty()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
+            Page<T> p = this.service.search(item, pageable);
+            list = p.toList();
+        } else if(page.isPresent() && size.isPresent()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), Integer.getInteger(size.get(), 10));
+            Page<T> p = this.service.search(item, pageable);
+            list = p.toList();
+        } else {
+            list = service.getAllItems();
+        }
+        return list;
     }
     
     private String getGenericName(){
@@ -93,7 +123,7 @@ public abstract class BaseController<T extends BaseItem, R extends BaseProvider<
                 .getGenericSuperclass()).getActualTypeArguments()[0]).getTypeName();
     }
     
-    protected ResponseEntity<?> baseExportToCSV(HttpServletResponse response, String[] csvHeader, String[] nameMapping) throws IOException {
+    protected ResponseEntity<?> baseExportToCSV(HttpServletResponse response, String[] csvHeader, String[] nameMapping) {
         response.setContentType("text/csv");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateTime = dateFormatter.format(new Date());
@@ -104,17 +134,22 @@ public abstract class BaseController<T extends BaseItem, R extends BaseProvider<
          
         List<T> list = this.service.getAllItems();
  
-        CSVWriter csvWriter = new CSVWriter(response.getWriter(), CSVPreference.STANDARD_PREFERENCE);
+        try {
+            CSVWriter csvWriter = new CSVWriter(response.getWriter(), CSVPreference.STANDARD_PREFERENCE);
 
-        csvWriter.writeHeader(csvHeader);
+            csvWriter.writeHeader(csvHeader);
 
-        for (T i : list) {
-            try {
-                csvWriter.write(i, nameMapping);
-            } catch (NoSuchFieldException ex) {
-                logger.error("Unable to find the Specified field in the Object.", ex);
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Export failed!");
+            for (T i : list) {
+                try {
+                    csvWriter.write(i, nameMapping);
+                } catch (NoSuchFieldException ex) {
+                    logger.error("Unable to find the Specified field in the Object.", ex);
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Export failed!");
+                }
             }
+        } catch (IOException ex) {
+            logger.error("Unable to read CSV file.", ex);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Export failed!");
         }
         return ResponseEntity.ok().build();
     }

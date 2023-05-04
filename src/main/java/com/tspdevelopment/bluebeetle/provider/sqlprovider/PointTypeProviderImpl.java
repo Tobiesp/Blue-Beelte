@@ -12,6 +12,8 @@ import com.tspdevelopment.bluebeetle.data.model.PointCategory;
 import com.tspdevelopment.bluebeetle.data.model.PointType;
 import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointTypeProvider;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class PointTypeProviderImpl implements PointTypeProvider{
 
@@ -84,6 +86,32 @@ public class PointTypeProviderImpl implements PointTypeProvider{
     @Override
     public List<PointType> findByCategoryAndGroup(PointCategory pointCategory, Group group) {
         return this.repository.findByPointCategoryAndGroup(pointCategory, group);
+    }
+
+    @Override
+    public Page<PointType> findByGroup(Group group, Pageable pageable) {
+        return this.repository.findByGroup(group, pageable);
+    }
+
+    @Override
+    public Page<PointType> findByCategory(PointCategory pointCategory, Pageable pageable) {
+        return this.repository.findByPointCategory(pointCategory, pageable);
+    }
+
+    @Override
+    public Page<PointType> findByCategoryAndGroup(PointCategory pointCategory, Group group, Pageable pageable) {
+        return this.repository.findByPointCategoryAndGroup(pointCategory, group, pageable);
+    }
+
+    @Override
+    public Page<PointType> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<PointType> search(PointType item, Pageable pageable) {
+        Example<PointType> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
     }
     
 }

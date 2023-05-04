@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -70,6 +72,17 @@ public class PointCategoryProviderImpl implements PointCategoryProvider {
     @Override
     public Optional<PointCategory> findByCategory(String category) {
         return this.repository.findByCategory(category);
+    }
+
+    @Override
+    public Page<PointCategory> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<PointCategory> search(PointCategory item, Pageable pageable) {
+        Example<PointCategory> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
     }
     
 }

@@ -11,4 +11,8 @@ public interface UserProvider extends BaseProvider<User>{
     public void updateJwtTokenId(UUID userId, UUID tokenId);
     
     public void increaseLoginAttempt(String username);
+    
+    public User findByUsername(String username);
+    
+    public User findByEmail(String email);
 }

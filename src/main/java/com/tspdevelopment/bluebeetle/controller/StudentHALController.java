@@ -11,18 +11,24 @@ import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import com.tspdevelopment.bluebeetle.services.controllerservice.StudentService;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  *
@@ -34,18 +40,33 @@ public class StudentHALController extends BaseHALController<Student, StudentProv
     
     public StudentHALController(StudentRepository repository) {
         this.service = new StudentService(repository);
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).findByName(placeHolder, placeHolder, placeHolder)).withRel("findByName"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).findByName(placeHolder, placeHolder, placeHolder)).withRel("findByName"));
     }
     
     @GetMapping("/findByName")
     @RolesAllowed({Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public CollectionModel<EntityModel<Student>> finByName(@RequestParam String name) throws IOException {
-        List<EntityModel<Student>> cList = this.service.findByNameLike(name).stream()
-        .map(c -> getModelForList(c))
+    public CollectionModel<EntityModel<Student>> findByName(@RequestParam Optional<String> name, @RequestParam Optional<String> page, @RequestParam Optional<String> size){
+        if(name.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must supply a student name.");
+        }
+        List<Student> list;
+        if(page.isPresent() && size.isEmpty()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), defaultPageSize);
+            Page<Student> p = this.service.findByNameLike(name.get(), pageable);
+            list = p.toList();
+        } else if(page.isPresent() && size.isPresent()) {
+            Pageable pageable = PageRequest.of(Integer.getInteger(page.get(), 10), Integer.getInteger(size.get(), 10));
+            Page<Student> p = this.service.findByNameLike(name.get(), pageable);
+            list = p.toList();
+        } else {
+            list = service.findByNameLike(name.get());
+        }
+        List<EntityModel<Student>> cList = list.stream()
+        .map(c -> getModelForListItem(c))
         .collect(Collectors.toList());
 
-        return CollectionModel.of(cList, 
-                    linkTo(methodOn(this.getClass()).search(null)).withSelfRel(),
-                    linkTo(methodOn(this.getClass()).all()).withSelfRel());
+        return getModelForList(cList);
     }
     
     @GetMapping("/export")

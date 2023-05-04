@@ -10,6 +10,8 @@ import org.springframework.data.domain.Example;
 import com.tspdevelopment.bluebeetle.data.model.ImportJob;
 import com.tspdevelopment.bluebeetle.data.repository.ImportJobRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.ImportJobProvider;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class ImportJobProviderImpl implements ImportJobProvider{
 
@@ -75,6 +77,17 @@ public class ImportJobProviderImpl implements ImportJobProvider{
     @Override
     public List<ImportJob> findByFileNameLike(String name) {
         return this.repository.findByFileNameLike(name);
+    }
+
+    @Override
+    public Page<ImportJob> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<ImportJob> search(ImportJob item, Pageable pageable) {
+        Example<ImportJob> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
     }
     
 }

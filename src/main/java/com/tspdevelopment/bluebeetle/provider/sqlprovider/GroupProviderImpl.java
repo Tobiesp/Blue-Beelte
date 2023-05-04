@@ -10,6 +10,8 @@ import org.springframework.data.domain.Example;
 import com.tspdevelopment.bluebeetle.data.model.Group;
 import com.tspdevelopment.bluebeetle.data.repository.GroupRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.GroupProvider;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class GroupProviderImpl implements GroupProvider{
 
@@ -74,6 +76,22 @@ public class GroupProviderImpl implements GroupProvider{
     @Override
     public List<Group> findByNameLike(String name) {
         return this.repository.findByNameLike(name);
+    }
+
+    @Override
+    public Page<Group> findByNameLike(String name, Pageable pageable) {
+        return this.repository.findByNameLike(name, pageable);
+    }
+    
+    @Override
+    public Page<Group> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Group> search(Group item, Pageable pageable) {
+        Example<Group> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
     }
     
 }

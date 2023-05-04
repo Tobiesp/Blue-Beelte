@@ -10,6 +10,8 @@ import org.springframework.data.domain.Example;
 import com.tspdevelopment.bluebeetle.data.model.User;
 import com.tspdevelopment.bluebeetle.data.repository.UserRepository;
 import com.tspdevelopment.bluebeetle.provider.interfaces.UserProvider;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class UserProviderImpl implements UserProvider {
 
@@ -110,6 +112,27 @@ public class UserProviderImpl implements UserProvider {
             user.get().setFailedAttempt(user.get().getFailedAttempt()+1);
             this.repository.save(user.get());
         }
+    }
+
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<User> search(User item, Pageable pageable) {
+        Example<User> example = Example.of(item);
+        return this.repository.findAll(example, pageable);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return this.repository.findByUsername(username).orElse(null);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return this.repository.findByEmail(email).orElse(null);
     }
 
 }
