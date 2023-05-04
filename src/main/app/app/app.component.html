@@ -1,19 +1,30 @@
 ﻿<!-- nav -->
 <mat-toolbar-row *ngIf="user">
-    <button mat-button (click)="NavigateToHome()">Home</button>
-    <button mat-button (click)="NavigateToStudents()">Students</button>
+    <button mat-button (click)="NavigateToHome()" *ngIf="hasReadAccess()">Home</button>
+    <button mat-button (click)="NavigateToStudents()" *ngIf="hasWriteAccess()">Students</button>
     <button mat-button [matMenuTriggerFor]="points">Points</button>
-    <mat-menu #points="matMenu">
-        <button mat-menu-item (click)="NavigateToAddEarnedPoints()">Add Earned Points</button>
-        <button mat-menu-item (click)="NavigateToAddSpentPoints()">Add Spent Points</button>
-        <button mat-menu-item (click)="NavigateToPointsHistory()">Student Point History</button>
+    <mat-menu #points="matMenu" *ngIf="hasReadAccess()">
+        <button mat-menu-item (click)="NavigateToAddEarnedPoints()" *ngIf="hasWriteAccess()">Add Earned Points</button>
+        <button mat-menu-item (click)="NavigateToAddSpentPoints()" *ngIf="hasWriteAccess()">Add Spent Points</button>
+        <button mat-menu-item (click)="NavigateToPointsHistory()" *ngIf="hasReadAccess()">Student Point History</button>
     </mat-menu>
-    <button mat-button [matMenuTriggerFor]="checkin">Check In</button>
-    <mat-menu #checkin="matMenu">
-        <button mat-menu-item (click)="NavigateToEarnedPointsCheckIn()">Earn Points Check In Form</button>
-        <button mat-menu-item (click)="NavigateToSpentPointsCheckIn()">Spent Points Check In Form</button>
+    <button mat-button [matMenuTriggerFor]="checkin" *ngIf="user">Check In</button>
+    <mat-menu #checkin="matMenu" *ngIf="user">
+        <button mat-menu-item (click)="NavigateToEarnedPointsCheckIn()" *ngIf="hasWriteAccess()">Earn Points Check In Form</button>
+        <button mat-menu-item (click)="NavigateToSpentPointsCheckIn()" *ngIf="hasWriteAccess()">Spent Points Check In Form</button>
     </mat-menu>
-    <button mat-button (click)="NavigateToUsers()">Users</button>
+    <!-- <button mat-button [matMenuTriggerFor]="reports" *ngIf="user">Reports</button>
+    <mat-menu #reports="matMenu" *ngIf="user">
+        <button mat-menu-item (click)="NavigateToEarnedPointsCheckIn()" *ngIf="user">Earn Points Check In Form</button>
+        <button mat-menu-item (click)="NavigateToSpentPointsCheckIn()" *ngIf="user">Spent Points Check In Form</button>
+    </mat-menu> -->
+    <button mat-button [matMenuTriggerFor]="admin" *hasAdminAccess()="user">Admin</button>
+    <mat-menu #admin="matMenu" *ngIf="user">
+        <button mat-button (click)="NavigateToUsers()" *ngIf="hasAdminAccess()">Users</button>
+        <button mat-button (click)="NavigateToConfig()" *ngIf="hasAdminAccess()">Config</button>
+        <button mat-button (click)="NavigateToImport()" *ngIf="hasAdminAccess()">Import</button>
+        <button mat-button (click)="NavigateToExport()" *ngIf="hasAdminAccess()">Export</button>
+    </mat-menu>
     <button mat-button (click)="logout()">Logout</button>
 </mat-toolbar-row>
 

@@ -14,6 +14,22 @@ export class AppComponent {
         this.accountService.user.subscribe(x => this.user = x);
     }
 
+    hasNoAccess(): boolean {
+        return this.accountService.hasNoAccess();
+    }
+
+    hasReadAccess(): boolean {
+        return this.accountService.hasReadAccess();
+    }
+
+    hasWriteAccess(): boolean {
+        return this.accountService.hasWriteAccess();
+    }
+
+    hasAdminAccess(): boolean {
+        return this.accountService.hasAdminAccess();
+    }
+
     logout() {
         this.accountService.logout();
     }
@@ -24,10 +40,6 @@ export class AppComponent {
 
     NavigateToStudents() {
         this.router.navigate(['/students']);
-    }
-
-    NavigateToUsers() {
-        this.router.navigate(['/users']);
     }
 
     NavigateToAddEarnedPoints() {
@@ -48,5 +60,21 @@ export class AppComponent {
 
     NavigateToSpentPointsCheckIn() {
         this.router.navigate(['/checkin/spent']);
+    }
+
+    NavigateToUsers() {
+        this.router.navigate(['/users']);
+    }
+
+    NavigateToConfig() {
+        this.router.navigate(['/config']);
+    }
+
+    NavigateToImport() {
+        this.router.navigate(['/import']);
+    }
+
+    NavigateToExport() {
+        this.router.navigate(['/export']);
     }
 }

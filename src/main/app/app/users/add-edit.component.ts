@@ -35,7 +35,7 @@ export class AddEditComponent implements OnInit {
             username: ['', Validators.required],
             role: ['', Validators.required],
             // password only required in add mode
-            password: ['', [Validators.minLength(6), ...(!this.id ? [Validators.required] : [])]]
+            password: ['', [Validators.minLength(8), ...(!this.id ? [Validators.required] : [])]]
         });
 
         this.title = 'Add User';
@@ -52,9 +52,6 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    // convenience getter for easy access to form fields
-    get f() { return this.form.controls; }
-
     onSubmit() {
         this.submitted = true;
 
@@ -63,7 +60,9 @@ export class AddEditComponent implements OnInit {
 
         // stop here if form is invalid
         if (this.form.invalid) {
-            return;
+            if (this.form.get('role')?.value === '') {
+                return;
+            }
         }
 
         this.submitting = true;

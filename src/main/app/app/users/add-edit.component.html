@@ -38,7 +38,7 @@
     </div>
     <div class="row">
         <div class="mb-3 col">
-            <label class="form-label">Role</label>
+            <label class="form-label">User Role</label>
             <Select formControlName="role" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.role.errors }" >
                 <option disabled>Select Role</option>
                 <option *ngFor="let rle of roles" value="{{rle.id}}">

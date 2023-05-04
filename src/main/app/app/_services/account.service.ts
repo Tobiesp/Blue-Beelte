@@ -103,11 +103,11 @@ export class AccountService {
     }
 
     hasReadAccess(): boolean {
-        return this.userValue?.authorities?.authority == "ROLE_READ_ROLE";
+        return this.userValue?.authorities?.authority == "ROLE_READ_ROLE" || this.hasWriteAccess() || this.hasAdminAccess();
     }
 
     hasWriteAccess(): boolean {
-        return this.userValue?.authorities?.authority == "ROLE_WRITE_ROLE";
+        return this.userValue?.authorities?.authority == "ROLE_WRITE_ROLE" || this.hasAdminAccess();
     }
 
     hasAdminAccess(): boolean {
