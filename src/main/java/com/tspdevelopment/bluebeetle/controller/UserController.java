@@ -182,6 +182,9 @@ public class UserController extends AdminBaseController<User, UserProvider, User
             }
             l2[i+1] = list[1];
         }
+        if(l2[l2.length -1] == null) {
+            l2[l2.length -1] = linkTo(methodOn(UserController.class).halUpdatePassword(null, c.getId(), null)).withRel("updatePassword");
+        }
         return EntityModel.of(c, l2);
     }
     
@@ -197,6 +200,9 @@ public class UserController extends AdminBaseController<User, UserProvider, User
                 l2[1] = linkTo(methodOn(UserController.class).halUpdatePassword(null, c.getId(), null)).withRel("updatePassword");
             }
             l2[i+1] = list[1];
+        }
+        if(l2[l2.length -1] == null) {
+            l2[l2.length -1] = linkTo(methodOn(UserController.class).halUpdatePassword(null, c.getId(), null)).withRel("updatePassword");
         }
         return EntityModel.of(c, l2);
     }
