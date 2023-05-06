@@ -1,0 +1,19 @@
+﻿<div class="card">
+    <h4 class="card-header">Add Points Earned</h4>
+    <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <mat-form-field class="example-full-width" appearance="fill">
+                <label class="form-label">Student</label>
+                <input type="text" placeholder="Student name" formControlName="student" matInput [matAutocomplete]="auto" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.student.errors }" />
+                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                    <mat-option *ngFor="let student of filteredStudents | async" value="student">
+                      {{student}}
+                    </mat-option>
+                  </mat-autocomplete>
+                <div *ngIf="submitted && f.student.errors" class="invalid-feedback">
+                    <div *ngIf="f.student.errors.required">Student is required</div>
+                </div>
+            </mat-form-field>
+        </form>
+    </div>
+</div>

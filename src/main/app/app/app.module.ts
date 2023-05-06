@@ -11,7 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { JwtInterceptor, ErrorInterceptor } from './_helpers';
 import { AppComponent } from './app.component';
 import { AlertComponent } from './_components';
-import { HomeComponent } from './home';;
+import { HomeComponent } from './home';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 @NgModule({

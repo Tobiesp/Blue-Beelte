@@ -43,11 +43,11 @@ export class AppComponent {
     }
 
     NavigateToAddEarnedPoints() {
-        this.router.navigate(['/points/earned']);
+        this.router.navigate(['/points/earned/add']);
     }
 
     NavigateToAddSpentPoints() {
-        this.router.navigate(['/points/spent']);
+        this.router.navigate(['/points/spent/add']);
     }
 
     NavigateToPointsHistory() {
@@ -76,5 +76,9 @@ export class AppComponent {
 
     NavigateToExport() {
         this.router.navigate(['/export']);
+    }
+
+    navigateToUserConfig() {
+        this.router.navigate(['/user/config']);
     }
 }

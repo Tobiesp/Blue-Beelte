@@ -43,7 +43,7 @@ export class AccountService {
     }
 
     register(user: User) {
-        return this.http.post(`${environment.apiUrl}/api/users/signup`, user);
+        return this.http.post(`${environment.apiUrl}/api/public/signup`, user);
     }
 
     getAllUsers() {
@@ -99,18 +99,18 @@ export class AccountService {
     }
 
     hasNoAccess(): boolean {
-        return this.userValue!.authorities?.authority == "ROLE_NO_ROLE";
+        return this.userValue!.userRole?.authority === "ROLE_NO_ROLE";
     }
 
     hasReadAccess(): boolean {
-        return this.userValue?.authorities?.authority == "ROLE_READ_ROLE" || this.hasWriteAccess() || this.hasAdminAccess();
+        return (this.userValue?.userRole?.authority === "ROLE_READ_ROLE") || this.hasWriteAccess() || this.hasAdminAccess();
     }
 
     hasWriteAccess(): boolean {
-        return this.userValue?.authorities?.authority == "ROLE_WRITE_ROLE" || this.hasAdminAccess();
+        return (this.userValue?.userRole?.authority === "ROLE_WRITE_ROLE") || this.hasAdminAccess();
     }
 
     hasAdminAccess(): boolean {
-        return this.userValue?.authorities?.authority == "ROLE_ADMIN_ROLE";
+        return (this.userValue?.userRole?.authority === "ROLE_ADMIN_ROLE");
     }
 }

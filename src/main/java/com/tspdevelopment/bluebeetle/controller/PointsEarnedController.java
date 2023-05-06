@@ -8,6 +8,7 @@ import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.bluebeetle.data.repository.StudentRepository;
+import com.tspdevelopment.bluebeetle.helpers.TimeHelper;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointsEarnedProvider;
 import com.tspdevelopment.bluebeetle.response.ImportJobResponse;
 import com.tspdevelopment.bluebeetle.response.PointsEarnedCollection;
@@ -49,26 +50,32 @@ public class PointsEarnedController extends BaseController<PointsEarned, PointsE
     
     public PointsEarnedController(PointsEarnedRepository repository, PointTypeRepository ptRepository, RunningTotalsRepository rtRepository, StudentRepository stdRepository) {
         this.service = new PointsEarnedService(repository, ptRepository, rtRepository, stdRepository);
+        
         this.AddLinkForSingle(linkTo(methodOn(this.getClass()).halGetPointsEarnedByStudentAndEvent(placeHolder, placeHolder)).withRel("getCollection"));
-        this.AddLinkForList(linkTo(methodOn(this.getClass()).halSetPointsEarnedCollection(null)).withRel("AddCollection"));
-        this.AddLinkForList(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).halGetPossiblePoints(placeHolder)).withRel("getPossiblePoints"));
+        this.AddLinkForSingle(linkTo(methodOn(this.getClass()).halSetPointsEarnedCollection(null)).withRel("AddCollection"));
         this.AddLinkForSingle(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
+        
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).halSetPointsEarnedCollection(null)).withRel("AddCollection"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).halGetPointsEarnedByStudentAndEvent(placeHolder, placeHolder)).withRel("getCollection"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).halGetPossiblePoints(placeHolder)).withRel("getPossiblePoints"));
+        this.AddLinkForList(linkTo(methodOn(this.getClass()).exportToCSV(null)).withRel("export"));
     }
     
     @GetMapping(value = "/findByStudentAndEvent", produces = { "application/json" })
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
-    public PointsEarnedCollection getPointsEarnedByStudentAndEvent(@RequestParam String studentId, @RequestParam String eventDate) {
-        if(studentId == null) {
+    public PointsEarnedCollection getPointsEarnedByStudentAndEvent(@RequestParam Optional<String> studentId, @RequestParam Optional<String> eventDate) {
+        if(!studentId.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing student id.");
         }
-        if(eventDate == null) {
+        if(!eventDate.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing event date.");
         }
-        UUID stdId = UUID.fromString(studentId);
+        UUID stdId = UUID.fromString(studentId.get());
         DateFormat dateFormatter = new SimpleDateFormat("M/d/yyyy");
         LocalDate date;
         try {
-            date = dateFormatter.parse(eventDate).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            date = dateFormatter.parse(eventDate.get()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         } catch (ParseException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Event date in bad format. Should be in M/d/yyyy: " + eventDate);
         }
@@ -79,6 +86,25 @@ public class PointsEarnedController extends BaseController<PointsEarned, PointsE
         List<PointsEarned> points = this.service.findByStudentAndEventDate(std, date);
         PointsEarnedCollection pec = new PointsEarnedCollection();
         pec.setEventDate(date);
+        pec.setStudent(std);
+        pec.setPoints(points);
+        return pec;
+    }
+    
+    @GetMapping(value = "/getPossiblePoints", produces = { "application/json" })
+    @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public PointsEarnedCollection getPossiblePoints(@RequestParam Optional<String> studentId) {
+        if(!studentId.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing student id.");
+        }
+        UUID stdId = UUID.fromString(studentId.get());
+        Student std = this.service.getStudent(stdId);
+        if(std == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No student with that id.");
+        }
+        List<PointsEarned> points = this.service.getPossiblePoints(std);
+        PointsEarnedCollection pec = new PointsEarnedCollection();
+        pec.setEventDate(TimeHelper.getInstance().getPreviousEventDate());
         pec.setStudent(std);
         pec.setPoints(points);
         return pec;
@@ -132,6 +158,25 @@ public class PointsEarnedController extends BaseController<PointsEarned, PointsE
         List<PointsEarned> points = this.service.findByStudentAndEventDate(std, date);
         PointsEarnedCollection pec = new PointsEarnedCollection();
         pec.setEventDate(date);
+        pec.setStudent(std);
+        pec.setPoints(points);
+        return EntityModel.of(pec, this.getLinkListForSingle(null));
+    }
+    
+    @GetMapping(value = "/getPossiblePoints", produces = { "application/hal+json" })
+    @RolesAllowed({ Role.WRITE_ROLE, Role.ADMIN_ROLE })
+    public EntityModel<PointsEarnedCollection> halGetPossiblePoints(@RequestParam Optional<String> studentId) {
+        if(!studentId.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing student id.");
+        }
+        UUID stdId = UUID.fromString(studentId.get());
+        Student std = this.service.getStudent(stdId);
+        if(std == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No student with that id.");
+        }
+        List<PointsEarned> points = this.service.getPossiblePoints(std);
+        PointsEarnedCollection pec = new PointsEarnedCollection();
+        pec.setEventDate(TimeHelper.getInstance().getPreviousEventDate());
         pec.setStudent(std);
         pec.setPoints(points);
         return EntityModel.of(pec, this.getLinkListForSingle(null));

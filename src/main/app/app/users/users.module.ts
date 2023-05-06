@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MaterialModule } from '.././material.module';
 
 import { UsersRoutingModule } from './users-routing.module';
 import { LayoutComponent } from './layout.component';
@@ -11,7 +12,8 @@ import { AddEditComponent } from './add-edit.component';
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        UsersRoutingModule
+        UsersRoutingModule,
+        MaterialModule
     ],
     declarations: [
         LayoutComponent,

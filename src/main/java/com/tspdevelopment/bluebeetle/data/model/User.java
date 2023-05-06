@@ -1,6 +1,7 @@
 package com.tspdevelopment.bluebeetle.data.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tspdevelopment.bluebeetle.helpers.SecurityHelper;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +33,7 @@ import org.springframework.security.core.GrantedAuthority;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User implements UserDetails, BaseItem{
     
     @Id
@@ -83,14 +85,15 @@ public class User implements UserDetails, BaseItem{
     @Column()
     private String lastName;
 
-    @JsonIgnore
     @ManyToOne()
     private Role userRole;
     
+    @JsonIgnore
     public void setAuthorities(GrantedAuthority role) {
         this.userRole = (Role)role;
     }
     
+    @JsonIgnore
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
         HashSet<GrantedAuthority> hs = new HashSet<>();

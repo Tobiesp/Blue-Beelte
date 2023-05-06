@@ -152,7 +152,7 @@ public class AuthService {
             view.setId(u.get().getId().toString());
             Iterator<GrantedAuthority> it = u.get().getAuthorities().iterator();
             if(it.hasNext()){
-                view.setRole((Role) it.next());
+                view.setUserRole((Role) it.next());
             }
             view.setToken(token);
             return view;

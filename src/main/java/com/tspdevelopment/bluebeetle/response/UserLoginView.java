@@ -15,6 +15,6 @@ public class UserLoginView {
     private String firstName;
     private String lastName;
     private String token;
-    private Role role;
+    private Role userRole;
 
 }

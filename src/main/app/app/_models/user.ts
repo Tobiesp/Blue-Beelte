@@ -8,5 +8,5 @@ export class User {
     lastName?: string;
     token?: string;
     isDeleting?: boolean;
-    authorities?: Role;
+    userRole?: Role;
 }

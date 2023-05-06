@@ -3,6 +3,7 @@ package com.tspdevelopment.bluebeetle.docs;
 import java.util.List;
 import com.tspdevelopment.bluebeetle.data.model.Student;
 import com.tspdevelopment.bluebeetle.data.model.PointType;
+import com.tspdevelopment.bluebeetle.helpers.TimeHelper;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -91,7 +92,7 @@ public class GenerateReportDocs {
         sb.append("<body>");
 
         sb.append("<div class=\"header\"><h2>").append(group).append("</h2></div>");
-        sb.append("<div class=\"headerDate\"><h2>").append(getNextWendesday().format(CUSTOM_FORMATTER)).append("</h2></div>");
+        sb.append("<div class=\"headerDate\"><h2>").append(TimeHelper.getInstance().getNextEventDate().format(CUSTOM_FORMATTER)).append("</h2></div>");
 
         sb.append("<table>");
         sb.append("  <tr>");
@@ -130,7 +131,7 @@ public class GenerateReportDocs {
             }
         }
         sb.append("],");
-        sb.append("\"reportDate\": ").append("\"").append(getNextWendesday().format(CUSTOM_FORMATTER)).append("\",");
+        sb.append("\"reportDate\": ").append("\"").append(TimeHelper.getInstance().getNextEventDate().format(CUSTOM_FORMATTER)).append("\",");
         sb.append("\"group\": ").append("\"").append(group).append("\"");
         sb.append("}");
 
@@ -177,7 +178,7 @@ public class GenerateReportDocs {
         sb.append("<body>");
 
         sb.append("<div class=\"header\"><h2>").append(group).append("</h2></div>");
-        sb.append("<div class=\"headerDate\"><h2>").append(getNextWendesday().format(CUSTOM_FORMATTER)).append("</h2></div>");
+        sb.append("<div class=\"headerDate\"><h2>").append(TimeHelper.getInstance().getNextEventDate().format(CUSTOM_FORMATTER)).append("</h2></div>");
 
         sb.append("<table>");
         sb.append("  <tr>");
@@ -248,23 +249,11 @@ public class GenerateReportDocs {
             }
         }
         sb.append("],");
-        sb.append("\"reportDate\": ").append("\"").append(getNextWendesday().format(CUSTOM_FORMATTER)).append("\",");
+        sb.append("\"reportDate\": ").append("\"").append(TimeHelper.getInstance().getNextEventDate().format(CUSTOM_FORMATTER)).append("\",");
         sb.append("\"group\": ").append("\"").append(group).append("\"");
         sb.append("}");
 
         return sb.toString();
-    }
-
-    private LocalDateTime getNextWendesday() {
-        LocalDateTime date = LocalDateTime.now();
-
-        if((date.getDayOfWeek().equals(DayOfWeek.WEDNESDAY)) && (date.getHour() < 17)) {
-            return date;
-        }
-        do {
-            date.plusDays(1);
-        } while(!date.getDayOfWeek().equals(DayOfWeek.WEDNESDAY));
-        return date;
     }
 
     private static class GeneratePDFHolder {

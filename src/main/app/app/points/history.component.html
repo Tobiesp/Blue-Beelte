@@ -1,0 +1,32 @@
+﻿<h1>Points History</h1>
+<a routerLink="earned/add" class="btn btn-sm btn-success mb-2">Add Earned Points</a>
+<a routerLink="spent/add" class="btn btn-sm btn-success mb-2">Add Spents Points</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th style="width: 30%">Student Name</th>
+            <th style="width: 30%">Grade</th>
+            <th style="width: 30%">Group</th>
+            <th style="width: 10%"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let student of students">
+            <td>{{student.name}}</td>
+            <td>{{student.grade}}</td>
+            <td>{{student.group?.name}}</td>
+            <!-- <td style="white-space: nowrap">
+                <a routerLink="history/{{student.id}}" class="btn btn-sm btn-primary me-1">Student History</a>
+                <button class="btn btn-sm btn-danger btn-delete-student" [disabled]="student.isDeleting">
+                    <span *ngIf="student.isDeleting" class="spinner-border spinner-border-sm"></span>
+                    <span *ngIf="!student.isDeleting">Delete</span>
+                </button>
+            </td> -->
+        </tr>
+        <tr *ngIf="!students">
+            <td colspan="4" class="text-center">
+                <span class="spinner-border spinner-border-lg align-center"></span>
+            </td>
+        </tr>
+    </tbody>
+</table>

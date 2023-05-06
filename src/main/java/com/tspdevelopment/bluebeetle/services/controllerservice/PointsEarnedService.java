@@ -12,6 +12,7 @@ import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
 import com.tspdevelopment.bluebeetle.data.repository.PointsEarnedRepository;
 import com.tspdevelopment.bluebeetle.data.repository.RunningTotalsRepository;
 import com.tspdevelopment.bluebeetle.data.repository.StudentRepository;
+import com.tspdevelopment.bluebeetle.helpers.TimeHelper;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointTypeProvider;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointsEarnedProvider;
 import com.tspdevelopment.bluebeetle.provider.interfaces.RunningTotalsProvider;
@@ -22,6 +23,7 @@ import com.tspdevelopment.bluebeetle.provider.sqlprovider.RunningTotalsProviderI
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.StudentProviderImpl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -155,6 +157,22 @@ public class PointsEarnedService extends BaseService<PointsEarned, PointsEarnedP
 
     public Page<PointsEarned> findByStudentAndEventDate(Student student, LocalDate eventDate, Pageable pageable) {
         return this.provider.findByStudentAndEventDate(student, eventDate, pageable);
+    }
+
+    public List<PointsEarned> getPossiblePoints(Student std) {
+        List<PointType> ptList = ptProvider.findByGroup(std.getGroup());
+        List<PointsEarned> list = new ArrayList<>();
+        //TODO: Filter out points that are outside of cycle time.
+        for(PointType pt: ptList) {
+            PointsEarned pe = new PointsEarned();
+            pe.setStudent(std);
+            pe.setCreatedAt(LocalDateTime.now());
+            pe.setEventDate(TimeHelper.getInstance().getPreviousEventDate());
+            pe.setPointCategory(pt.getPointCategory());
+            pe.setTotal(pt.getTotalPoints());
+            list.add(pe);
+        }
+        return list;
     }
     
 }
