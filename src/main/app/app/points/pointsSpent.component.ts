@@ -1,36 +1,68 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { first } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { startWith, map, first } from 'rxjs/operators';
 
-import { AccountService, AlertService } from '@app/_services';
+import { StudentService, AlertService } from '@app/_services';
+import { Student } from '@app/_models';
 
-@Component({ templateUrl: 'pointsSpent.component.html' })
+@Component({ 
+    selector: 'pointsSpent.component',
+    templateUrl: 'pointsSpent.component.html' })
 export class PointsSpentComponent implements OnInit {
     form!: FormGroup;
     loading = false;
     submitted = false;
+    students?: Student[];
+    studentNames: string[] = [];
+    filteredStudents?: Observable<string[]>;
 
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
-        private accountService: AccountService,
+        private studentService: StudentService,
         private alertService: AlertService
     ) { }
 
     ngOnInit() {
+        this.studentService.getAllStudents()
+            .pipe(first())
+            .subscribe(std => this.students = std);
+        this.studentNames = new Array(0);
+        if(this.students?.length !== undefined) {
+            this.studentNames = new Array(this.students?.length);
+            this.students.forEach((currentValue, index) => {
+                if(!currentValue.name) {
+                    this.studentNames[index] = currentValue.name || '';
+                }
+              })
+        }
+        
         this.form = this.formBuilder.group({
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
-            username: ['', Validators.required],
-            email: ['', Validators.required],
-            password: ['', [Validators.required, Validators.minLength(6)]]
+            student: ['', Validators.required],
+            eventDate: ['', Validators.required],
+            points: ['', Validators.required]
+            //Add all the check boxes fro different points
         });
+        this.filteredStudents = this.form.controls['student'].valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value || ''))
+          );
     }
 
     // convenience getter for easy access to form fields
     get f() { return this.form.controls; }
+
+    private _filter(value: string): string[] {
+      const filterValue = this._normalizeValue(value);
+      return this.studentNames.filter(studentName => this._normalizeValue(studentName).includes(filterValue));
+    }
+  
+    private _normalizeValue(value: string): string {
+      return value.toLowerCase().replace(/\s/g, '');
+    }
 
     onSubmit() {
         this.submitted = true;
@@ -44,17 +76,19 @@ export class PointsSpentComponent implements OnInit {
         }
 
         this.loading = true;
-        this.accountService.register(this.form.value)
-            .pipe(first())
-            .subscribe({
-                next: () => {
-                    this.alertService.success('Registration successful', { keepAfterRouteChange: true });
-                    this.router.navigate(['../login'], { relativeTo: this.route });
-                },
-                error: error => {
-                    this.alertService.error(error);
-                    this.loading = false;
-                }
-            });
+        //Add submition logic so that the on successful submit form resets
+        // this.accountService.login(this.f.username.value, this.f.password.value)
+        //     .pipe(first())
+        //     .subscribe({
+        //         next: () => {
+        //             // get return url from query parameters or default to home page
+        //             const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+        //             this.router.navigateByUrl(returnUrl);
+        //         },
+        //         error: error => {
+        //             this.alertService.error(error);
+        //             this.loading = false;
+        //         }
+        //     });
     }
 }
