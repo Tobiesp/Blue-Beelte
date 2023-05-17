@@ -81,7 +81,7 @@ public class ReportController {
         this.pointsEarnedService = new PointsEarnedService(pointsEarnedRepository, pointTableRepository,
                 runningTotalsRepository, studentRepository);
         this.pointsSpentService = new PointsSpentService(pointsSpentProvider, runningTotalsRepository, studentRepository);
-        this.pointTypeService = new PointTypeService(pointTableRepository, pointCategoryRepository);
+        this.pointTypeService = new PointTypeService(pointTableRepository, pointCategoryRepository, groupRepository);
         this.roleService = new RoleService(roleRepository, userRepository);
         this.userService = new UserService(userRepository);
         this.runningTotalsService = new RunningTotalsService(runningTotalsRepository);
@@ -171,12 +171,13 @@ public class ReportController {
 
     }
 
+    //TODO: add code to do seperate outputs and to use a model instead of hand built
     @GetMapping("/checkin")
     @RolesAllowed({ Role.READ_ROLE, Role.WRITE_ROLE, Role.ADMIN_ROLE })
     public ResponseEntity<?> getCheckin(@RequestParam String group, @RequestHeader HttpHeaders headers) {
         Group grp = groupService.findByName(group);
         if (grp != null) {
-            List<PointType> points = pointTypeService.findByGroup(grp);
+            List<PointType> points = pointTypeService.findByGroup(group);
             List<Student> students = studentService.findByGroup(grp);
             HttpHeaders ResponseHeaders = new HttpHeaders();
             if(headers.getAccept().contains(MediaType.APPLICATION_JSON_VALUE)){

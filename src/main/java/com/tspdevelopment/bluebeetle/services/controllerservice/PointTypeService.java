@@ -7,16 +7,20 @@ package com.tspdevelopment.bluebeetle.services.controllerservice;
 import com.tspdevelopment.bluebeetle.data.model.Group;
 import com.tspdevelopment.bluebeetle.data.model.PointCategory;
 import com.tspdevelopment.bluebeetle.data.model.PointType;
+import com.tspdevelopment.bluebeetle.data.repository.GroupRepository;
 import com.tspdevelopment.bluebeetle.data.repository.PointCategoryRepository;
 import com.tspdevelopment.bluebeetle.data.repository.PointTypeRepository;
+import com.tspdevelopment.bluebeetle.provider.interfaces.GroupProvider;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointCategoryProvider;
 import com.tspdevelopment.bluebeetle.provider.interfaces.PointTypeProvider;
+import com.tspdevelopment.bluebeetle.provider.sqlprovider.GroupProviderImpl;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointCategoryProviderImpl;
 import com.tspdevelopment.bluebeetle.provider.sqlprovider.PointTypeProviderImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -26,10 +30,12 @@ import org.springframework.data.domain.Pageable;
 public class PointTypeService extends BaseService<PointType, PointTypeProvider> {
     
     private final PointCategoryProvider pointCategoryProvider;
+    private final GroupProvider groupProvider;
 
-    public PointTypeService(PointTypeRepository repository, PointCategoryRepository pointCategoryRepository) {
+    public PointTypeService(PointTypeRepository repository, PointCategoryRepository pointCategoryRepository, GroupRepository groupRepository) {
         this.provider = new PointTypeProviderImpl(repository);
         this.pointCategoryProvider = new PointCategoryProviderImpl(pointCategoryRepository);
+        this.groupProvider = new GroupProviderImpl(groupRepository);
     }
     
     public List<PointType> findByCategory(String category) {
@@ -43,12 +49,32 @@ public class PointTypeService extends BaseService<PointType, PointTypeProvider> 
         }
     }
     
-    public List<PointType> findByGroup(Group group) {
-        return this.provider.findByGroup(group);
+    public List<PointType> findByGroup(String group) {
+        Optional<Group> og = this.groupProvider.findByName(group);
+        return og.isEmpty() ? null : this.provider.findByGroup(og.get());
     }
     
-    public List<PointType> findByCategoryAndGroup(PointCategory pointCategory, Group group) {
-        return this.provider.findByCategoryAndGroup(pointCategory, group);
+    public List<PointType> findByCategoryAndGroup(String category, String group) {
+        Optional<Group> og = this.groupProvider.findByName(group);
+        Optional<PointCategory> pc = pointCategoryProvider.findByCategory(category);
+        return og.isEmpty() || pc.isEmpty() ? new ArrayList<>() : this.provider.findByCategoryAndGroup(pc.get(), og.get());
+    }
+    
+    public List<PointType> findByCategory(PointCategory category) {
+        if(category != null) {
+            List<PointType> ptList = this.provider.findByCategory(category);
+            return ptList;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+    
+    public List<PointType> findByGroup(Group group) {
+        return group == null ? null : this.provider.findByGroup(group);
+    }
+    
+    public List<PointType> findByCategoryAndGroup(PointCategory category, Group group) {
+        return (group == null) || (category == null) ? new ArrayList<>() : this.provider.findByCategoryAndGroup(category, group);
     }
     
     public Page<PointType> findByCategory(String category, Pageable pageable) {
@@ -62,12 +88,15 @@ public class PointTypeService extends BaseService<PointType, PointTypeProvider> 
         }
     }
     
-    public Page<PointType> findByGroup(Group group, Pageable pageable) {
-        return this.provider.findByGroup(group, pageable);
+    public Page<PointType> findByGroup(String group, Pageable pageable) {
+        Optional<Group> og = this.groupProvider.findByName(group);
+        return og.isEmpty() ? null : this.provider.findByGroup(og.get(), pageable);
     }
     
-    public Page<PointType> findByCategoryAndGroup(PointCategory pointCategory, Group group, Pageable pageable) {
-        return this.provider.findByCategoryAndGroup(pointCategory, group, pageable);
+    public Page<PointType> findByCategoryAndGroup(String category, String group, Pageable pageable) {
+        Optional<Group> og = this.groupProvider.findByName(group);
+        Optional<PointCategory> pc = pointCategoryProvider.findByCategory(category);
+        return og.isEmpty() || pc.isEmpty() ? new PageImpl<>(new ArrayList<>()) : this.provider.findByCategoryAndGroup(pc.get(), og.get(), pageable);
     }
     
 }
