@@ -16,22 +16,22 @@ export class PointCategoryService {
         
     }
 
-    getAllGroups() {
+    getAllCategories() {
         return this.http.get<PointCategory[]>(`${environment.apiUrl}/api/category/`);
     }
 
-    getGroupById(id: string) {
+    getCategoryById(id: string) {
         return this.http.get<PointCategory>(`${environment.apiUrl}/api/category/${id}`);
     }
 
-    updateGroup(id: string, params: any) {
+    updateCategory(id: string, params: any) {
         return this.http.put(`${environment.apiUrl}/api/category/${id}`, params)
             .pipe(map(x => {
                 return x;
             }));
     }
 
-    deleteGroup(id: string) {
+    deleteCategory(id: string) {
         return this.http.delete(`${environment.apiUrl}/api/category/${id}`)
             .pipe(map(x => {
                 return x;

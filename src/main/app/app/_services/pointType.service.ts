@@ -16,22 +16,26 @@ export class PointTypeService {
         
     }
 
-    getAllGroups() {
+    getAllPointTypes() {
         return this.http.get<PointType[]>(`${environment.apiUrl}/api/points/config/`);
     }
 
-    getGroupById(id: string) {
+    getPointTypeById(id: string) {
         return this.http.get<PointType>(`${environment.apiUrl}/api/points/config/${id}`);
     }
 
-    updateGroup(id: string, params: any) {
+    getPointTypeByGroup(group: string) {
+        return this.http.get<PointType>(`${environment.apiUrl}/api/points/config/findByGroup?group=${group}`);
+    }
+
+    updatePointType(id: string, params: any) {
         return this.http.put(`${environment.apiUrl}/api/points/config/${id}`, params)
             .pipe(map(x => {
                 return x;
             }));
     }
 
-    deleteGroup(id: string) {
+    deletePointType(id: string) {
         return this.http.delete(`${environment.apiUrl}/api/points/config/${id}`)
             .pipe(map(x => {
                 return x;

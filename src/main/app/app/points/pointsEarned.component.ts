@@ -1,11 +1,10 @@
 ﻿import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map, first } from 'rxjs/operators';
 
-import { StudentService, AlertService } from '@app/_services';
-import { Student } from '@app/_models';
+import { StudentService, AlertService, PointTypeService, PointCategoryService } from '@app/_services';
+import { PointCategory, PointType, Student } from '@app/_models';
 
 @Component({ 
     selector: 'pointsEarned.component',
@@ -15,15 +14,17 @@ export class pointsEarnedComponent implements OnInit {
     loading = false;
     submitted = false;
     students?: Student[];
+    pointTypes?: PointType[];
+    pointCategories?: PointCategory[];
     studentNames: string[] = [];
     filteredStudents?: Observable<string[]>;
 
     constructor(
         private formBuilder: FormBuilder,
-        private route: ActivatedRoute,
-        private router: Router,
         private studentService: StudentService,
-        private alertService: AlertService
+        private alertService: AlertService,
+        private pointTypeService: PointTypeService,
+        private pointCategoryService: PointCategoryService
     ) { 
 
     }
@@ -42,15 +43,27 @@ export class pointsEarnedComponent implements OnInit {
               })
         }
         
+        this.pointCategoryService.getAllCategories()
+            .pipe(first())
+            .subscribe(cat => this.pointCategories = cat);
+
         this.form = this.formBuilder.group({
             student: ['', Validators.required],
             eventDate: ['', Validators.required]
             //Add all the check boxes fro different points
         });
+
+        for (const item of this.pointCategories!) {
+            const category = item.category ? item.category : "";
+            this.form.addControl(category, new FormControl(""));
+        }
+
         this.filteredStudents = this.form.controls['student'].valueChanges.pipe(
             startWith(''),
             map(value => this._filter(value || ''))
           );
+
+        
     }
 
     private _filter(value: string): string[] {
@@ -60,6 +73,16 @@ export class pointsEarnedComponent implements OnInit {
   
     private _normalizeValue(value: string): string {
       return value.toLowerCase().replace(/\s/g, '');
+    }
+
+    checkboxControl(category: String|undefined|null): string {
+        return (category ? category.toString() : '');
+    }
+
+    displayCheckbox(category: String|undefined|null): string {
+        const c = (category ? category.toString() : '');
+        const str = c.charAt(0).toUpperCase() + c.slice(1);
+        return str.replace(/([A-Z])/g, ' $1').trim();
     }
 
     // convenience getter for easy access to form fields

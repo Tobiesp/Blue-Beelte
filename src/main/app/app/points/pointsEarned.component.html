@@ -23,6 +23,16 @@
                 <mat-datepicker #eventDatePicker></mat-datepicker>
               </mat-form-field>
             </p>
+
+            <p *ngFor="let category of pointCategories">
+              <mat-form-field appearance="fill">
+                <mat-checkbox labelPosition="before" [formControlName]="checkboxControl(category?.category)" class="form-control">
+                  {{displayCheckbox(category?.category)}}
+                </mat-checkbox>
+              </mat-form-field>
+            </p>
+
+            <button mat-raised-button type="submit" color="Black">Add Points</button>
         </form>
     </div>
 </div>

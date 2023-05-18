@@ -1,5 +1,4 @@
 ﻿import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map, first } from 'rxjs/operators';
@@ -20,8 +19,6 @@ export class PointsSpentComponent implements OnInit {
 
     constructor(
         private formBuilder: FormBuilder,
-        private route: ActivatedRoute,
-        private router: Router,
         private studentService: StudentService,
         private alertService: AlertService
     ) { }
