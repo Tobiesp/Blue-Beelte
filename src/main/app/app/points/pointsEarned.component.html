@@ -1,38 +1,86 @@
 ﻿<div class="card">
-    <h4 class="card-header">Add Points Earned</h4>
-    <div class="card-body">
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
-            <mat-form-field class="example-full-width" appearance="fill">
-                <label class="form-label">Student</label>
-                <input type="text" placeholder="Student name" formControlName="student" matInput [matAutocomplete]="auto" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.student.errors }" />
-                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                    <mat-option *ngFor="let student of filteredStudents | async" value="student">
-                      {{student}}
-                    </mat-option>
-                  </mat-autocomplete>
-                <div *ngIf="submitted && f.student.errors" class="invalid-feedback">
-                    <div *ngIf="f.student.errors.required">Student is required</div>
-                </div>
-            </mat-form-field>
-            <p>
-            <mat-form-field appearance="fill">
-                <mat-label>Event date</mat-label>
-                <input matInput [matDatepicker]="eventDatePicker" formControlName="eventDate" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.eventDate.errors }">
-                <mat-hint>MM/DD/YYYY</mat-hint>
-                <mat-datepicker-toggle matIconSuffix [for]="eventDatePicker"></mat-datepicker-toggle>
-                <mat-datepicker #eventDatePicker></mat-datepicker>
-              </mat-form-field>
-            </p>
+  <h4 class="card-header">Add Points Earned</h4>
+  <div class="card-body">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div>
+        <mat-form-field class="example-full-width" appearance="fill">
+          <label class="form-label">Student</label>
+          <input type="text" placeholder="Student name" formControlName="student" matInput [matAutocomplete]="auto"
+            class="form-control" [ngClass]="{ 'is-invalid': submitted && f.student.errors }" />
+          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+            <mat-option *ngFor="let student of filteredStudents | async" value="student">
+              {{student}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <div *ngIf="submitted && f.student.errors" class="invalid-feedback">
+          <div *ngIf="f.student.errors.required">Student is required</div>
+        </div>
+      </div>
 
-            <p *ngFor="let category of pointCategories">
-              <mat-form-field appearance="fill">
-                <mat-checkbox labelPosition="before" [formControlName]="checkboxControl(category?.category)" class="form-control">
-                  {{displayCheckbox(category?.category)}}
-                </mat-checkbox>
-              </mat-form-field>
-            </p>
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>Event date</mat-label>
+          <input matInput [matDatepicker]="eventDatePicker" formControlName="eventDate" class="form-control"
+            [ngClass]="{ 'is-invalid': submitted && f.eventDate.errors }">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="eventDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #eventDatePicker></mat-datepicker>
+        </mat-form-field>
+        <div *ngIf="submitted && f.eventDate.errors" class="invalid-feedback">
+          <div *ngIf="f.eventDate.errors.required">Event Date is required</div>
+        </div>
+      </div>
 
-            <button mat-raised-button type="submit" color="Black">Add Points</button>
-        </form>
-    </div>
+      <p>
+        <mat-form-field appearance="fill">
+          <mat-checkbox labelPosition="before" formControlName="attended">
+            Attended
+          </mat-checkbox>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field appearance="fill">
+          <mat-checkbox labelPosition="before" formControlName="bible">
+            Bible
+          </mat-checkbox>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field appearance="fill">
+          <mat-checkbox labelPosition="before" formControlName="bibleVerse">
+            Bible Verse
+          </mat-checkbox>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field appearance="fill">
+          <mat-checkbox labelPosition="before" formControlName="bringAFriend">
+            Bring A Friend
+          </mat-checkbox>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field appearance="fill">
+          <mat-checkbox labelPosition="before" formControlName="attentive">
+            Attentive
+          </mat-checkbox>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field appearance="fill">
+          <mat-checkbox labelPosition="before" formControlName="recallsLastWeekLesson">
+            Recalls Last Week Lesson
+          </mat-checkbox>
+        </mat-form-field>
+      </p>
+
+      <button mat-raised-button type="submit" color="Black">Add Points</button>
+    </form>
+  </div>
 </div>

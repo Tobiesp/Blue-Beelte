@@ -1,5 +1,5 @@
 ﻿import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map, first } from 'rxjs/operators';
 
@@ -42,21 +42,17 @@ export class pointsEarnedComponent implements OnInit {
                 }
               })
         }
-        
-        this.pointCategoryService.getAllCategories()
-            .pipe(first())
-            .subscribe(cat => this.pointCategories = cat);
 
         this.form = this.formBuilder.group({
             student: ['', Validators.required],
-            eventDate: ['', Validators.required]
-            //Add all the check boxes fro different points
+            eventDate: ['', Validators.required],
+            attended: false,
+            bible: false,
+            bibleVerse: false,
+            bringAFriend: false,
+            attentive: false,
+            recallsLastWeekLesson: false
         });
-
-        for (const item of this.pointCategories!) {
-            const category = item.category ? item.category : "";
-            this.form.addControl(category, new FormControl(""));
-        }
 
         this.filteredStudents = this.form.controls['student'].valueChanges.pipe(
             startWith(''),
@@ -73,16 +69,6 @@ export class pointsEarnedComponent implements OnInit {
   
     private _normalizeValue(value: string): string {
       return value.toLowerCase().replace(/\s/g, '');
-    }
-
-    checkboxControl(category: String|undefined|null): string {
-        return (category ? category.toString() : '');
-    }
-
-    displayCheckbox(category: String|undefined|null): string {
-        const c = (category ? category.toString() : '');
-        const str = c.charAt(0).toUpperCase() + c.slice(1);
-        return str.replace(/([A-Z])/g, ' $1').trim();
     }
 
     // convenience getter for easy access to form fields
