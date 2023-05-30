@@ -183,6 +183,7 @@ public class LoadDatabase {
                     pt.setPointCategory(pc);
                     if (null == g.getName()) {
                         pt.setTotalPoints(0);
+                        pt.setEnabled(false);
                     } else
                         switch (g.getName()) {
                             case "Graduated":
@@ -196,11 +197,20 @@ public class LoadDatabase {
                                     pt.setTotalPoints(0);
                                     pt.setEnabled(false);
                                     break;
+                                } else {
+                                    pt.setTotalPoints(1);
+                                    pt.setEnabled(true);
+                                    break;
                                 }
                             case "K-2 Boys":
                             case "K-2 Girls":
                                 if ("bibleVerse".equals(pc.getCategory())) {
                                     pt.setTotalPoints(5);
+                                    pt.setEnabled(true);
+                                    break;
+                                } else {
+                                    pt.setTotalPoints(1);
+                                    pt.setEnabled(true);
                                     break;
                                 }
                             default:
