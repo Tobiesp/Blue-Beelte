@@ -25,10 +25,7 @@ public class PointTypeProviderImpl implements PointTypeProvider{
 
     @Override
     public PointType create(PointType newItem) {
-        if((newItem != null) && (newItem.getCreatedAt() == null)) {
-            newItem.setCreatedAt(LocalDateTime.now());
-            newItem.setModifiedAt(LocalDateTime.now());
-        }
+        newItem.setCreatedAt(LocalDateTime.now());
         return this.repository.save(newItem);
     }
 

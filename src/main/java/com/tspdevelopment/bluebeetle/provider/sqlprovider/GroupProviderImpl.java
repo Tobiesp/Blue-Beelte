@@ -33,10 +33,7 @@ public class GroupProviderImpl implements GroupProvider{
 
     @Override
     public Group create(Group newItem) {
-        if((newItem != null) && (newItem.getCreatedAt() == null)) {
-            newItem.setCreatedAt(LocalDateTime.now());
-            newItem.setModifiedAt(LocalDateTime.now());
-        }
+        newItem.setCreatedAt(LocalDateTime.now());
         return this.repository.save(newItem);
     }
 

@@ -35,10 +35,7 @@ public class StudentProviderImpl implements StudentProvider{
 
     @Override
     public Student create(Student newItem) {
-        if((newItem != null) && (newItem.getCreatedAt() == null)) {
-            newItem.setCreatedAt(LocalDateTime.now());
-            newItem.setModifiedAt(LocalDateTime.now());
-        }
+        newItem.setCreatedAt(LocalDateTime.now());
         return this.repository.save(newItem);
     }
 

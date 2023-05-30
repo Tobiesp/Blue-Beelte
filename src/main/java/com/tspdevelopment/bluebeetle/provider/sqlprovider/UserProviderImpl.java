@@ -63,10 +63,7 @@ public class UserProviderImpl implements UserProvider {
 
     @Override
     public User create(User item) {
-        if((item != null) && (item.getCreatedAt() == null)) {
-            item.setCreatedAt(LocalDateTime.now());
-            item.setModifiedAt(LocalDateTime.now());
-        }
+        item.setCreatedAt(LocalDateTime.now());
         return this.repository.save(item);
     }
 

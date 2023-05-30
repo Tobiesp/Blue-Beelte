@@ -25,10 +25,7 @@ public class PointsSpentProviderImpl implements PointsSpentProvider {
 
     @Override
     public PointsSpent create(PointsSpent newItem) {
-        if((newItem != null) && (newItem.getCreatedAt() == null)) {
-            newItem.setCreatedAt(LocalDateTime.now());
-            newItem.setModifiedAt(LocalDateTime.now());
-        }
+        newItem.setCreatedAt(LocalDateTime.now());
         PointsSpent sp = this.repository.save(newItem);
         return sp;
     }

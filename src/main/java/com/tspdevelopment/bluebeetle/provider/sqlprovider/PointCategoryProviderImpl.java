@@ -51,10 +51,7 @@ public class PointCategoryProviderImpl implements PointCategoryProvider {
 
     @Override
     public PointCategory create(PointCategory newItem) {
-        if((newItem != null) && (newItem.getCreatedAt() == null)) {
-            newItem.setCreatedAt(LocalDateTime.now());
-            newItem.setModifiedAt(LocalDateTime.now());
-        }
+        newItem.setCreatedAt(LocalDateTime.now());
         return this.repository.save(newItem);
     }
 

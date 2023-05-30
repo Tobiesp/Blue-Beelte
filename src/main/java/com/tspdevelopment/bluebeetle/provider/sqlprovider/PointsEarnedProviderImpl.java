@@ -35,10 +35,7 @@ public class PointsEarnedProviderImpl implements PointsEarnedProvider{
 
     @Override
     public PointsEarned create(PointsEarned newItem) {
-        if((newItem != null) && (newItem.getCreatedAt() == null)) {
-            newItem.setCreatedAt(LocalDateTime.now());
-            newItem.setModifiedAt(LocalDateTime.now());
-        }
+        newItem.setCreatedAt(LocalDateTime.now());
         return this.repository.save(newItem);
     }
 

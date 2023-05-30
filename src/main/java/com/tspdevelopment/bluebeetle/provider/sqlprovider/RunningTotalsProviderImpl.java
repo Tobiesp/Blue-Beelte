@@ -24,10 +24,7 @@ public class RunningTotalsProviderImpl implements RunningTotalsProvider{
 
     @Override
     public RunningTotals create(RunningTotals newItem) {
-        if((newItem != null) && (newItem.getCreatedAt() == null)) {
-            newItem.setCreatedAt(LocalDateTime.now());
-            newItem.setModifiedAt(LocalDateTime.now());
-        }
+        newItem.setCreatedAt(LocalDateTime.now());
         return this.repository.save(newItem);
     }
 
