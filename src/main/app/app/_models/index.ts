@@ -10,3 +10,4 @@ export * from './runningTotals';
 export * from './student';
 export * from './lastEventView';
 export * from './groupCountView';
+export * from './pointsEarnedCollection';
