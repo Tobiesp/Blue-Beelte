@@ -96,23 +96,8 @@ export class pointsEarnedComponent implements OnInit {
               this.f.eventDate.setValue(this.parseDate(possiblePoints.eventDate));
             }
             possiblePoints.points?.forEach(pnt => {
-              if(pnt.pointCategory?.category === 'attended') {
-                this.f.attended.enable();
-              }
-              if(pnt.pointCategory?.category === 'bible') {
-                this.f.bible.enable();
-              }
-              if(pnt.pointCategory?.category === 'bibleVerse') {
-                this.f.bibleVerse.enable();
-              }
-              if(pnt.pointCategory?.category === 'bringAFriend') {
-                this.f.bringAFriend.enable();
-              }
-              if(pnt.pointCategory?.category === 'attentive') {
-                this.f.attentive.enable();
-              }
-              if(pnt.pointCategory?.category === 'recallsLastWeekLesson') {
-                this.f.recallsLastWeekLesson.enable();
+              if(pnt.pointCategory?.category) {
+                this.f[pnt.pointCategory?.category].enable();
               }
             })
           })
