@@ -26,6 +26,11 @@ export class StudentService {
         return this.http.get<Student>(`${environment.apiUrl}/api/student/${id}`);
     }
 
+    getStudentName(name: string) {
+        console.log("Getting student details for: " + name);
+        return this.http.get<Student[]>(`${environment.apiUrl}/api/student/findByName?name=${name}`);
+    }
+
     createStudent(student: Student) {
         const group = this.groupService.getGroupByName(student.group?.name).subscribe(
             group => student.group = group

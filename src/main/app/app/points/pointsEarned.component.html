@@ -2,85 +2,74 @@
   <h4 class="card-header">Add Points Earned</h4>
   <div class="card-body">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div>
-        <mat-form-field class="example-full-width" appearance="fill">
-          <label class="form-label">Student</label>
+      <mat-form-field>
+          <label class="form-label">Student name</label>
           <input type="text" placeholder="Student name" formControlName="student" matInput [matAutocomplete]="auto"
             class="form-control" [ngClass]="{ 'is-invalid': submitted && f.student.errors }" />
-          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-            <mat-option *ngFor="let student of filteredStudents | async" value="student">
+          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)='fireSelectedValueEvent($event.option.value)'>
+            <mat-option *ngFor="let student of filteredStudents | async" [value]="student">
               {{student}}
             </mat-option>
           </mat-autocomplete>
-        </mat-form-field>
         <div *ngIf="submitted && f.student.errors" class="invalid-feedback">
           <div *ngIf="f.student.errors.required">Student is required</div>
         </div>
+      </mat-form-field>
+
+      <div>
+        <mat-form-field>
+            <mat-label>Event date</mat-label>
+            <input matInput [matDatepicker]="eventDatePicker" formControlName="eventDate" class="form-control"
+              [ngClass]="{ 'is-invalid': submitted && f.eventDate.errors }" [value]="eventDateValue">
+            <mat-hint>Date Format: MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="eventDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #eventDatePicker></mat-datepicker>
+          <div *ngIf="submitted && f.eventDate.errors" class="invalid-feedback">
+            <div *ngIf="f.eventDate.errors.required">Event Date is required</div>
+          </div>
+        </mat-form-field>
       </div>
 
       <div>
-        <mat-form-field appearance="fill">
-          <mat-label>Event date</mat-label>
-          <input matInput [matDatepicker]="eventDatePicker" formControlName="eventDate" class="form-control"
-            [ngClass]="{ 'is-invalid': submitted && f.eventDate.errors }">
-          <mat-hint>MM/DD/YYYY</mat-hint>
-          <mat-datepicker-toggle matIconSuffix [for]="eventDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #eventDatePicker></mat-datepicker>
-        </mat-form-field>
-        <div *ngIf="submitted && f.eventDate.errors" class="invalid-feedback">
-          <div *ngIf="f.eventDate.errors.required">Event Date is required</div>
-        </div>
-      </div>
+        <p>
+            <mat-checkbox formControlName="attended" [disabled]="true">
+              Attended
+            </mat-checkbox>
+        </p>
 
-      <p>
-        <mat-form-field appearance="fill">
-          <mat-checkbox labelPosition="before" formControlName="attended">
-            Attended
-          </mat-checkbox>
-        </mat-form-field>
-      </p>
+        <p>
+            <mat-checkbox formControlName="bible" [disabled]="true">
+              Bible
+            </mat-checkbox>
+        </p>
 
-      <p>
-        <mat-form-field appearance="fill">
-          <mat-checkbox labelPosition="before" formControlName="bible">
-            Bible
-          </mat-checkbox>
-        </mat-form-field>
-      </p>
+        <p>
+            <mat-checkbox formControlName="bibleVerse" [disabled]="true">
+              Bible Verse
+            </mat-checkbox>
+        </p>
 
-      <p>
-        <mat-form-field appearance="fill">
-          <mat-checkbox labelPosition="before" formControlName="bibleVerse">
-            Bible Verse
-          </mat-checkbox>
-        </mat-form-field>
-      </p>
+        <p>
+            <mat-checkbox formControlName="bringAFriend" [disabled]="true">
+              Bring A Friend
+            </mat-checkbox>
+        </p>
 
-      <p>
-        <mat-form-field appearance="fill">
-          <mat-checkbox labelPosition="before" formControlName="bringAFriend">
-            Bring A Friend
-          </mat-checkbox>
-        </mat-form-field>
-      </p>
+        <p>
+            <mat-checkbox formControlName="attentive" [disabled]="true">
+              Attentive
+            </mat-checkbox>
+        </p>
 
-      <p>
-        <mat-form-field appearance="fill">
-          <mat-checkbox labelPosition="before" formControlName="attentive">
-            Attentive
-          </mat-checkbox>
-        </mat-form-field>
-      </p>
-
-      <p>
-        <mat-form-field appearance="fill">
-          <mat-checkbox labelPosition="before" formControlName="recallsLastWeekLesson">
-            Recalls Last Week Lesson
-          </mat-checkbox>
-        </mat-form-field>
-      </p>
+        <p>
+            <mat-checkbox formControlName="recallsLastWeekLesson" [disabled]="true">
+              Recalls Last Week Lesson
+            </mat-checkbox>
+        </p>
+    </div>
 
       <button mat-raised-button type="submit" color="Black">Add Points</button>
+      <button mat-raised-button type="button" color="Black">Reset</button>
     </form>
   </div>
 </div>

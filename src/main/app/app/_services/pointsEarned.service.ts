@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
 import { environment } from '@environments/environment';
-import { PointsEarned } from '@app/_models';
+import { PointsEarned, PointsEarnedCollection } from '@app/_models';
 
 @Injectable({ providedIn: 'root' })
 export class PointsEarnedService {
@@ -16,22 +16,26 @@ export class PointsEarnedService {
         
     }
 
-    getAllGroups() {
+    getAllEarnedPoints() {
         return this.http.get<PointsEarned[]>(`${environment.apiUrl}/api/points/earned/`);
     }
 
-    getGroupById(id: string) {
+    getEarnedPointById(id: string) {
         return this.http.get<PointsEarned>(`${environment.apiUrl}/api/points/earned/${id}`);
     }
 
-    updateGroup(id: string, params: any) {
+    getPossibleEarnedPointByStudentId(stdId: string) {
+        return this.http.get<PointsEarnedCollection>(`${environment.apiUrl}/api/points/earned/getPossiblePoints?studentId=${stdId}`);
+    }
+
+    updateEarnedPoint(id: string, params: any) {
         return this.http.put(`${environment.apiUrl}/api/points/earned/${id}`, params)
             .pipe(map(x => {
                 return x;
             }));
     }
 
-    deleteGroup(id: string) {
+    deleteEarnedPoint(id: string) {
         return this.http.delete(`${environment.apiUrl}/api/points/earned/${id}`)
             .pipe(map(x => {
                 return x;
